@@ -4,3 +4,10 @@ Version: 0.1
 Summary: A package which can help user to using memory tool to create and search memory
 Author: BlackSheep Netmind.AI
 Author-email: xiangpeng.wan@protagolabs.com
+Requires-Dist: openai
+Requires-Dist: langchain
+Requires-Dist: openpyxl
+Requires-Dist: networkx
+Requires-Dist: pymilvus
+Requires-Dist: pymongo
+Requires-Dist: pytest
