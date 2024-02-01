@@ -1,0 +1,17 @@
+README.md
+setup.py
+xyz/__init__.py
+xyz.egg-info/PKG-INFO
+xyz.egg-info/SOURCES.txt
+xyz.egg-info/dependency_links.txt
+xyz.egg-info/requires.txt
+xyz.egg-info/top_level.txt
+xyz/magics/__init__.py
+xyz/magics/memory/BasicAttributeStorage.py
+xyz/magics/memory/BasicMemoryMechanism.py
+xyz/magics/memory/__init__.py
+xyz/magics/memory/utils.py
+xyz/magics/memory/_embedding_setting/EmbeddingTypeEnum.py
+xyz/magics/memory/_embedding_setting/IdxTypeEnum.py
+xyz/magics/memory/_embedding_setting/MetricTypeEnum.py
+xyz/magics/memory/_embedding_setting/__init__.py

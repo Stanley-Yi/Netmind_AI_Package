@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='netmindxyz',
+    name='xyz',
     version='0.1',
     author='BlackSheep Netmind.AI',
     author_email='xiangpeng.wan@protagolabs.com',
