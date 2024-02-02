@@ -42,7 +42,8 @@ class BasicMemoryMechanism:
             self,
             memory_name: str, 
             db_name: str,
-            coll_name: str = None,
+            collection_name: str = None,
+            partition_name: str = "default",
             is_partion_level: bool = False,
             milvus_host: str = 'localhost', 
             milvus_port: int = 19530, 
@@ -64,7 +65,7 @@ class BasicMemoryMechanism:
             the name of this memory storage
         db_name : str
             the name of used Milvus database
-        coll_name : str
+        collection_name : str
             the name of used Milvus collection
         is_partion_level : bool
             indicating the type of memory unit storage: true if it is partition-level; false if it is collection-level
@@ -102,13 +103,17 @@ class BasicMemoryMechanism:
         each database contains multiple collections; each collections contains multiple partitions; the memory records are actually stored in each partitions
         This BasicMemoryMechanism facilitates two types of memory unit storage levels available, ie, collection-level and partition-level
 
-        - if it is collection-level: The collection is named as memory_name, and all of its memory records are stored in 'default' partition
-        - if it is partiton-level: The collection is named as a pre-specified name, and a partition named as memory_name will be created and used within this collection
+        - if it is collection-level: The collection is named as collection_name, and all of its memory records are stored in 'default' partition
+        - if it is partiton-level: The collection is named as a pre-specified name, and a partition named as partition_name will be created and used within this collection
         '''
 
         # Step 2: connect to the MongoDB no-SQL database
         try:
-            self._mongo_db = BasicAttributeStorage(memory_name, mongo_url) # connect to mongoDB client, and use the database, whose name is memory_name
+            if self.if_partition_level:
+                self.mongo_db_name = self.partition_name 
+            else:
+                self.mongo_db_name = self.collection_name
+            self._mongo_db = BasicAttributeStorage(self.mongo_db_name, mongo_url) # connect to mongoDB client, and use the database, whose name is collection_name
             self.mongo_url = mongo_url
         except Exception as e:
             raise Exception('MongoDB connect failed: the mongo_url you provided is not correct')
@@ -145,13 +150,13 @@ class BasicMemoryMechanism:
         '''
     
         self.memory_name = memory_name
-        self.collection_name = coll_name
+        self.collection_name = collection_name
     
         # parameters related to milvus settings
         self._storage_engine = storage_engine
         self.collection = None
         self.db_name = db_name
-        self.partition_name = memory_name if is_partion_level else 'default'
+        self.partition_name = partition_name
         self._search_idx_params = None
         
         # parameters related to embedding
@@ -160,7 +165,6 @@ class BasicMemoryMechanism:
 
         # initialize the collection instance
         if not self._load_memory_store(
-                    coll_name if is_partion_level else memory_name, 
                     num_shards, 
                     metric_type, 
                     idx_type, 
@@ -168,9 +172,11 @@ class BasicMemoryMechanism:
             raise Exception('loading memory store failed')
 
     def get_info(self):
-        return { "db_name" : self.db_name, 
+        return { 
+                "memory_name" : self.memory_name,
+                "db_name" : self.db_name, 
                 "collection_name" : self.collection_name,
-                "memory_name" : self.partition_name,
+                "partition_name" : self.partition_name,
                 "is_partion_level" : self.milvus_connection['is_partion_level'],
                 "milvus_host" : self.milvus_connection['host'], 
                 "milvus_port" : self.milvus_connection['port'], 
@@ -233,7 +239,6 @@ class BasicMemoryMechanism:
 
     def _load_memory_store(
             self, 
-            collection_name: str,
             num_shards: int,
             metric_type: MetricType,
             idx_type: IdxType,
@@ -263,7 +268,7 @@ class BasicMemoryMechanism:
             db.create_database(db_name=self.db_name, using=self._storage_engine)
         db.using_database(db_name=self.db_name, using=self._storage_engine)
 
-        if not utility.has_collection(collection_name):
+        if not utility.has_collection(self.collection_name):
             '''
             docstore_id: the generated UUID, the primary key of one memory record
             meta_data_dict: the json dict data, the keys are customized filter conditions, such as category, importance
@@ -280,10 +285,10 @@ class BasicMemoryMechanism:
                 fields=[docstore_id, meta_data_dict, description, full_content]
                 )
             
-            self.collection = Collection(name=collection_name, schema=coll_schema, using=self._storage_engine, shards_num=num_shards)
+            self.collection = Collection(name=self.collection_name, schema=coll_schema, using=self._storage_engine, shards_num=num_shards)
 
         else:
-            self.collection = Collection(collection_name)
+            self.collection = Collection(self.collection_name)
 
         # Attach the index to vector field, ie, description Field
         self._search_idx_params = attach_idx(self.collection, 'description', metric_type, False, idx_type, **idx_builder)
