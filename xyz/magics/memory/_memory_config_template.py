@@ -10,12 +10,11 @@ Memory Configuration Template
 MEMORY_CONFIG = {
     "type": "milvus",
     "if_init" : True,
-    # Following will be given by BMM\BAS 
     "memory_name": "test_memory",
     "db_name": "test_db",
     "collection_name" : "test_memory",
     "partition_name" : "default",
-    "is_partion_level" : False,
+    "if_partion_level" : False,
     "milvus_host" : '18.171.129.243',
     "milvus_port" : 80,
     "milvus_user" : "root",

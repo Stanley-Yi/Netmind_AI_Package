@@ -31,6 +31,7 @@ def collection_bmm() -> BasicMemoryMechanism:
     return BasicMemoryMechanism(
             memory_name=memory_name, 
             db_name=db_name, 
+            collection_name=memory_name,
             is_partion_level=False, 
             milvus_host=milvus_host,
             milvus_port=milvus_port,
@@ -47,6 +48,7 @@ def partition_bmm():
     # connection informations related to Milvus
     db_name = 'test_milvus_db'
     coll_name = 'test_milvus_coll'
+    partition_name = 'test_people_partition'
     milvus_host = '18.171.129.243'
     milvus_port = 80
     milvus_user = "root"
@@ -64,7 +66,8 @@ def partition_bmm():
     return BasicMemoryMechanism(
             memory_name=memory_name, 
             db_name=db_name, 
-            coll_name=coll_name,
+            collection_name=coll_name,
+            partition_name=partition_name,
             is_partion_level=True, 
             milvus_host=milvus_host,
             milvus_port=milvus_port,
@@ -186,3 +189,23 @@ def test_delete_memory_partition(partition_bmm):
     result = partition_bmm.delete_memory(meta_data_filter=filter)
     
     assert result == 1
+    
+def test_get_info(collection_bmm):
+    
+    info = collection_bmm.get_info()
+    assert info['memory_name'] == 'test_people_collection'
+    assert info['db_name'] == 'test_milvus_db'
+    assert info['collection_name'] == 'test_people_collection'
+    assert info['partition_name'] == 'default'
+    assert info['if_partion_level'] == False
+    assert info['milvus_host'] == '18.171.129.243'
+    assert info['milvus_port'] == 80
+    assert info['milvus_user'] == 'root'
+    assert info['milvus_psw'] == 'NetMindMilvusDB'
+
+    
+    
+    
+    
+    
+    

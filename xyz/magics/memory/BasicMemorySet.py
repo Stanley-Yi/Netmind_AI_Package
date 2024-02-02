@@ -16,8 +16,8 @@ from user_settings import DEFAULT_INFO
 from typing import Dict, List, Optional, Any
 from urllib.parse import quote_plus
 from xyz.magics.memory._memory_config_template import MEMORY_CONFIG
-from memory.BasicMemoryMechanism import BasicMemoryMechanism
-from memory.BasicAttributeStorage import BasicAttributeStorage
+from xyz.magics.memory.BasicMemoryMechanism import BasicMemoryMechanism
+from xyz.magics.memory.BasicAttributeStorage import BasicAttributeStorage
 
 
 class BasicMemorySet:
@@ -58,7 +58,11 @@ class BasicMemorySet:
             self.memory[memory_name] = self.load_nosql(memory_config)
         else:
             raise TypeError("The type of memory is not supported.")
-            
+        
+    def save_config(self):
+        with open(self.info_path, 'w') as f:
+            json.dump(self.info, f)      
+                  
     @staticmethod
     def load_milvus(memory_info):
 
@@ -67,7 +71,7 @@ class BasicMemorySet:
             db_name=memory_info['db_name'], 
             collection_name = memory_info['collection_name'],
             partition_name = memory_info['partition_name'], 
-            is_partion_level=memory_info['is_partion_level'], 
+            if_partion_level=memory_info['if_partion_level'], 
             milvus_host=memory_info['milvus_host'],
             milvus_port = memory_info['milvus_port'],
             milvus_user = memory_info['milvus_user'],
@@ -80,82 +84,6 @@ class BasicMemorySet:
         return BasicAttributeStorage(
             attribute_storage_name = memory_info['db_name'], 
             mongo_url= memory_info['mongo_url'])
-        
-    def save_memorys(self):
-        with open(self.info_path, 'w') as f:
-            json.dump(self.info, f)
-    
-    def search_memory(self, memory_name, 
-                        query: List[str], 
-                        limit: int = 1000,  
-                        replica_num: int = 1, 
-                        doc_id_list: Optional[List[int]] = None,
-                        meta_data_filter: Optional[Dict] = None,) -> List[Dict]:
-        if self.info["memorys_config"][memory_name]["type"] != "milvus":
-            raise TypeError("The this type of memory can not use search_memory")
-        current_time = datetime.datetime.now()
-        current_access_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-        result = self._milvus_retrieval(memory_name,query, 
-                    current_access_time,
-                    limit,  
-                    replica_num, 
-                    doc_id_list,
-                    meta_data_filter)
-        return result           
-    
-    def _milvus_retrieval(self, memory_name, 
-                        query: List[str], 
-                        current_access_time: str,
-                        limit: int = 1000,  
-                        replica_num: int = 1, 
-                        doc_id_list: Optional[List[int]] = None,
-                        meta_data_filter: Optional[Dict] = None,) -> List[Dict]:
-        return self.memory[memory_name].search_memory(
-            query, 
-            current_access_time,
-            limit,  
-            replica_num, 
-            doc_id_list,
-            meta_data_filter)
-        
-    def _no_sql_retrieval(self, memory_name,
-                          attribute_group_name: str, 
-                          attribute_type_name: str, 
-                          key: str) -> Any:
-        return self.memory[memory_name].get_attribute(
-            attribute_group_name, 
-            attribute_type_name, 
-            key)
-        
-    def filter_memory(self, memory_name,
-                        current_access_time: str,
-                        limit: int = 1000,  
-                        replica_num: int = 1, 
-                        doc_id_list: Optional[List[int]] = None,
-                        meta_data_filter: Optional[Dict] = None,) -> List[Dict]:
-        return self.memory[memory_name].filter_memory(
-                                                    current_access_time,
-                                                    limit,  
-                                                    replica_num, 
-                                                    doc_id_list,
-                                                    meta_data_filter)
-        
-    def add_memory(self, memory_name, 
-                   meta_data_dict_list: List[Dict], 
-                   description_list: List[str], 
-                   full_content_dict_list: List[str]) -> None:
-        current_time = datetime.datetime.now()
-        current_access_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-        save_time_list = [current_access_time] * len(meta_data_dict_list)
-        
-        self.memory[memory_name].add_memory(
-            meta_data_dict_list, 
-            description_list, 
-            full_content_dict_list,
-            save_time_list)
-    
-    def delate_memory(self, memory_info):
-        raise NotImplementedError
     
     @staticmethod
     def read_json(json_path):

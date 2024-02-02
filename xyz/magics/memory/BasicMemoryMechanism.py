@@ -10,6 +10,7 @@ The basic memory object, which has function for modifying memory include saving,
 
 
 import time
+import traceback
 from pymilvus import connections
 from typing import Dict, List, Optional
 from pymilvus import db, Collection
@@ -44,7 +45,7 @@ class BasicMemoryMechanism:
             db_name: str,
             collection_name: str = None,
             partition_name: str = "default",
-            is_partion_level: bool = False,
+            if_partion_level: bool = False,
             milvus_host: str = 'localhost', 
             milvus_port: int = 19530, 
             milvus_user: str = 'root',
@@ -67,7 +68,7 @@ class BasicMemoryMechanism:
             the name of used Milvus database
         collection_name : str
             the name of used Milvus collection
-        is_partion_level : bool
+        if_partion_level : bool
             indicating the type of memory unit storage: true if it is partition-level; false if it is collection-level
         milvus_host : str
             the host of deployed milvus vector database
@@ -90,8 +91,23 @@ class BasicMemoryMechanism:
         idx_type : IdxType
             the in-memory indexes supported by milvus, which can be configured to achieve better search performance
         """
+        
+        self.memory_name = memory_name
+        self.collection_name = collection_name
+    
+        # parameters related to milvus settings
+        self._storage_engine = storage_engine
+        self.collection = None
+        self.db_name = db_name
+        self.partition_name = partition_name
+        self._search_idx_params = None
+        
+        # parameters related to embedding
+        self._embedding_type = embedding_type
+        self.metric_type = metric_type
+
         self.milvus_connection = { "host": milvus_host, "port": milvus_port, "user": milvus_user, "password": milvus_psw,
-                                  "is_partion_level":is_partion_level}
+                                  "if_partion_level":if_partion_level}
         # Step 1: connect to the Milvus vector database
         try:
             connections.connect(host=milvus_host, port=milvus_port, user=milvus_user, password=milvus_psw)
@@ -109,14 +125,15 @@ class BasicMemoryMechanism:
 
         # Step 2: connect to the MongoDB no-SQL database
         try:
-            if self.if_partition_level:
+            if self.milvus_connection["if_partion_level"]:
                 self.mongo_db_name = self.partition_name 
             else:
                 self.mongo_db_name = self.collection_name
             self._mongo_db = BasicAttributeStorage(self.mongo_db_name, mongo_url) # connect to mongoDB client, and use the database, whose name is collection_name
             self.mongo_url = mongo_url
         except Exception as e:
-            raise Exception('MongoDB connect failed: the mongo_url you provided is not correct')
+            error_message = traceback.format_exc()
+            raise Exception (f"MongoDB connect failed: the mongo_url you provided is not correct\n\n{error_message}")
         
         '''
         The info format of registered_attributes related to a single memory unit is:
@@ -148,23 +165,10 @@ class BasicMemoryMechanism:
             }
         ]
         '''
-    
-        self.memory_name = memory_name
-        self.collection_name = collection_name
-    
-        # parameters related to milvus settings
-        self._storage_engine = storage_engine
-        self.collection = None
-        self.db_name = db_name
-        self.partition_name = partition_name
-        self._search_idx_params = None
-        
-        # parameters related to embedding
-        self._embedding_type = embedding_type
-        self.metric_type = metric_type
 
         # initialize the collection instance
         if not self._load_memory_store(
+                    self.collection_name ,
                     num_shards, 
                     metric_type, 
                     idx_type, 
@@ -177,7 +181,7 @@ class BasicMemoryMechanism:
                 "db_name" : self.db_name, 
                 "collection_name" : self.collection_name,
                 "partition_name" : self.partition_name,
-                "is_partion_level" : self.milvus_connection['is_partion_level'],
+                "if_partion_level" : self.milvus_connection['if_partion_level'],
                 "milvus_host" : self.milvus_connection['host'], 
                 "milvus_port" : self.milvus_connection['port'], 
                 "milvus_user" : self.milvus_connection['user'], 
@@ -186,8 +190,8 @@ class BasicMemoryMechanism:
                 "meta_data" : {
                     "embedding_type" : self._embedding_type,
                     "metric_type" : self.metric_type,
-                }}
-
+                    }
+                }
 
     def _get_embedding(
             self, 
@@ -239,6 +243,7 @@ class BasicMemoryMechanism:
 
     def _load_memory_store(
             self, 
+            collection_name: str,
             num_shards: int,
             metric_type: MetricType,
             idx_type: IdxType,
@@ -268,7 +273,7 @@ class BasicMemoryMechanism:
             db.create_database(db_name=self.db_name, using=self._storage_engine)
         db.using_database(db_name=self.db_name, using=self._storage_engine)
 
-        if not utility.has_collection(self.collection_name):
+        if not utility.has_collection(collection_name):
             '''
             docstore_id: the generated UUID, the primary key of one memory record
             meta_data_dict: the json dict data, the keys are customized filter conditions, such as category, importance
@@ -285,10 +290,10 @@ class BasicMemoryMechanism:
                 fields=[docstore_id, meta_data_dict, description, full_content]
                 )
             
-            self.collection = Collection(name=self.collection_name, schema=coll_schema, using=self._storage_engine, shards_num=num_shards)
+            self.collection = Collection(name=collection_name, schema=coll_schema, using=self._storage_engine, shards_num=num_shards)
 
         else:
-            self.collection = Collection(self.collection_name)
+            self.collection = Collection(collection_name)
 
         # Attach the index to vector field, ie, description Field
         self._search_idx_params = attach_idx(self.collection, 'description', metric_type, False, idx_type, **idx_builder)
