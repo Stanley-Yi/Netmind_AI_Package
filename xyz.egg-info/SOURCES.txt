@@ -9,7 +9,10 @@ xyz.egg-info/top_level.txt
 xyz/magics/__init__.py
 xyz/magics/memory/BasicAttributeStorage.py
 xyz/magics/memory/BasicMemoryMechanism.py
+xyz/magics/memory/MemoryAgent.py
+xyz/magics/memory/MemoryClient.py
 xyz/magics/memory/__init__.py
+xyz/magics/memory/_memory_config_template.py
 xyz/magics/memory/utils.py
 xyz/magics/memory/_embedding_setting/EmbeddingTypeEnum.py
 xyz/magics/memory/_embedding_setting/IdxTypeEnum.py

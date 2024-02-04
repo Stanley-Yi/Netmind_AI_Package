@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='xyz',
-    version='0.1',
+    version='0.2',
     author='BlackSheep Netmind.AI',
     author_email='xiangpeng.wan@protagolabs.com',
     packages=find_packages(),
