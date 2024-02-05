@@ -76,3 +76,14 @@ def is_valid_timestamp(timestamp_str):
 def append_expr(key, value):
     return key + ' ' + value + ' && '
 
+
+# Singleton pattern
+def singleclient(_class):
+    instances = {}
+ 
+    def _singleton(*args, **kwargs):
+        if _class not in instances:
+            instances[_class] = _class(*args, **kwargs)
+        return instances[_class]
+ 
+    return _singleton
