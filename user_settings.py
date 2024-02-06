@@ -1,11 +1,16 @@
-DEFAULT_INFO = {
-            "if_init" : True,
-            "default_collection_name" : "default",
-            "default_milvus_host" : '18.171.129.243',
-            "default_milvus_port" : 80,
-            "default_milvus_user" : "root",
-            "default_milvus_psw" : "NetMindMilvusDB",
-            "default_mongo_user" : "NetMind",
-            "default_mongo_psw" : "NetMindMongoDB",
-            "default_mongo_host" : "18.171.129.243:27017",
-        }
+import os
+from openai import OpenAI
+
+
+# 请在这里 补充上 API-Key
+API_KEY = ""
+os.environ["OPENAI_API_KEY"] = API_KEY 
+
+# 可以去直接 import 这个 client
+# 例子: 
+# from user_settings import client
+client = OpenAI(
+    api_key = os.environ.get(
+        API_KEY),
+)
+
