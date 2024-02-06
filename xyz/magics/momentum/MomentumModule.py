@@ -39,7 +39,6 @@ class MomentumModule:
         self.energy = energy
         self.longterm_memory = longterm_memory
         self.shortterm_memory = shortterm_memory
-        self.energy = []
         self.progress = progress
         self.feedback = feedback
         self.actions = actions
