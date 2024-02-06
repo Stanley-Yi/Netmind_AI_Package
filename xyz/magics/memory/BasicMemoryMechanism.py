@@ -22,20 +22,7 @@ from xyz.magics.memory._embedding_setting.EmbeddingTypeEnum import EmbeddingType
 from xyz.magics.memory._embedding_setting.IdxTypeEnum import IdxType
 from xyz.magics.memory._embedding_setting.MetricTypeEnum import MetricType
 from xyz.magics.memory.BasicAttributeStorage import BasicAttributeStorage
-
-import os
-from openai import OpenAI
-os.environ["OPENAI_API_KEY"] = "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"
-
-client = OpenAI(
-    api_key = os.environ.get(
-        "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"),
-)
-
-import sys
-sys.path.append("..")
-
-API_KEY = "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"
+from user_settings import client
 
 class BasicMemoryMechanism:
 
