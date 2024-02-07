@@ -8,11 +8,13 @@ The complexity of the task
 You should give the estimated time of the task to be completed by a skillful worker. For example, if given the task of
 creating a servide in linode, you should think of how many hours it requires for a Senior Laravel Developer with experience to 
 finish it.
+Please give a final estimation in hours. If you think it is too complex, you can give 100000 hours.
 
 ## Task complexity:
 You should evaluate if the task is overwhelming and large. Please give a score from 0-100. For example, task like becoming
 a skillful researcher is a complex task that is rated 100. Task like writing out a paper is easier than the previous one but 
 still hard so rated 50. Task like read a paper is easier so rated 20.
+Please give a score bewtween 0-100 as a final score 
 
 |||Format|||
 ## Please give the estimation in the following format:
