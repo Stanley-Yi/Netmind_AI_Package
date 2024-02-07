@@ -13,9 +13,10 @@ import numpy as np
 from xyz.magics.memory.MemoryAgent import MemoryAgent
 
 
+
 class MomentumModule:
     
-    def __init__(self, goal:str, energy:np.array, longterm_memory:MemoryAgent, shortterm_memory, progress:float = 0, feedback:str = "None", actions = None) -> None:
+    def __init__(self, goal:str, longterm_memory:MemoryAgent, shortterm_memory, energy:np.array= np.zero(2), progress:float = 0, feedback:str = "None", actions = None, thinkingflow=None) -> None:
         """The momentum class of Agent, which has goal, energy to indicate attention needed and ability to be further divided into sub-momentums
 
         Parameters
@@ -34,6 +35,7 @@ class MomentumModule:
             feedback from core llm indicating the final result of the current momentum
         actions : None
             available actions/tools to choose from and utilize
+        thinkingflow: N
         """
         self.goal = goal
         self.energy = energy
@@ -51,6 +53,10 @@ class MomentumModule:
     def momentum_energy(self) -> None:
         """if user not specify energy of the momentum, determine the energy using agents
         """
+        # if not specified, return energy by agent
+        #if self.energy == np.zero(2):
+            
+            
         raise NotImplementedError
 
     def momentum_instuction(self) -> None:
