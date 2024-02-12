@@ -42,9 +42,11 @@ class MomentumThinkingflow(ThinkingFlow):
                 break
             except:
                 retry_times += 1
+                energy_array = 0
                 print(f"retrying, this is {retry_times} time")
             
-            
+        if (energy_array==np.array(0)).all():
+            print(f"the energy extraction failed, the answer by LLM is {estimated_energy_by_agent}")
         return energy_array
     
     def energy_extraction(self, LLM_answer:str, pattern:str = r'Time needed:\n(\d+?) hours\n\nComplexity score:\n(\d+?)$') -> np.array:
@@ -87,12 +89,12 @@ class MomentumThinkingflow(ThinkingFlow):
         """
         try:
             task_breakdown_by_agent = self.task_dividing_agent.run(current_task=task)
-            extract_divided_task = self.divided_tasks_extraction(divided_tasks=task)
+            extract_divided_task = self.divided_tasks_extraction(divided_tasks=task_breakdown_by_agent)
         except:
             retry_times += 1
             print(f"retrying, this is {retry_times} time")
         
-        raise extract_divided_task
+        return  extract_divided_task
     
     def divided_tasks_extraction(self, divided_tasks:str, pattern:str = r'## (Step \d+: [^\n]+)\n- ([\s\S]+?)(?=\n\n## Step \d+:|$)'):
         """The function for extracting divided tasks in to a subtask list using regular expression
@@ -107,6 +109,7 @@ class MomentumThinkingflow(ThinkingFlow):
         steps = re.findall(pattern, divided_tasks)
 
         # Format the output for better readability
-        formatted_steps = [{"Step": step[0], "Description": step[1]} for step in steps]
+        #formatted_steps = [{"Step": step[0], "Description": step[1]} for step in steps]
+        formatted_steps = [step[0] + step[1] for step in steps]
 
         return formatted_steps
