@@ -244,26 +244,80 @@ class MomentumMemory:
         pass
     
     
-    def show_full_short_memory(self, ) -> None:
-        try:
+    def _get_all_child_id(self, root_id: int, table: str):
+        """treat pass id as root id, find its all child id
+        """
+        with self._sql_con.cursor() as cursor:
+            tree_sql = f"WITH RECURSIVE TreeCTE AS ( SELECT id, parent_id FROM {table} WHERE id = {root_id} UNION ALL SELECT yt.id, yt.parent_id FROM {table} yt JOIN TreeCTE cte ON yt.parent_id = cte.id ) SELECT id FROM TreeCTE;"
+            cursor.execute(tree_sql)
+            tree_res = cursor.fetchall()
+
+        if tree_res:
+            return [x[0] for x in tree_res]
+        
+    
+    def _get_whole_tree_id(self, cur_id: int, table: str = 'short_term'):
+        root_id = self.get_root_id(cur_id, table)
+
+        # find all tree id
+        if root_id != -1:
+            return self._get_all_child_id(root_id, table)
+    
+    
+    def _get_single_path(self, cur_id: int, table: str = 'short_term'):
+        """
+        """
+        nodes_data = []
+        
+        with self._sql_con.cursor() as cursor:
+            root_cur_sql = f"""
+                WITH RECURSIVE LevelChain AS (
+                    SELECT * FROM {table} WHERE id = {cur_id}
+                    UNION ALL
+                    SELECT t.* FROM {table} t
+                    INNER JOIN LevelChain lc ON t.id = lc.parent_id
+                )
+                SELECT LevelChain.* FROM LevelChain ORDER BY LevelChain.cur_level;                 
+                """
+            cursor.execute(root_cur_sql)
+            root_cur = cursor.fetchall()
+            if len(root_cur) > 0:
+                nodes_data += [{"id": row[0], "parent_id": row[1], "cur_status": row[3], "action": row[5], "cur_level": row[2]} for row in root_cur[:-1]]
+            
+            child_sql = f"WITH RECURSIVE TreeCTE AS ( SELECT * FROM {table} WHERE id = {cur_id} UNION ALL SELECT yt.* FROM {table} yt JOIN TreeCTE cte ON yt.parent_id = cte.id ) SELECT * FROM TreeCTE;"
+            cursor.execute(child_sql)
+            child_res = cursor.fetchall()
+            if len(child_res) > 0:
+                nodes_data += [{"id": row[0], "parent_id": row[1], "cur_status": row[3], "action": row[5], "cur_level": row[2]} for row in child_res]
+        
+        return nodes_data
+            
+    
+    def show_memory(self, id: int, is_tree: bool = True, table: str = 'short_term') -> None:
+        """根据 id, 打印 id 所属的整个 tree, 或整条 action chain
+        """
+        all_id = self._get_whole_tree_id(id, table)
+        
+        nodes_data = []
+        
+        if is_tree:
             with self._sql_con.cursor() as cursor:
-                select_sql = "SELECT id, parent_id, cur_status, action, cur_level FROM short_term"
+                select_sql = f"SELECT id, parent_id, cur_status, action, cur_level FROM {table} WHERE id IN ({', '.join(str(id) for id in all_id)})"
                 cursor.execute(select_sql)
 
                 result = cursor.fetchall()
 
                 nodes_data = [{"id": row[0], "parent_id": row[1], "cur_status": row[2], "action": row[3], "cur_level": row[4]} for row in result]
-
-        except Exception as e:
-            raise e
+        else:
+            nodes_data = self._get_single_path(id, table)
         
-        self.print_memory_tree(nodes_data)
+        self._print_memory_tree(nodes_data)
 
     
-    def print_memory_tree(self, data) -> None:
+    def _print_memory_tree(self, data) -> None:
         nodes = {}
         root_id = -1
-        
+
         for node_data in data:
             nodes[node_data["id"]] = Node(str(node_data["id"]) + ': ' + node_data["cur_status"] + '\n' + ('     ' * node_data["cur_level"]) + node_data["action"])
             if node_data["parent_id"] == -1:
@@ -290,6 +344,17 @@ class MomentumMemory:
             collect.create_index("vector", index)
 
 
+    def get_root_id(self, cur_id: int, table: str):
+        with self._sql_con.cursor() as cursor:
+            root_sql = f"WITH RECURSIVE CTE AS (SELECT * FROM {table} WHERE id = {cur_id} UNION ALL SELECT t.* FROM {table} t JOIN CTE c ON t.id = c.parent_id) SELECT id FROM CTE where parent_id = -1;"
+            cursor.execute(root_sql)
+            root_res = cursor.fetchall()
+
+            if root_res:
+                root_id = root_res[0][0]
+                return root_id
+    
+
     def end_task(self, end_id: int):
         '''
             store short term memory to long term memory
@@ -301,12 +366,7 @@ class MomentumMemory:
         try:
             with self._sql_con.cursor() as cursor:
                 # find root id
-                root_sql = f"WITH RECURSIVE CTE AS (SELECT * FROM short_term WHERE id = {end_id} UNION ALL SELECT t.* FROM short_term t JOIN CTE c ON t.id = c.parent_id) SELECT id FROM CTE where parent_id = -1;"
-                cursor.execute(root_sql)
-                root_res = cursor.fetchall()
-
-                if root_res:
-                    root_id = root_res[0][0]
+                root_id = self.get_root_id(end_id, 'short_term')
                 
                 # find all leaf id
                 if root_id != -1:
@@ -426,9 +486,5 @@ class MomentumMemory:
     
     
     def find_all_possible_path():
-        pass
-    
-    
-    def show_full_path():
         pass
     

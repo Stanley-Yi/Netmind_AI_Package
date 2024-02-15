@@ -119,6 +119,19 @@ def test_save_memory_1(memory_instance):
     )
     assert len(res) != 0
     
+    print('Whole tree - root node: ')
+    memory_instance.show_memory(step_1)
+    print('Whole tree - final node: ')
+    memory_instance.show_memory(step_5)
+    print('Whole tree - intermediate node {}: '.format(step_3P2))
+    memory_instance.show_memory(step_3P2)
+    print('Single chain - root node: ')
+    memory_instance.show_memory(step_1, False)
+    print('Single chain - final node: ')
+    memory_instance.show_memory(step_5, False)
+    print('Single chain - intermediate node {}: '.format(step_3P2))
+    memory_instance.show_memory(step_3P2, False)
+    
     memory_instance.end_task(step_5)
     
     # test if transfered
@@ -168,23 +181,23 @@ def test_save_memory_1(memory_instance):
 #     step_2 = memory_instance.save_memory(step_1, 2, step_2_status, step_2_goal, step_2_action, step_2_feedback)
 
 
-# def test_clean_data(memory_instance):
-#     try:
-#         with memory_instance._sql_con.cursor() as cursor:
-#             sql = f"TRUNCATE TABLE short_term;"
-#             cursor.execute(sql)
+def test_clean_data(memory_instance):
+    try:
+        with memory_instance._sql_con.cursor() as cursor:
+            sql = f"TRUNCATE TABLE short_term;"
+            cursor.execute(sql)
             
-#             sql = f"TRUNCATE TABLE long_term;"
-#             cursor.execute(sql)
+            sql = f"TRUNCATE TABLE long_term;"
+            cursor.execute(sql)
             
-#             memory_instance._sql_con.commit()
+            memory_instance._sql_con.commit()
             
-#     except Exception as e:
-#         print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
 
     
-#     try:
-#         utility.drop_collection('short_term')
-#         utility.drop_collection('long_term')
-#     except Exception as e:
-#         print(f"Error: {e}")
+    try:
+        utility.drop_collection('short_term')
+        utility.drop_collection('long_term')
+    except Exception as e:
+        print(f"Error: {e}")
