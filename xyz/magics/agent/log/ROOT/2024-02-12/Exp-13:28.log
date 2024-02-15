@@ -1,0 +1,85 @@
+2024-02-12 13:29:01,612 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task to be rated:
+You will become a researcher on multi-llm agent framework. You need to read paper/code of current state of art framework of multi-llm agents. Ultimately, I want you to be able to 
+design and implement your own structure with useful difference compare to the existing structures
+Take deep breath, dont hurry, you can now give your estimation:
+
+Output: Time needed:
+100000 hours
+
+Complexity score:
+100
+
+
+2024-02-12 13:31:32,397 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task you are going to divide is:
+You will become a researcher on multi-llm agent framework. You need to read paper/code of current state of art framework of multi-llm agents. Ultimately, I want you to be able to 
+design and implement your own structure with useful difference compare to the existing structures
+Take deep breath, dont hurry, you can now give your plan:
+
+Output: ## Step 1: Define the Scope and Objectives
+- Identify the specific area of multi-agent systems you are interested in (e.g., robotics, virtual agents, etc.).
+- Clarify what you mean by "useful difference" and set clear objectives for your research and development.
+
+## Step 2: Conduct a Preliminary Survey
+- Search for recent surveys or review papers on multi-agent systems to get an overview of the field.
+- List down the key terms, concepts, and frameworks mentioned in these surveys.
+
+## Step 3: Literature Review
+- Use academic databases like Google Scholar, IEEE Xplore, and others to find state-of-the-art papers on multi-agent systems.
+- Read abstracts and conclusions to select relevant papers for detailed study.
+- Organize the papers into categories based on similarities in approaches or applications.
+
+## Step 4: Deep Dive into Selected Papers
+- Read the selected papers in detail, focusing on methodology, experiments, and results.
+- Take notes on the strengths and weaknesses of each framework.
+- Summarize each paper for future reference.
+
+## Step 5: Study Existing Code
+- Find open-source code repositories related to the papers you've studied.
+- Set up a coding environment to run and experiment with the existing frameworks.
+- Document your understanding of the code structure and algorithms used.
+
+## Step 6: Identify Gaps and Opportunities
+- Based on your literature review and code study, identify gaps in the current research or potential improvements.
+- Brainstorm how your work could fill these gaps or offer a novel contribution.
+
+## Step 7: Learn Necessary Skills
+- Identify any skills or knowledge gaps you have (e.g., programming languages, machine learning techniques).
+- Take online courses, tutorials, or workshops to acquire these skills.
+
+## Step 8: Develop a Conceptual Design
+- Sketch out the conceptual design of your multi-agent framework.
+- Define the architecture, components, and how they will interact.
+- Get feedback from peers or mentors on your design.
+
+## Step 9: Plan the Implementation
+- Break down the implementation into smaller tasks (e.g., setting up the environment, implementing individual modules).
+- Create a timeline for completing each task.
+- Determine the resources you need (e.g., software tools, computational resources).
+
+## Step 10: Prototype Development
+- Start coding the simplest version of your framework to test the core ideas.
+- Iteratively develop and test each component.
+- Document your progress and any changes to the design.
+
+## Step 11: Testing and Evaluation
+- Develop test cases and scenarios to evaluate your framework's performance.
+- Compare the results with existing frameworks.
+- Refine your framework based on the test results.
+
+## Step 12: Documentation and Dissemination
+- Write detailed documentation for your framework, including setup instructions, usage examples, and design rationale.
+- Consider publishing your work in academic journals or at conferences.
+- Share your code in a public repository for community feedback and collaboration.
+
+## Step 13: Reflect and Iterate
+- Reflect on the feedback received and the performance of your framework.
+- Plan for further iterations to improve or extend your framework.
+- Stay updated with new research and incorporate relevant findings into your work.
+
+

@@ -11,12 +11,13 @@ MomentumModule
 
 import numpy as np
 from xyz.magics.memory.MemoryAgent import MemoryAgent
+from xyz.magics.agent.MomentumThinkingFlow import MomentumThinkingflow
 
 
 
 class MomentumModule:
     
-    def __init__(self, goal:str, longterm_memory:MemoryAgent, shortterm_memory, energy:np.array= np.zero(2), progress:float = 0, feedback:str = "None", actions = None, thinkingflow=None) -> None:
+    def __init__(self, goal:str, longterm_memory:MemoryAgent, shortterm_memory, thinkingflow:MomentumThinkingflow, energy:np.array= np.zeros(2), progress:float = 0, feedback:str = "None", actions = None, deadline:float=0) -> None:
         """The momentum class of Agent, which has goal, energy to indicate attention needed and ability to be further divided into sub-momentums
 
         Parameters
@@ -36,6 +37,7 @@ class MomentumModule:
         actions : None
             available actions/tools to choose from and utilize
         thinkingflow: N
+        deadline: N
         """
         self.goal = goal
         self.energy = energy
@@ -44,35 +46,42 @@ class MomentumModule:
         self.progress = progress
         self.feedback = feedback
         self.actions = actions
+        self.thinkingflow = thinkingflow
+        self.get_momentum_energy()
     
     def update_attributes(self) -> None:
         """funciton for manually update attributes in momentum class
         """
         raise NotImplementedError
     
-    def momentum_energy(self) -> None:
+    def get_momentum_energy(self, max_retry=5) -> None:
         """if user not specify energy of the momentum, determine the energy using agents
+        
+        Parameters
+        ----------
+        max_retry: int
+            The max retry number when evaluating and extracting energy using agents to avoid circumstance the extraction failed because of format issue
         """
         # if not specified, return energy by agent
-        #if self.energy == np.zero(2):
+        if (self.energy==np.zeros(2)).all():
+            agent_extract_energy = self.thinkingflow.get_energy(task=self.goal, max_retry=max_retry)
+            self.energy = agent_extract_energy
             
-            
-        raise NotImplementedError
+        return None
 
     def momentum_instuction(self) -> None:
         """Given the goal of momemtum and the actions(tools) store, give suggestion on how to carry on the momentum, update in goal
         """
         raise NotImplementedError
     
-    def momentum_energy(self) -> None:
-        """If energy not specified by user, assign energy to the momentum using agents
-        """
-        raise NotImplementedError
-    
     def check_decompose(self) -> bool:
         """Check if the momentum needed to be decompose into submomentum if it is too complex base on energy and goals
+        (currently using simple rules based on energy on time and complexity)
         """
-        raise NotImplementedError
+        decompose_threshold = np.array([50,50])
+        comparision_result = np.all(self.energy < decompose_threshold)
+
+        return not(comparision_result)
     
     def decompose(self) -> list:
         """Decompose the current momentum to smaller momentums with less energy and more specific goals
@@ -80,9 +89,30 @@ class MomentumModule:
         Returns
         -------
         list
-            A list of subMomentums 
+            A list of subMomentum goals
         """
+        if self.check_decompose():
+            subtasks = self.thinkingflow.divide_task(task=self.goal)
+            print()
+            subtasks_with_energy = [MomentumModule(goal=task,longterm_memory=None, shortterm_memory=None, thinkingflow=self.thinkingflow) for task in subtasks]
+        else:
+            subtasks_with_energy = []
+        
+        return subtasks_with_energy
+    
+    def iterative_divide(self) -> list:
+        """divide the task into a chain of tasks to perform with each energy under threshold 
+
+        Returns
+        -------
+        list
+            list of subMomentum goals and corresponding energy 
+        """
+        current_divide_tasks = self.decompose()
+        if current_divide_tasks:
+            flag =True
         raise NotImplementedError
+        
     
     def save_to_short_memory(self) -> None:
         """function for storing and updating the short term memory, used when momentum divided, finished, or attributes changed

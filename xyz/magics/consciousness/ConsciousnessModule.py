@@ -12,12 +12,13 @@ ConsciousnessModule
 from xyz.magics.momentum.MomentumModule import MomentumModule
 
 
+
 class ConsciousnessModule:
     
-    def __init__(self):
+    def __init__(self, momemtums={}):
         """Initiating Consciousness module with empty momentums
         """
-        self.momentums = {} # Dictionary where key in id of ongoing momentum and value be their (energy, goal) pair
+        self.momentums = momemtums # Dictionary where key in id of ongoing momentum and value be their (energy, goal, deadline) pair
     
     def sort_momentum(self, inverse=True) -> list:
         """Sort priority of Momentums in self.momentums base on their energy and goals
@@ -32,7 +33,9 @@ class ConsciousnessModule:
         list
             list of momentum ids from top priority to low priority
         """
-        raise NotImplementedError
+        sorted_keys = sorted(self.momentums.keys(), key=lambda x: self.momentums[x][2] - self.momentums[x][0])
+        
+        return sorted_keys
     
     def choose_momentum(self, k=3) -> list:
         """Choose the top k priority momentum that not resolved
@@ -47,6 +50,8 @@ class ConsciousnessModule:
         list
             _description_
         """
+        #first implementation base on threshold for decision, pure rule base
+        
         raise NotImplementedError
     
     def update_momentum_attributes(self, momentum_id, new_attributes) -> None:
@@ -55,7 +60,7 @@ class ConsciousnessModule:
         Parameters
         ----------
         momentum_id : str
-            momentum_id for momentum in self.momentums to updata to
+            momentum_id for momentum in self.momentums to update to
         new_attributes: dict
             new attributes value to update in momentum modules attribute dict
         """
