@@ -1,13 +1,13 @@
 import numpy as np
 import re
-from ThinkingFlow import ThinkingFlow
-from CoreAgent import CoreAgent
-from prompts import task_evaluating_prompt, task_dividing_prompt
+from xyz.magics.agent.ThinkingFlow import ThinkingFlow
+from xyz.magics.agent.CoreAgent import CoreAgent
+from xyz.magics.agent.prompts import *
 
 
 # define energy identify and divide agent
-task_evaluating_agent = CoreAgent(template=task_evaluating_prompt)
-task_dividing_agent = CoreAgent(template=task_dividing_prompt)
+task_evaluating_agent = CoreAgent(template=task_evaluating_prompt_new)
+task_dividing_agent = CoreAgent(template=task_dividing_prompt_new)
 agents_dict = {"task_evalutating_agent": task_evaluating_agent,
                "task_dividing_agent": task_dividing_agent}
 
@@ -94,9 +94,12 @@ class MomentumThinkingflow(ThinkingFlow):
             retry_times += 1
             print(f"retrying, this is {retry_times} time")
         
+        if not extract_divided_task:
+            extract_divided_task = []
+        
         return  extract_divided_task
     
-    def divided_tasks_extraction(self, divided_tasks:str, pattern:str = r'## (Step \d+: [^\n]+)\n- ([\s\S]+?)(?=\n\n## Step \d+:|$)'):
+    def divided_tasks_extraction(self, divided_tasks:str, pattern:str = r"Step(\d+) \((initial|following Step(\d+)|option Step(\d+))\): ([^\n]+)((?:\n- [^\n]+)+)"):
         """The function for extracting divided tasks in to a subtask list using regular expression
 
         Parameters
@@ -106,10 +109,20 @@ class MomentumThinkingflow(ThinkingFlow):
         pattern : str
             regular expression regex, default r'## (Step \d+: [^\n]+)\n- ([\s\S]+?)(?=\n\n## Step \d+:|$)'
         """
-        steps = re.findall(pattern, divided_tasks)
 
-        # Format the output for better readability
-        #formatted_steps = [{"Step": step[0], "Description": step[1]} for step in steps]
-        formatted_steps = [step[0] + step[1] for step in steps]
+        # Find all matches in the text
+        matches = re.findall(pattern, divided_tasks)
+
+        # Process matches to format them as required
+        formatted_steps = []
+        for match in matches:
+            step_number = "Step" + match[0]
+            step_reference = match[1]
+            if step_reference.startswith('following'):
+                step_reference = 'Step' + match[2]
+            if  step_reference.startswith('option'):
+                step_reference = 'Step' + match[3]
+            step_content = match[4] + ' ' + ' '.join(match[5].strip().split('\n'))
+            formatted_steps.append((step_number, step_reference, step_content))
 
         return formatted_steps

@@ -17,7 +17,7 @@ from xyz.magics.agent.MomentumThinkingFlow import MomentumThinkingflow
 
 class MomentumModule:
     
-    def __init__(self, goal:str, longterm_memory:MemoryAgent, shortterm_memory, thinkingflow:MomentumThinkingflow, energy:np.array= np.zeros(2), progress:float = 0, feedback:str = "None", actions = None, deadline:float=0) -> None:
+    def __init__(self, goal:str, longterm_memory:MemoryAgent, shortterm_memory, thinkingflow:MomentumThinkingflow, energy:float, decay_func, progress:float = 0, feedback:str = "None", actions = None, deadline:float=0, initial_type:str='child') -> None:
         """The momentum class of Agent, which has goal, energy to indicate attention needed and ability to be further divided into sub-momentums
 
         Parameters
@@ -25,17 +25,21 @@ class MomentumModule:
         goal : str
             The goal that agent needs to finish in the momentum
         energy : np.array
-            multidimensional vector indicating the energy level of the momentum, each dimension stands for diffent evaluation
+            Energy is how the agent is deciding on which task to do, when dividing task, energy will be divided as well
         longterm_memory : MemoryAgent
             The memory agent, which connects to where past momentum and feedbacks are stored
         shortterm_memory : _type_
-            shortterm memory storing the current momentum and its parents, children
+            Shortterm memory storing the current momentum and its parents, children
         progress : float
-            float from 0-1 to indicate the progress of current Momentum
+            Float from 0-1 to indicate the progress of current Momentum
+        decay : function
+            Function for energy decay, should accept variable with time and action
         feedback : str
-            feedback from core llm indicating the final result of the current momentum
+            Feedback from core llm indicating the final result of the current momentum
         actions : None
-            available actions/tools to choose from and utilize
+            Available actions/tools to choose from and utilize
+        initial_type : str
+            The inital type of momentum when first created, should be "root" or "child"
         thinkingflow: N
         deadline: N
         """
@@ -47,7 +51,13 @@ class MomentumModule:
         self.feedback = feedback
         self.actions = actions
         self.thinkingflow = thinkingflow
-        self.get_momentum_energy()
+        self.decay_func = decay_func
+        self.initial_type = initial_type
+        #self.get_momentum_energy()
+        
+        #if it is root momentum, automatically check for division
+        if self.initial_type == 'root':
+            self.decompose()
     
     def update_attributes(self) -> None:
         """funciton for manually update attributes in momentum class
@@ -75,44 +85,40 @@ class MomentumModule:
         raise NotImplementedError
     
     def check_decompose(self) -> bool:
-        """Check if the momentum needed to be decompose into submomentum if it is too complex base on energy and goals
-        (currently using simple rules based on energy on time and complexity)
+        """Check if the momentum needed to be decompose into submomentum if it is too complex base on its time to finish
         """
         decompose_threshold = np.array([50,50])
         comparision_result = np.all(self.energy < decompose_threshold)
 
         return not(comparision_result)
     
-    def decompose(self) -> list:
-        """Decompose the current momentum to smaller momentums with less energy and more specific goals
-
-        Returns
-        -------
-        list
-            A list of subMomentum goals
+    def decompose(self) -> None:
+        """Decompose the current momentum to smaller momentums with less energy and more specific goals, right now only happen it is a
+        Root momentum and long term. The decompose will automatically be saved to short term memory
         """
         if self.check_decompose():
             subtasks = self.thinkingflow.divide_task(task=self.goal)
-            print()
-            subtasks_with_energy = [MomentumModule(goal=task,longterm_memory=None, shortterm_memory=None, thinkingflow=self.thinkingflow) for task in subtasks]
+            
+            # The subtask will be in form(Step, parent_step or initial if first, goal)
+            #subtasks_with_energy = [MomentumModule(goal=task,longterm_memory=None, shortterm_memory=None, thinkingflow=self.thinkingflow) for task in subtasks]
         else:
-            subtasks_with_energy = []
-        
-        return subtasks_with_energy
-    
-    def iterative_divide(self) -> list:
-        """divide the task into a chain of tasks to perform with each energy under threshold 
+            print('No need to decompose as the momentum is shortterm')
+            subtasks= []
 
-        Returns
-        -------
-        list
-            list of subMomentum goals and corresponding energy 
+        return subtasks
+    
+    def decay(self, time, action_time) -> None:
+        """Energy decay action associate with the time 
+
+        Parameters
+        ----------
+        time : _type_
+            _description_
+        action_time : _type_
+            _description_
         """
-        current_divide_tasks = self.decompose()
-        if current_divide_tasks:
-            flag =True
         raise NotImplementedError
-        
+
     
     def save_to_short_memory(self) -> None:
         """function for storing and updating the short term memory, used when momentum divided, finished, or attributes changed
