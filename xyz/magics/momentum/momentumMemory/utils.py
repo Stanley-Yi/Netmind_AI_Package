@@ -134,5 +134,3 @@ def embedding_content(content: List[str],) -> List[List[float]]:
         raise err
 
     return embedding_res
-
-

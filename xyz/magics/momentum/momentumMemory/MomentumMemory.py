@@ -244,6 +244,18 @@ class MomentumMemory:
         pass
     
     
+    def get_child_id(self,  cur_id: int, table: str):
+        """treat pass id as root id, find its all child id
+        """
+        with self._sql_con.cursor() as cursor:
+            child_sql = f"SELECT t.id FROM (SELECT id, parent_id FROM {table} WHERE parent_id = {cur_id}) t;"
+            cursor.execute(child_sql)
+            child_res = cursor.fetchall()
+
+        if child_res:
+            return [x[0] for x in child_res]
+    
+    
     def _get_all_child_id(self, root_id: int, table: str):
         """treat pass id as root id, find its all child id
         """
@@ -340,7 +352,7 @@ class MomentumMemory:
         if collect.has_index():
             return
         else:
-            index = {"index_type": "IVF_FLAT", "params": {"nlist": 2}, "metric_type": "L2"}
+            index = {"index_type": "IVF_FLAT", "params": {"nlist": 4}, "metric_type": "L2"}
             collect.create_index("vector", index)
 
 
@@ -465,8 +477,49 @@ class MomentumMemory:
         
     
 
-    def search_memory():
-        pass
+    def search_memory(self, status: str, goal: str, is_shortest: bool = True):
+        self.check_create_index('long_term')
+        long_term = Collection('long_term')
+        long_term.load()
+        
+        status_set, goal_set = set(), set()
+        
+        em_status, em_goal = utils.embedding_content([status, goal])
+        
+        search_params = {
+            "metric_type": "L2", 
+            "offset": 0, 
+            "ignore_growing": False, 
+            "params": {"nprobe": 2}
+        }
+        
+        status_res = long_term.search(
+            data=[em_status], 
+            anns_field="vector", 
+            param=search_params,
+            limit=5,
+            expr="category == 'status'",
+            output_fields=['sql_id']
+        )
+        for hit in status_res[0]:
+            sql_id = hit.entity.get('sql_id') if hasattr(hit, 'entity') and callable(hit.entity.get) else None
+            if sql_id is not None:
+                status_set.add(sql_id)
+        
+        goal_res = long_term.search(
+            data=[em_goal], 
+            anns_field="vector", 
+            param=search_params,
+            limit=5,
+            expr="category == 'goal'",
+            output_fields=['sql_id']
+        )
+        for hit in goal_res[0]:
+            sql_id = hit.entity.get('sql_id') if hasattr(hit, 'entity') and callable(hit.entity.get) else None
+            if sql_id is not None:
+                goal_set.add(sql_id)
+        
+        
     
     
     def search_status():
@@ -478,7 +531,6 @@ class MomentumMemory:
     
     
     def search_action():
-        # NetMInd@UK123456
         pass
     
     
