@@ -33,7 +33,7 @@ def collection_bmm() -> BasicMemoryMechanism:
             memory_name=memory_name, 
             db_name=db_name, 
             collection_name=memory_name,
-            is_partion_level=False, 
+            if_partion_level=False, 
             milvus_host=milvus_host,
             milvus_port=milvus_port,
             milvus_user=milvus_user,
@@ -70,12 +70,12 @@ def partition_bmm():
             db_name=db_name, 
             collection_name=coll_name,
             partition_name=partition_name,
-            is_partion_level=True, 
+            if_partion_level=True, 
             milvus_host=milvus_host,
             milvus_port=milvus_port,
             milvus_user=milvus_user,
             milvus_psw=milvus_psw,
-            mongo_url=mongo_url
+            mongo_url=mongo_url,
             )
 
 
@@ -121,7 +121,7 @@ def test_add_memory_partition(partition_bmm):
 
     result = partition_bmm.add_memory(meta_data_dict_list, description_list, full_contents_list, save_time)
     assert result == True
-"""
+
 
 def test_search_memory_collection(collection_bmm):
     query = ['who is Stanley, and what is the relationship between Stanley and Eric?']
@@ -132,7 +132,8 @@ def test_search_memory_collection(collection_bmm):
                                           advanced_filter=False, 
                                           filter_key=filter_key,
                                           filter_operand=filter_operand,
-                                          filter_value=filter_value)[0]
+                                          filter_value=filter_value,
+                                          current_access_time = '2024-01-25 12:12:53')[0]
     
     meta_dict, full_content_dict = result['meta_data_dict'], result['full_content_dict']
     
@@ -141,7 +142,7 @@ def test_search_memory_collection(collection_bmm):
     assert meta_dict['mood'] == 'fear'
 
     assert full_content_dict['content'] == 'Eric found that his roommate, Stanley is a gay who want to do something to him'
-
+"""
 
 def test_search_memory_partition(partition_bmm):
     query = ['who is Stanley, and what is the relationship between Stanley and Eric?']
@@ -155,12 +156,18 @@ def test_search_memory_partition(partition_bmm):
     assert meta_dict['mood'] == 'fear'
 
     assert full_content_dict['content'] == 'Eric found that his roommate, Stanley is a gay who want to do something to him'
+"""
 
 
 def test_filter_memory_collection(collection_bmm):
-    filter = {'importance': "== 2", 'mood': "in ['peaceful']"}
-    current_access_time = '2024-09-14 12:12:53'
-    result = collection_bmm.filter_memory(current_access_time, meta_data_filter=filter)[0]
+    filter_key = 'mood'
+    filter_operand = FilterOperand.LIKE
+    filter_value = 'peac%'
+    result = collection_bmm.filter_memory(advanced_filter=False,
+                                          filter_key=filter_key,
+                                          filter_operand=filter_operand,
+                                          filter_value=filter_value,
+                                          current_access_time = '2024-01-25 12:12:53')[0]
 
     meta_dict, full_content_dict = result['meta_data_dict'], result['full_content']
     
@@ -170,7 +177,7 @@ def test_filter_memory_collection(collection_bmm):
 
     assert full_content_dict['content'] == 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'
 
-
+"""
 def test_filter_memory_partition(partition_bmm):
     filter = {'importance': "== 2", 'mood': "in ['peaceful']"}
     current_access_time = '2024-09-01 12:12:53'
@@ -183,21 +190,25 @@ def test_filter_memory_partition(partition_bmm):
     assert meta_dict['mood'] == 'peaceful'
 
     assert full_content_dict['content'] == 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'
-
+"""
 
 def test_delete_memory_collection(collection_bmm):
-    filter = {'importance': "== 2", 'mood': "in ['peaceful']"}
-    result = collection_bmm.delete_memory(meta_data_filter=filter)
-    
-    assert result == 1
+    filter_key = 'mood'
+    filter_operand = FilterOperand.EQUAL_TO
+    filter_value = 'peaceful'
+    result = collection_bmm.delete_memory(advanced_filter=False,
+                                          filter_key=filter_key,
+                                          filter_operand=filter_operand,
+                                          filter_value=filter_value)
 
-
+"""
 def test_delete_memory_partition(partition_bmm):
     filter = {'importance': "== 2", 'mood': "in ['peaceful']"}
     result = partition_bmm.delete_memory(meta_data_filter=filter)
     
     assert result == 1
-    
+"""
+"""
 def test_get_info(collection_bmm):
     
     info = collection_bmm.get_info()

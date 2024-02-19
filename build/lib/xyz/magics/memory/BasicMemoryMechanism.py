@@ -375,10 +375,10 @@ class BasicMemoryMechanism:
             query: List[str], 
             advanced_filter: bool = True,
             filter_expression: Optional[str] = None,
-            filter_key: str = None,
-            filter_operand: FilterOperand = None,
-            filter_value: Any = None,
-            current_access_time: str = None,
+            filter_key: Optional[str] = None,
+            filter_operand: Optional[FilterOperand] = None,
+            filter_value: Optional[Any] = None,
+            current_access_time: str = '',
             limit: int = 1000,  
             replica_num: int = 1) -> List[Dict]:
         """Query up to #limit amount of records that are similar to given query, supporting the filtering using meta_data_dict conditions
@@ -390,17 +390,19 @@ class BasicMemoryMechanism:
         advanced_filter : bool
             indicate whether to use advanced filter mode or not; in advanced filter mode, user need to form expr themselves, otherwise filter by only one key in meta_data dict
         filter_expression : Optional[str]
-            optional, the expr provided by user, to execute advanced filter
+            optional, the expr provided by user, to execute advanced filter]
+        filter_key : Optional[str]
+            optional, in simple filter mode, specify the key in the meta_data_dict, which is used to filter data
+        filter_operand : Optional[FilterOperand]
+            optional, in simple filter mode, specify which operand is needed
+        filter_value : Optional[Any]
+            optional, in simple filter mode, specify the value of filtered data
         current_access_time : str
             the current timestamp when searching the query
         limit : int
             the maximum amount of records
         replica_num : int
             specify how many query nodes the data will be loaded onto
-        doc_id_list : Optional[List[int]]
-            optional, the list of specified doc_id, whose attached records are what we want to search from Milvus
-        meta_data_filter : Optional[Dict]
-            optional, the dict to specify the keys in meta_data_dict to be used and their related filtering descriptions
 
         Returns
         -------
@@ -428,7 +430,7 @@ class BasicMemoryMechanism:
         # form the filter expression
         expr = filter_expression if advanced_filter else ''
         if not advanced_filter:
-            filter_value = "'" + filter_value + "'" if type(filter_value) == str else filter_value
+            filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
             filter_key = "meta_data_dict['" + filter_key + "']"
             expr = filter_key + " " + filter_operand.value + " " + filter_value
 
@@ -479,16 +481,22 @@ class BasicMemoryMechanism:
         
         Parameters
         ----------
+        advanced_filter : bool
+            indicate whether to use advanced filter mode or not; in advanced filter mode, user need to form expr themselves, otherwise filter by only one key in meta_data dict
+        filter_expression : Optional[str]
+            optional, the expr provided by user, to execute advanced filter]
+        filter_key : Optional[str]
+            optional, in simple filter mode, specify the key in the meta_data_dict, which is used to filter data
+        filter_operand : Optional[FilterOperand]
+            optional, in simple filter mode, specify which operand is needed
+        filter_value : Optional[Any]
+            optional, in simple filter mode, specify the value of filtered data
         current_access_time : str
             the current timestamp when searching the query
         limit : int
             the maximum amount of records
         replica_num : int
             specify how many query nodes the data will be loaded onto
-        doc_id_list : Optional[List[int]]
-            optional, the list of specified doc_id, whose attached records are what we want to search from Milvus
-        **meta_data_filter : Optional[Dict]
-            optional, specify the keys in meta_data_dict to be used and their related filtering descriptions
 
         Returns
         -------
@@ -516,7 +524,7 @@ class BasicMemoryMechanism:
         # form the filter expression
         expr = filter_expression if advanced_filter else ''
         if not advanced_filter:
-            filter_value = "'" + filter_value + "'" if type(filter_value) == str else filter_value
+            filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
             filter_key = "meta_data_dict['" + filter_key + "']"
             expr = filter_key + " " + filter_operand.value + " " + filter_value
     
@@ -550,12 +558,18 @@ class BasicMemoryMechanism:
         
         Parameters
         ----------
-        doc_id_list : Optional[List[int]]
-            optional, the list of specified doc_id, whose attached records are what we want to search from Milvus
+        advanced_filter : bool
+            indicate whether to use advanced filter mode or not; in advanced filter mode, user need to form expr themselves, otherwise filter by only one key in meta_data dict
+        filter_expression : Optional[str]
+            optional, the expr provided by user, to execute advanced filter]
+        filter_key : Optional[str]
+            optional, in simple filter mode, specify the key in the meta_data_dict, which is used to filter data
+        filter_operand : Optional[FilterOperand]
+            optional, in simple filter mode, specify which operand is needed
+        filter_value : Optional[Any]
+            optional, in simple filter mode, specify the value of filtered data
         replica_num : int
             specify how many query nodes the data will be loaded onto
-        meta_data_filter : Optional[Dict]
-            optional, specify the keys in meta_data_dict to be used and their related filtering descriptions
 
         Returns
         -------
@@ -580,7 +594,7 @@ class BasicMemoryMechanism:
         # form the filter expression
         expr = filter_expression if advanced_filter else ''
         if not advanced_filter:
-            filter_value = "'" + filter_value + "'" if type(filter_value) == str else filter_value
+            filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
             filter_key = "meta_data_dict['" + filter_key + "']"
             expr = filter_key + " " + filter_operand.value + " " + filter_value
 
