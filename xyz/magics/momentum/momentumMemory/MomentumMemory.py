@@ -560,7 +560,13 @@ class MomentumMemory:
             else:
                 return []
             
-        print(path_record)
+        # 没整完，等和 flow 和 energy + importance 结合
+        return path_record
+        # result = []
+        # for k, v in path_record.items():
+            
+            
+        # return result
     
     
     def search_status():
