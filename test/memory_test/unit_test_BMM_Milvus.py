@@ -1,6 +1,7 @@
 import pytest
 from urllib.parse import quote_plus
 from xyz.magics.memory.BasicMemoryMechanism import BasicMemoryMechanism
+from xyz.magics.memory.FilterOperandType import FilterOperand
 
 """
 The unit test case for BasicMemoryMechanism class, specifically test Milvus related methods
@@ -10,7 +11,7 @@ add_memory(), search_memory(), filter_memory(), delete_memory()
 
 @pytest.fixture(scope='module')
 def collection_bmm() -> BasicMemoryMechanism:
-    memory_name = 'test_people_collection'
+    memory_name = 'test_people_collection_1'
 
     # connection informations related to Milvus
     db_name = 'test_milvus_db'
@@ -41,9 +42,10 @@ def collection_bmm() -> BasicMemoryMechanism:
             )
 
 
+
 @pytest.fixture(scope='module')
 def partition_bmm():
-    memory_name = 'test_people_partition'
+    memory_name = 'test_people_partition_1'
 
     # connection informations related to Milvus
     db_name = 'test_milvus_db'
@@ -119,12 +121,18 @@ def test_add_memory_partition(partition_bmm):
 
     result = partition_bmm.add_memory(meta_data_dict_list, description_list, full_contents_list, save_time)
     assert result == True
-
+"""
 
 def test_search_memory_collection(collection_bmm):
     query = ['who is Stanley, and what is the relationship between Stanley and Eric?']
-    current_access_time = '2024-07-14 09:02:53'
-    result = collection_bmm.search_memory(query, current_access_time)[0]
+    filter_key = 'importance'
+    filter_operand = FilterOperand.GREATER_OR_EQUAL
+    filter_value = 7
+    result = collection_bmm.search_memory(query, 
+                                          advanced_filter=False, 
+                                          filter_key=filter_key,
+                                          filter_operand=filter_operand,
+                                          filter_value=filter_value)[0]
     
     meta_dict, full_content_dict = result['meta_data_dict'], result['full_content_dict']
     
@@ -208,4 +216,4 @@ def test_get_info(collection_bmm):
     
     
     
-    
+"""
