@@ -55,10 +55,10 @@ class ConsciousnessModule:
         queue = [root_id]
         while queue:
             current_node = queue.pop(0)
-            child_set = self.shortterm_memory.get_child_id(root_id, table='short_term')
+            child_set = self.shortterm_memory.get_child_id(current_node, table='short_term')
             if child_set:
                 # currently set weight to be equal
-                edge_set += [(root_id, child_id, 1, 'se') for child_id in child_set]
+                edge_set += [(current_node, child_id, 1, 'se') for child_id in child_set]
                 queue += child_set
                 
         for source, target, weight, label in edge_set:
@@ -106,7 +106,7 @@ class ConsciousnessModule:
         self.graph = G
         return None
     
-    def choose_action(self, attribute:str):
+    def choose_action(self, attribute:str, root_node):
         """Function for choosing the 
 
         Parameters
@@ -115,17 +115,20 @@ class ConsciousnessModule:
             Node attribute to work on
         """
         leaf_nodes = [node for node in self.graph.nodes() if self.graph.degree(node) == 1]
+        #remove root from it
+        leaf_nodes.remove(root_node)
 
         # Find the leaf node with the highest energy
-        max_energy_leaf_node = max((node for node in self.graph.nodes(data=True) if node[0] in leaf_nodes), key=lambda x: x[1]['energy'])
+        max_energy_leaf_node = max((node for node in self.graph.nodes(data=True) if node[0] in leaf_nodes), key=lambda x: x[1][attribute])
 
         
         # Find parent of the leaf node
         leaf_node = max_energy_leaf_node[0]
-        parent_node = next(n for n in self.graph.neighbors(leaf_node))
+        parent_node = list(self.graph.predecessors(52))[0]
 
         # Update the parent's energy by adding the leaf node's energy
-        self.graph.nodes[parent_node]['energy'] += self.graph.nodes[leaf_node]['energy']
+        self.graph.nodes[parent_node][attribute] += self.graph.nodes[leaf_node][attribute]
+        self.graph.remove_node(leaf_node)
         
         return max_energy_leaf_node
     
