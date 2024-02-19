@@ -18,17 +18,7 @@ import networkx as nx
 
 class ConsciousnessModule:
     
-    def __init__(self, shortterm_memory: MomentumMemory = MomentumMemory(
-            sql_db = 'momentum_sql_db',
-            milvus_host = '18.171.129.243',
-            milvus_port = 80,
-            milvus_user = 'root',
-            milvus_psw = 'NetMindMilvusDB',
-            sql_host = '18.171.129.243',
-            sql_port = 3306,
-            sql_user = 'netmind',
-            sql_psw = 'NetMindMySQL',
-        )):
+    def __init__(self, shortterm_memory: MomentumMemory):
         """Initiating Consciousness module with empty momentums
         """
         self.shortterm_memory = shortterm_memory
@@ -113,7 +103,32 @@ class ConsciousnessModule:
                     # Add successor to queue for further processing
                     queue.append(successor)
                     #G.nodes[current_node]['energy'] = 0
+        self.graph = G
         return None
+    
+    def choose_action(self, attribute:str):
+        """Function for choosing the 
+
+        Parameters
+        ----------
+        attribute : str
+            Node attribute to work on
+        """
+        leaf_nodes = [node for node in self.graph.nodes() if self.graph.degree(node) == 1]
+
+        # Find the leaf node with the highest energy
+        max_energy_leaf_node = max((node for node in self.graph.nodes(data=True) if node[0] in leaf_nodes), key=lambda x: x[1]['energy'])
+
+        
+        # Find parent of the leaf node
+        leaf_node = max_energy_leaf_node[0]
+        parent_node = next(n for n in self.graph.neighbors(leaf_node))
+
+        # Update the parent's energy by adding the leaf node's energy
+        self.graph.nodes[parent_node]['energy'] += self.graph.nodes[leaf_node]['energy']
+        
+        return max_energy_leaf_node
+    
     
     def show_graph(self):
         """Show the graph
