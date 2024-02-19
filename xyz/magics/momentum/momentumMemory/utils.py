@@ -57,6 +57,7 @@ def create_long_term_table(connection: pymysql.connections):
         create_table_sql = f"""
         CREATE TABLE long_term (
             id INT AUTO_INCREMENT PRIMARY KEY,
+            tree_num INT NOT NULL,
             parent_id INT NOT NULL,
             cur_level INT NOT NULL,
             cur_status TEXT NOT NULL,

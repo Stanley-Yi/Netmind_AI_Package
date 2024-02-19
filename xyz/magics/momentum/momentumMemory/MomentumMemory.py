@@ -430,12 +430,19 @@ class MomentumMemory:
                             if record[0] in record_nodes:  # 如果已经储存在 long_term 里了
                                 continue
                             
+                            last_tree_num_sql = "SELECT tree_num FROM long_term ORDER BY tree_num DESC LIMIT 1"
+                            cursor.execute(last_tree_num_sql)
+                            last_tree_num = cursor.fetchone()
+                            tree_num = 1
+                            if last_tree_num:
+                                tree_num = last_tree_num[0]
+                            
                             insert_sql = """
-                                INSERT INTO long_term (parent_id, cur_level, cur_status, cur_goal, action, feedback, store_datetime, final_status) 
-                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                                INSERT INTO long_term (tree_num, parent_id, cur_level, cur_status, cur_goal, action, feedback, store_datetime, final_status) 
+                                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                             """
                             
-                            data = (short_long_id[record[1]] if record[1] in short_long_id else -1, record[2], record[3], record[4], record[5], record[6], record[7], record[8])
+                            data = (tree_num, short_long_id[record[1]] if record[1] in short_long_id else -1, record[2], record[3], record[4], record[5], record[6], record[7], record[8])
                             cursor.execute(insert_sql, data)
                             insert_id = cursor.lastrowid
                             self._sql_con.commit()
@@ -519,7 +526,41 @@ class MomentumMemory:
             if sql_id is not None:
                 goal_set.add(sql_id)
         
-        
+
+        # get all record
+        path_record = dict()
+        with self._sql_con.cursor() as cursor:
+            status_sql = f"SELECT * FROM long_term WHERE id IN ({', '.join(str(id) for id in status_set)}) AND final_status = 'success'"
+            cursor.execute(status_sql)
+            status_rec = cursor.fetchall()
+
+            if status_rec:
+                for x in status_rec:
+                    if x[1] in path_record:
+                        if path_record[x[1]]['status'][0][3] > x[3]:
+                            path_record[x[1]]['status'] = [x]
+                    else:
+                        path_record[x[1]] = {'status': [x]}
+            else:
+                return []
+            
+            goal_sql = f"SELECT * FROM long_term WHERE id IN ({', '.join(str(id) for id in goal_set)}) AND final_status = 'success'"
+            cursor.execute(goal_sql)
+            goal_rec = cursor.fetchall()
+
+            if status_rec:
+                for x in goal_rec:
+                    if x[1] in path_record:
+                        if 'goal' in path_record[x[1]]:
+                            path_record[x[1]]['goal'].append(x)
+                        else:
+                            path_record[x[1]]['goal'] = [x]
+                    else:  # 如果没有 status，则不记录这棵 tree
+                        continue
+            else:
+                return []
+            
+        print(path_record)
     
     
     def search_status():

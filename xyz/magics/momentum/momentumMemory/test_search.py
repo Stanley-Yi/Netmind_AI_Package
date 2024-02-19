@@ -17,7 +17,7 @@ def memory_instance() -> MomentumMemory:
 
     # initialize the collection-level memory storage unit
     return MomentumMemory(
-            sql_db = 'momentum_sql_db',
+            sql_db = 'momentum_sql_db_stanley',
             milvus_host = '18.171.129.243',
             milvus_port = 80,
             milvus_user = 'root',
