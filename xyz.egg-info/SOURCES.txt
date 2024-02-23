@@ -7,8 +7,14 @@ xyz.egg-info/dependency_links.txt
 xyz.egg-info/requires.txt
 xyz.egg-info/top_level.txt
 xyz/magics/__init__.py
+xyz/magics/agent/CoreAgent.py
+xyz/magics/agent/ThinkingFlow.py
+xyz/magics/agent/__init__.py
+xyz/magics/agent/logger.py
+xyz/magics/consciousness/__init__.py
 xyz/magics/memory/BasicAttributeStorage.py
 xyz/magics/memory/BasicMemoryMechanism.py
+xyz/magics/memory/FilterOperandType.py
 xyz/magics/memory/MemoryAgent.py
 xyz/magics/memory/MemoryClient.py
 xyz/magics/memory/__init__.py
@@ -18,3 +24,4 @@ xyz/magics/memory/_embedding_setting/EmbeddingTypeEnum.py
 xyz/magics/memory/_embedding_setting/IdxTypeEnum.py
 xyz/magics/memory/_embedding_setting/MetricTypeEnum.py
 xyz/magics/memory/_embedding_setting/__init__.py
+xyz/magics/momentum/__init__.py
