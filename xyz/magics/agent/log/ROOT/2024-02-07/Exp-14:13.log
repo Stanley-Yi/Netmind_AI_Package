@@ -1,0 +1,61 @@
+2024-02-07 14:14:35,900 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task to be rated:
+You will become a researcher on multi-llm agent framework. You need to read paper/code of current state of art framework of multi-llm agents. Ultimately, I want you to be able to 
+design and implement your own structure with useful difference compare to the existing structures
+Take deep breath, dont hurry, you can now give your estimation:
+
+Output: Time needed:
+100000 hours
+Complexity score:
+100
+
+
+2024-02-07 14:14:55,975 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task to be rated:
+Establish a Foundation in Multi-Agent Systems
+- Begin by reading introductory materials on multi-agent systems to understand the basic concepts, terminology, and theoretical underpinnings.
+
+- Identify and complete any prerequisite learning, such as courses or tutorials on artificial intelligence, machine learning, and software engineering principles relevant to multi-agent systems.
+Take deep breath, dont hurry, you can now give your estimation:
+
+Output: Time needed:
+200 hours
+
+Complexity score:
+80
+
+
+2024-02-07 14:15:02,624 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task to be rated:
+You will become a researcher on multi-llm agent framework. You need to read paper/code of current state of art framework of multi-llm agents. Ultimately, I want you to be able to 
+design and implement your own structure with useful difference compare to the existing structures
+Take deep breath, dont hurry, you can now give your estimation:
+
+Output: Time needed:
+100000 hours
+
+Complexity score:
+100
+
+
+2024-02-07 14:15:06,958 - CoreAgent.py[line:59] - INFO: BSAgent: 
+
+ Input: 
+The task to be rated:
+You will become a researcher on multi-llm agent framework. You need to read paper/code of current state of art framework of multi-llm agents. Ultimately, I want you to be able to 
+design and implement your own structure with useful difference compare to the existing structures
+Take deep breath, dont hurry, you can now give your estimation:
+
+Output: Time needed:
+100000 hours
+
+Complexity score:
+100
+
+
