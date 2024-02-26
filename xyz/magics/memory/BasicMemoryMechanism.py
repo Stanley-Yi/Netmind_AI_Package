@@ -373,7 +373,7 @@ class BasicMemoryMechanism:
     def search_memory(
             self, 
             query: List[str], 
-            advanced_filter: bool = True,
+            advanced_filter: bool = False,
             filter_expression: Optional[str] = None,
             filter_key: Optional[str] = None,
             filter_operand: Optional[FilterOperand] = None,
@@ -418,21 +418,21 @@ class BasicMemoryMechanism:
         if not is_valid_timestamp(current_access_time):
             raise Exception('the current access time must follow the format of valid timestamp')
         
-        if advanced_filter and filter_expression is None:
-            raise Exception('In the case of advanced filter, the filter_expression statement must not be None')
-        
-        if not advanced_filter and (filter_key is None or filter_operand is None or filter_value is None):
-            raise Exception('In the case of non-advanced filter, all of filter_key, filter_operand and filter_value must not be None')
+        if advanced_filter:
+            if filter_expression is None:
+                raise Exception('In the case of advanced filter, the filter_expression statement must not be None')
+            else:
+                expr = filter_expression
+        else:
+            if (filter_key is None or filter_operand is None or filter_value is None):
+                expr = None
+            else: 
+                filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
+                filter_key = "meta_data_dict['" + filter_key + "']"
+                expr = filter_key + " " + filter_operand.value + " " + filter_value
         
         # before doing query, the data must be loaded from disk to memory, as querying is executed in memory
         self.collection.load(partition_names=[self.partition_name] if type(self.partition_name) is str else self.partition_name, replica_number=replica_num)
-        
-        # form the filter expression
-        expr = filter_expression if advanced_filter else ''
-        if not advanced_filter:
-            filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
-            filter_key = "meta_data_dict['" + filter_key + "']"
-            expr = filter_key + " " + filter_operand.value + " " + filter_value
 
         # convert query sentence into the embedding vector
         embedded_query = self._get_embedding(query)
