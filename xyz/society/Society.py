@@ -11,6 +11,12 @@ Society
   
 class Society:
     
-    def __init__(self):
+    def __init__(
+            self,
+            task_name: str,
+            task_desc: str,
+            memory: object, 
+            momentum: object,
+            consicious: object,
+            ):
         pass
-    
