@@ -47,7 +47,13 @@ MemoryAgent` 在一个项目中会有许多个不同的实例化对象，本身�
    1. Zhouhan Zhang: `BasicAttributeStorage.py`, `BasicMemoryMechanism.py`
    2. Tianlei: 部署于 AWS EC2
    3. Bin Liang: `MemoryClient.py`, `MemoryAgent.py`
-3. 看 test 文件，`NetMind_AI_XYZ/test/memory_test`
+3. 看 test 文件，`NetMind_AI_XYZ/test/memory_test`.
+   
+    client_config 主要参数的说明:
+     - `collection_name`: collection_name用于标识向量数据库中的一个collection. 一个collection通常用来存储一个agent的一类数据, 比如存储一个agent 的某一类知识. 一个collection 中每条数据需要有相同的metadata.
+     - `partition_name`: partition_name 用于标识一个 collection 的子集. 一个collection 中的partition数量是有限的, 使用 partition 主要用于在collection的子集中做检索, 一个 collection 中不同partition有相同的metadata.
+     - `db_name`: db_name 用来标识一个向量数据库的服务. 一个db_name有多个 collection, 不同collection可以有不同的metadata.
+     - `memory_name`: 一个agent可能有多个collection, memory_name 用于在逻辑上区分一个agent的不同知识库或记忆库.
 
 ### 目前进展
 
