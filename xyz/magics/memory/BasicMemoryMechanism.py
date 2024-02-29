@@ -39,20 +39,20 @@ class BasicMemoryMechanism:
             self,
             memory_name: str, 
             db_name: str,
-            collection_name: str = None,
+            collection_name: Optional[str] = None,
             partition_name: str = "default",
             if_partion_level: bool = False,
             milvus_host: str = 'localhost', 
             milvus_port: int = 19530, 
             milvus_user: str = 'root',
             milvus_psw: str = 'NetMindMilvusDB',
-            mongo_url: str = 'mongodb://localhost:27017/', 
+            mongo_url: Optional[str] = None, 
             # The following parameters always be uesed in default
-            storage_engine: str = 'default',
-            num_shards: int = 1,
-            embedding_type: EmbeddingType = EmbeddingType.OpenAI_text_embedding_ada_002, 
-            metric_type: MetricType = MetricType.L2, 
-            idx_type: IdxType = IdxType.IVF_FLAT, 
+            storage_engine: Optional[str] = 'default',
+            num_shards: Optional[int] = 1,
+            embedding_type: Optional[EmbeddingType] = EmbeddingType.OpenAI_text_embedding_ada_002, 
+            metric_type: Optional[MetricType] = MetricType.L2, 
+            idx_type: Optional[IdxType] = IdxType.IVF_FLAT, 
             **idx_builder):
         """The basic memory object, which has function for modifying memory include saving, loading, retrieving
 
@@ -64,6 +64,8 @@ class BasicMemoryMechanism:
             the name of used Milvus database
         collection_name : str
             the name of used Milvus collection
+        partition_name : str
+            the name of used Milvus partition
         if_partion_level : bool
             indicating the type of memory unit storage: true if it is partition-level; false if it is collection-level
         milvus_host : str
@@ -74,18 +76,18 @@ class BasicMemoryMechanism:
             the user name to log into Milvus vector database
         milvus_psw : str
             the password to log into Milvus vector database
-        storage_engine : str
-            specify in which server the collection is to be created; in Milvus cluster, there can be more than one server, each server will have a server alias
-        num_shards : int
-            specify the amount of nodes that one write operation in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
-        mongo_url : str
-            the url of deployed mongoDB server
-        embedding_type : EmbeddingType
-            the embedding algorithm to be use when embedding the description sentence into a vector
-        metric_type : MetricType
-            the algorithm used to measure similarity among different vectors
-        idx_type : IdxType
-            the in-memory indexes supported by milvus, which can be configured to achieve better search performance
+        mongo_url : Optional[str]
+            Optional, the url of remote mongo_url, if it is None, then no mongoDB will be binded
+        storage_engine : Optional[str]
+            Optional, specify in which server the collection is to be created; in Milvus cluster, there can be more than one server, each server will have a server alias
+        num_shards : Optional[int]
+            Optional, specify the amount of nodes that one write operation in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
+        embedding_type : Optional[EmbeddingType]
+            Optional, the embedding algorithm to be use when embedding the description sentence into a vector
+        metric_type : Optional[MetricType]
+            Optional, the algorithm used to measure similarity among different vectors
+        idx_type : Optional[IdxType]
+            Optional, the in-memory indexes supported by milvus, which can be configured to achieve better search performance
         """
 
         self.client = OpenAI(
@@ -125,47 +127,20 @@ class BasicMemoryMechanism:
         '''
 
         # Step 2: connect to the MongoDB no-SQL database
-        try:
-            if self.milvus_connection["if_partion_level"]:
-                self.mongo_db_name = self.partition_name 
-            else:
-                self.mongo_db_name = self.collection_name
-            self._mongo_db = BasicAttributeStorage(self.mongo_db_name, mongo_url) # connect to mongoDB client, and use the database, whose name is collection_name
-            self.mongo_url = mongo_url
-        except Exception as e:
-            error_message = traceback.format_exc()
-            raise Exception (f"MongoDB connect failed: the mongo_url you provided is not correct\n\n{error_message}")
+        self.mongo_db = None
+        self.mongo_url = None
+        if mongo_url is not None:
+            try:
+                if self.milvus_connection["if_partion_level"]:
+                    self.mongo_db_name = self.partition_name 
+                else:
+                    self.mongo_db_name = self.collection_name
+                self.mongo_db = BasicAttributeStorage(self.mongo_db_name, mongo_url) # connect to mongoDB client, and use the database, whose name is collection_name
+                self.mongo_url = mongo_url
+            except Exception as e:
+                error_message = traceback.format_exc()
+                raise Exception (f"MongoDB connect failed: the mongo_url you provided is not correct\n\n{error_message}")
         
-        '''
-        The info format of registered_attributes related to a single memory unit is:
-
-        In database - memory_name:
-        In collection - 'registered_attributes':
-        [
-            {
-                ''attributes'': list(),
-            }
-        ]
-        '''
-        
-        '''
-        The format of attribute dict related to a single memory unit is:
-
-        In database - memory_name:
-        In collection - memory_group [for example, we set a group named milvus_data to store save_time and last_access_time properties for each memory records]:
-        [
-            {
-            
-                'attribute_type': attribute_type_1,
-                'values': { property_1: value_1, property_2: value_2, property_3: value_3 }
-            }
-
-            {
-                'attribute_type': attribute_type_1,
-                'values': { property_1: value_1, property_2: value_2, property_3: value_3 }
-            }
-        ]
-        '''
 
         # initialize the collection instance
         if not self._load_memory_store(
@@ -285,7 +260,7 @@ class BasicMemoryMechanism:
             docstore_id = FieldSchema(name='docstore_id', dtype=DataType.INT64, is_primary=True)
             meta_data_dict = FieldSchema(name='meta_data_dict', dtype=DataType.JSON)
             description = FieldSchema(name='description', dtype=DataType.FLOAT_VECTOR, dim=self._embedding_type.dim)
-            full_content = FieldSchema(name='full_content', dtype=DataType.JSON)
+            full_content = FieldSchema(name='full_content_dict', dtype=DataType.JSON)
 
             coll_schema = CollectionSchema(
                 fields=[docstore_id, meta_data_dict, description, full_content]
@@ -304,13 +279,17 @@ class BasicMemoryMechanism:
             self.collection.create_partition(self.partition_name)
 
         return self.collection is not None # check if the Collection instance and partition has been successfully in use
+    
+
+    def has_mongoDB(self):
+        return self.mongo_db is not None
+    
 
     def add_memory(
             self, 
             meta_data_dict_list: List[Dict], 
             description_list: List[str], 
-            full_content_dict_list: List[str],
-            save_time_list: List[str]) -> bool:
+            full_content_dict_list: List[str]) -> bool:
         """Insert one or more records into the Milvus database
         
         Parameters
@@ -321,8 +300,6 @@ class BasicMemoryMechanism:
             the list of description sentence to be stored in Milvus
         full_content_dict_list : List[str]
             the list of full content data to be stored in Milvus
-        save_time_list : List[str]
-            the list of timestamp to be used in the new record
 
         Returns
         -------
@@ -336,12 +313,8 @@ class BasicMemoryMechanism:
         if self.collection is None:
             raise Exception('there is no collection in use')
         
-        if not (len(meta_data_dict_list) == len(description_list) == len(full_content_dict_list) == len(save_time_list)):
+        if not (len(meta_data_dict_list) == len(description_list) == len(full_content_dict_list)):
             raise Exception('the list length of each field does not match')
-        
-        for save_time in save_time_list:
-            if not is_valid_timestamp(save_time):
-                raise Exception('all elements in save_time_list must follow the format of valid timestamp')
             
         # data field format converting
         doc_id_list = []
@@ -361,11 +334,6 @@ class BasicMemoryMechanism:
         # Milvus record insertion
         data = [doc_id_list, meta_data_json_list, description_vector_list, full_content_json_list]
         operand = self.collection.insert(data, partition_name=self.partition_name)
-
-        # add the save_time and last_access_time corresponding to certain piece of Milvus data record in mongoDB
-        for i in range(len(save_time_list)):
-            self._mongo_db.update_attributes(attribute_group_name='milvus_data', attribute_type_name=str(doc_id_list[i]), key='save_time', value=save_time_list[i])
-            self._mongo_db.update_attributes(attribute_group_name='milvus_data', attribute_type_name=str(doc_id_list[i]), key='last_access_time', value=save_time_list[i])
         
         self.collection.flush()
         return operand.succ_count == len(meta_data_dict_list)
@@ -378,7 +346,6 @@ class BasicMemoryMechanism:
             filter_key: Optional[str] = None,
             filter_operand: Optional[FilterOperand] = None,
             filter_value: Optional[Any] = None,
-            current_access_time: str = '',
             limit: int = 1000,  
             replica_num: int = 1) -> List[Dict]:
         """Query up to #limit amount of records that are similar to given query, supporting the filtering using meta_data_dict conditions
@@ -397,8 +364,6 @@ class BasicMemoryMechanism:
             optional, in simple filter mode, specify which operand is needed
         filter_value : Optional[Any]
             optional, in simple filter mode, specify the value of filtered data
-        current_access_time : str
-            the current timestamp when searching the query
         limit : int
             the maximum amount of records
         replica_num : int
@@ -414,9 +379,6 @@ class BasicMemoryMechanism:
 
         if self.collection is None:
             raise Exception('there is no collection in use')
-        
-        if not is_valid_timestamp(current_access_time):
-            raise Exception('the current access time must follow the format of valid timestamp')
         
         if advanced_filter:
             if filter_expression is None:
@@ -440,7 +402,7 @@ class BasicMemoryMechanism:
         # Milvus records search
         try:
             res = self.collection.search(data=embedded_query, anns_field='description', param=self._search_idx_params, limit=limit, expr=expr, 
-                                     output_fields=['docstore_id', 'meta_data_dict', 'full_content'])
+                                     output_fields=['docstore_id', 'meta_data_dict', 'full_content_dict'])
         except:
             raise('There is some error encountered when searching the memory, please do check the filter expression provided')
         
@@ -449,15 +411,13 @@ class BasicMemoryMechanism:
         visited_doc_ids = set()
         for hits in res:
             for hit in hits:
-                docstore_id, meta_data_dict, full_content = hit.entity.get('docstore_id'), hit.entity.get('meta_data_dict'), hit.entity.get('full_content')
+                docstore_id, meta_data_dict, full_content = hit.entity.get('docstore_id'), hit.entity.get('meta_data_dict'), hit.entity.get('full_content_dict')
 
                 if docstore_id not in visited_doc_ids:
-                    # Once several records are successfully searched from Milvus, we need to update their last_access_time in mongoDB
-                    self._mongo_db.update_attributes(attribute_group_name='milvus_data', attribute_type_name=str(docstore_id), key='last_access_time', value=current_access_time)
                     
                     # the processed data, which is provided to user for later usage
                     data = dict()
-                    data['doc_id'], data['meta_data_dict'], data['full_content_dict'] = docstore_id, meta_data_dict, full_content
+                    data['meta_data_dict'], data['full_content_dict'] = meta_data_dict, full_content
                     result_data.append(data)
 
                     # set the doc_id as visited one
@@ -474,7 +434,6 @@ class BasicMemoryMechanism:
             filter_key: str = None,
             filter_operand: FilterOperand = None,
             filter_value: Any = None,
-            current_access_time: str = None,
             limit: int = 1000,  
             replica_num: int = 1, ) -> List[Dict]:
         """Filter up to #limit amount of records according to the given conditions
@@ -491,8 +450,6 @@ class BasicMemoryMechanism:
             optional, in simple filter mode, specify which operand is needed
         filter_value : Optional[Any]
             optional, in simple filter mode, specify the value of filtered data
-        current_access_time : str
-            the current timestamp when searching the query
         limit : int
             the maximum amount of records
         replica_num : int
@@ -508,9 +465,6 @@ class BasicMemoryMechanism:
 
         if self.collection is None:
             raise Exception('there is no collection in use')
-        
-        if not is_valid_timestamp(current_access_time):
-            raise Exception('the current access time must follow the format of valid timestamp')
         
         if advanced_filter and filter_expression is None:
             raise Exception('In the case of advanced filter, the filter_expression statement must not be None')
@@ -532,18 +486,12 @@ class BasicMemoryMechanism:
 
         #Milvus records search
         try:
-            res = self.collection.query(expr=expr, limit=limit, output_fields=['docstore_id', 'meta_data_dict', 'full_content'])
+            res = self.collection.query(expr=expr, limit=limit, output_fields=['meta_data_dict', 'full_content_dict'])
         except:
             raise('There is some error encountered when filtering the memory, please do check the filter expression provided')
 
-        # update the last_access_time for each queried records in Milvus
-        for entity in res:
-            docstore_id = entity.get('docstore_id')
-
-            # Once several records are successfully searched from Milvus, we need to update their last_access_time in mongoDB
-            self._mongo_db.update_attributes(attribute_group_name='milvus_data', attribute_type_name=str(docstore_id), key='last_access_time', value=current_access_time)
-
         self.collection.release()
+
         return res
     
     def delete_memory(
@@ -597,16 +545,6 @@ class BasicMemoryMechanism:
             filter_value = "'" + filter_value + "'" if type(filter_value) == str else str(filter_value)
             filter_key = "meta_data_dict['" + filter_key + "']"
             expr = filter_key + " " + filter_operand.value + " " + filter_value
-
-        #Milvus records search, in here, limit is set to be maxium, ie, 16384
-        try:
-            res = self.collection.query(expr=expr, limit=16384, output_fields=['docstore_id'])
-        except:
-            raise('There is some error encountered when deleting the memory, please do check the filter expression provided')
-
-        # Once several records are successfully searched from Milvus, we need to update their last_access_time in mongoDB
-        for entity in res:
-            self._mongo_db.delete_attribute(attribute_group_name='milvus_data', attribute_type_name=str(entity.get('docstore_id')))
 
         operand = self.collection.delete(expr)
 
