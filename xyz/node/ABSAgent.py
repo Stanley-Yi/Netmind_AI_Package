@@ -22,13 +22,11 @@ class Supervisor(ABC):
 
     @abstractmethod
     def run(self, content:str) -> str:
-    """ 
-    .
-    """
+        pass
     
     @abstractmethod
     def save(self) -> None:
-
+        pass
     
     
     
