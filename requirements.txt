@@ -1,0 +1,10 @@
+loguru
+openai
+pandas
+numpy
+scipy
+milvus
+pymongo
+fastapi
+uvicorn
+requests

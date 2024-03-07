@@ -10,56 +10,138 @@ Node
 
 
 from typing import Any
+
 from xyz.node.LLMAgent import LLMAgent
 from xyz.node.FunctionalAgent import FunctionalAgent
+from xyz.node.Manager import Manager
 
 
 class Node:
+    """ 
+    A node that can be of different types (LLM, functional, manager) based on the configuration.
+    This code implements a Dependency Injection (DI) pattern that allows for combining different agents and utilizing their methods.
+
+    Parameters
+    ----------
+    node_config : dict
+        The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
+    core_agent : CoreAgent
+        The core agent to use for requesting response from OpenAI.
+    """
     
-    def __init__(self, node_config:dict) -> None:
+    def __init__(self, node_config:dict, core_agent) -> None:
         """ 
-        DI
+        Initialize the Node.
+
+        Parameters
+        ----------
+        node_config : dict
+            The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
+        core_agent : CoreAgent
+            The core agent to use for requesting response from OpenAI.
+
+        Raises
+        ------
+        ValueError
+            If the node type is not supported.
         """
         
-        # 
+        # save the information of the node
         self.node_config = node_config
         
-        # 
+        # initialize the agent with different type
         if node_config['node_type'] == "llm": 
-            self.node = LLMAgent(self.node_config)   
+            self.node = LLMAgent(self.node_config, core_agent)   
         elif node_config['node_type'] == "functional":    
             self.node = FunctionalAgent(self.node_config)  
+        elif node_config['node_type'] == "manager":
+            self.node = Manager(self.node_config)
         else:
             raise ValueError("node_type is not supported")
             
-    def __type__(self) -> Any:
-        return self.node_config['node_type'] + "_node"
+    def __str__(self) -> Any:
+        """
+        Get a string representation of the node.
+
+        Returns
+        -------
+        str
+            A string representation of the node.
+        """
+        
+        # TODO: 需要精细化完善，考虑到 自驱动时需要 由 llm 进行粘合
+        if self.node_config['node_type'] == "llm":
+            return self.node_config['description'] + self.node_config['template'] 
+        elif self.node_config['node_type'] == "functional":
+            
+            return self.node_config['description'] + self.node.get_function_call_info()
     
     def load_memory(self, client, memory_config:dict) -> Any:
+        """
+        Load the node's memory.
+
+        Parameters
+        ----------
+        client : object
+            The client to use for loading the memory.
+        memory_config : dict
+            The configuration for the memory.
+        """
+        
         # 这一步 应该在 初始化 company 的时候进行，每一个 company 共用一个 client
         if self.node_config['memory_config']:
-            self.memory = self.load_memory(self.node_config['memory_config'])
+            # TODO 加载我们需要的 memory
+            # self.memory = self.load_memory(self.node_config['memory_config'])
+            pass
     
-    def cosciousness(self) -> str:
+    def consciousness(self) -> str:
+        """
+        Get the node's consciousness.
+
+        Returns
+        -------
+        dict
+            A dictionary containing the node's consciousness.
+        """
         
         # TODO: 返回一定的信息，对分配任务有帮助的内容
-        
-        
         return {"template": "",
                 "job_description" : "",
                 "momentum" : "",
                 }
     
-    def working(self, content:str) -> None:
+    def working(self, task:str, **kwargs ) -> None:
         """ 
-        任务分配
+        Assign a task to the node.
+
+        Parameters
+        ----------
+        task : str
+            The task to assign to the node.
+        **kwargs
+            The keyword arguments to use for running the task.
+
+        Returns
+        -------
+        str
+            The response from the node.
         """
         
-        response = self.node.run(content)
+        # TODO: 在自身的数据存储中，会对任务进行更新
+        response = self.node.run(**kwargs)
         
         return response
     
     def save(self) -> None:
+        """
+        Save the node's data.
+
+        Raises
+        ------
+        NotImplementedError
+            If the method is not implemented.
+        """
+        # TODO: 需要一个全局的 folder 对数据进行保存
         raise NotImplementedError
         
     

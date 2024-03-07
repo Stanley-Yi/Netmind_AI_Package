@@ -29,10 +29,6 @@ import os
 from openai import OpenAI
 
 
-# 请在这里 补充上 API-Key
-API_KEY = "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"
-os.environ["OPENAI_API_KEY"] = API_KEY 
-
 class BasicMemoryMechanism:
 
     def __init__(

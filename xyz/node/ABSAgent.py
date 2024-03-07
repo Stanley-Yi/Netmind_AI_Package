@@ -12,21 +12,12 @@ ABSAgent
 from abc import ABC, abstractmethod
 
 
-class Supervisor(ABC):
-    
-    def __init__(self, config):
-        raise NotImplementedError
-
-    def __call__(self, *args, **kwds):
-        raise NotImplementedError
+class ABSAgent(ABC):
 
     @abstractmethod
     def run(self, content:str) -> str:
         pass
     
-    @abstractmethod
-    def save(self) -> None:
-        pass
     
     
     

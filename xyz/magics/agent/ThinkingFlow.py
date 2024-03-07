@@ -6,7 +6,7 @@ Using multi-agents to build a thinking-flow to process the complex tasks.
 """
 
 
-from xyz.magics.agent.CoreAgent import CoreAgent
+from xyz.node.CoreAgent import CoreAgent
 import time
 from copy import deepcopy
 import traceback

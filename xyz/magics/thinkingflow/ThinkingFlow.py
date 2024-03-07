@@ -16,4 +16,3 @@ class ThinkingFlow(ABC):
     
     @abstractmethod
     def process(self):
-

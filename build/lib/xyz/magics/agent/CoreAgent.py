@@ -9,14 +9,13 @@ import time
 from openai import OpenAI
 import traceback
 
-from xyz.magics.agent.logger import logger
+from xyz.utils.logger import logger
 
 class CoreAgent():
 
-    def __init__(self, template={}, llm="gpt-4-1106-preview", temperature=0, logger=logger):
+    def __init__(self, llm="gpt-4-1106-preview", temperature=0, logger=logger):
 
         self.llm = llm
-        self.template = template
         self.temperature = temperature
         self.client = OpenAI()
         self.logger = logger

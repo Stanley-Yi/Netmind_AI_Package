@@ -10,12 +10,11 @@ Planning
 
 
 from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
-from xyz.magics.agent.CoreAgent import CoreAgent
+from xyz.node.CoreAgent import CoreAgent
 
 class Planning(ThinkingFlow):
     
     def __init__(self):
-        
         ThinkingFlow.__isabstractmethod__ = True
 
     def process(self):
