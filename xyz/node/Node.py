@@ -53,7 +53,7 @@ class Node:
         if node_config['node_type'] == "llm": 
             self.node = LLMAgent(self.node_config, core_agent)   
         elif node_config['node_type'] == "functional":    
-            self.node = FunctionalAgent(self.node_config)  
+            self.node = FunctionalAgent(self.node_config, core_agent)  
         elif node_config['node_type'] == "manager":
             self.node = Manager(self.node_config)
         else:
@@ -128,7 +128,7 @@ class Node:
         """
         
         # TODO: 在自身的数据存储中，会对任务进行更新
-        response = self.node.run(**kwargs)
+        response = self.node(**kwargs)
         
         return response
     

@@ -10,6 +10,7 @@ LLMAgent
 
 
 from copy import deepcopy
+from typing import Any, Generator
 
 from xyz.node.ABSAgent import ABSAgent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
@@ -27,7 +28,7 @@ class LLMAgent(ABSAgent):
         The core agent to use for requesting response from OpenAI.
     """
     
-    def __init__(self, node_config, core_agent):
+    def __init__(self, node_config, core_agent) -> None:
         """
         Initialize the LLMAgent.
 
@@ -46,8 +47,26 @@ class LLMAgent(ABSAgent):
         self._set_prompts()
         self.generate_parameters = node_config['generate_parameters']
         self.messages = []
+        
+    def __call__(self, **kwargs) -> str:
+        """When you call this agent, we will run the agent with the given keyword arguments from the prompts.
+            Before we call the OpenAI's API, we do some process on this message.
+
+        Returns
+        -------
+        str
+            The response from the OpenAI's API
+        """
+        
+        # TODO: 异常处理
+        
+        [system_message, user_message] = self._complete_prompts(**kwargs)
+        current_message = self._using_thinking_flow(system_message, user_message)
+        messages = self._get_messages(current_message)
+        
+        return self.request(user_message=user_message, messages=messages)   # TODO: 这个 User message 传的不优雅。
     
-    def run(self, **kwargs):
+    def request(self, user_message:dict, messages:list) -> str:
         """
         Run the agent with the given keyword arguments.
 
@@ -62,10 +81,6 @@ class LLMAgent(ABSAgent):
             The agent's response.
         """
         
-        [system_message, user_message] = self._complete_prompts(**kwargs)
-        current_message = self._using_thinking_flow(system_message, user_message)
-        messages = self._set_messages(current_message)
-        
         # TODO: 获取输出的时候，要进行参数的设置，参数的来源 self.generate_parameters
         if self.generate_parameters["if_stream"]:  
             self.add_messages([user_message, {"role": "assistant", "content": ""}])
@@ -75,7 +90,7 @@ class LLMAgent(ABSAgent):
             self.add_messages([user_message, {"role": "assistant", "content": response}])
             return response
     
-    def _stream_run(self, messages):
+    def _stream_run(self, messages: list) -> Generator[str, None, None]:
         """
         Run the agent in a streaming manner with the given messages.
 
@@ -96,7 +111,7 @@ class LLMAgent(ABSAgent):
             self.messages[-1]["content"] = response
             yield word
     
-    def reset_messages(self, messages=[]):
+    def reset_messages(self, messages=[]) -> None:
         """
         Reset the agent's messages.
 
@@ -108,7 +123,7 @@ class LLMAgent(ABSAgent):
         
         self.messages = messages
         
-    def add_messages(self, messages):
+    def add_messages(self, messages) -> None:
         """
         Add messages to the agent's messages.
 
@@ -123,7 +138,7 @@ class LLMAgent(ABSAgent):
                 if message["role"] != "system":
                     self.messages.append(message)
     
-    def _set_prompts(self):
+    def _set_prompts(self) -> None:
         """
         Set the agent's prompts based on its template.
         """
@@ -133,7 +148,7 @@ class LLMAgent(ABSAgent):
 
         self.prompts = system + "||--||" + user    
         
-    def _complete_prompts(self, **kwargs):
+    def _complete_prompts(self, **kwargs) -> tuple: # TODO: 这里的返回值不够明确
         """
         Complete the agent's prompts with the given keyword arguments.
 
@@ -159,7 +174,7 @@ class LLMAgent(ABSAgent):
         
         return {"role": "system", "content": system}, {"role": "user", "content": user}     
        
-    def _using_thinking_flow(self, system_message, user_message):
+    def _using_thinking_flow(self, system_message:dict, user_message:dict) -> list:
         """
         Use the Thinking-Flow module to process the system message and the user message.
 
@@ -179,7 +194,7 @@ class LLMAgent(ABSAgent):
         
         return [system_message, user_message]
         
-    def _set_messages(self, current_message):
+    def _get_messages(self, current_message: list) -> list:
         """
         Set the agent's messages based on the current message and the generate_parameters.
 
@@ -195,7 +210,7 @@ class LLMAgent(ABSAgent):
         """
         
         if self.generate_parameters["if_multi"]:
-            messages = deepcopy(self.messages) + current_message
+            messages = deepcopy(self.messages)
             messages.extend(current_message)
             return messages
         else:

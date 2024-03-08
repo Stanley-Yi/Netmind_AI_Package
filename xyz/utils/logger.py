@@ -45,5 +45,3 @@ def create_logger(log_folder, rotation="00:00", compression='zip'):
     
     return logger
 
-# Create a logger object
-logger = create_logger("logs")

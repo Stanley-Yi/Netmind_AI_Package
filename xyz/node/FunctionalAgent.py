@@ -12,6 +12,7 @@ FunctionalAgent
 # python standard packages
 import requests
 import json
+from typing import Any
 
 # python third-party packages
 
@@ -34,7 +35,7 @@ class FunctionalAgent(ABSAgent):
         The core agent to use for requesting response from OpenAI.
     """
     
-    def __init__(self, node_config, core_agent):
+    def __init__(self, node_config:dict, core_agent:CoreAgent):
         """ 
         Initialize the FunctionalAgent.
 
@@ -62,10 +63,26 @@ class FunctionalAgent(ABSAgent):
         else:
             self.headers = None
             
-        # TODO: 之后为了自主性，可以利用 core_agent 进行一些操作
+        # TODO: 之后为了自主性，可以利用 core_agent 进行一些操作, 比如 在 call 之后，先利用大模型进行一些简单的处理，再去 request。
         self.core_agent = core_agent
+        
+    def __call__(self, parameters_dict:dict) -> Any:
+        """When you start the current Agent, call this function directly, and this function will call the request function and return the result
+            The reason for this is because there may be some other operations later
+
+        Parameters
+        ----------
+        parameters_dict : dict
+            The parameters to use for the api.
+
+        Returns
+        -------
+        Any
+            The response from the API.
+        """
+        return self.request(parameters_dict)
     
-    def run(self, parameters_dict:dict) -> str: 
+    def request(self, parameters_dict:dict) -> Any: 
         """ 
         Run the agent with the given parameters.
 
@@ -76,7 +93,7 @@ class FunctionalAgent(ABSAgent):
 
         Returns
         -------
-        str
+        Any
             The response from the API.
         """
         
@@ -102,7 +119,7 @@ class FunctionalAgent(ABSAgent):
         
         return self.description
     
-    def get_function_call_info(self):
+    def get_function_call_info(self) -> dict:
         """
         Get the information for calling the function.
 

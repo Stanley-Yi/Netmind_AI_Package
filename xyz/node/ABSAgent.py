@@ -10,10 +10,10 @@ ABSAgent
 
 
 # python standard packages
-
+from abc import ABC, abstractmethod
+from typing import Any
 
 # python third-party packages
-from abc import ABC, abstractmethod
 
 # python first-party packages
 
@@ -21,7 +21,19 @@ from abc import ABC, abstractmethod
 class ABSAgent(ABC):
 
     @abstractmethod
-    def run(self, content:str) -> str:
+    def request(self, input:Any) -> Any:
+        """All the agents should have a request method to process the messages.
+
+        Parameters
+        ----------
+        input : Any
+            The input to be processed.
+
+        Returns
+        -------
+        Any
+            The response from the agent.
+        """
         pass
     
     

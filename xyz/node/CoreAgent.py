@@ -17,7 +17,7 @@ import traceback
 from openai import OpenAI
 
 # import from our modules
-from xyz.utils.logger import logger
+from xyz.parameters import logger
 
 
 class CoreAgent():

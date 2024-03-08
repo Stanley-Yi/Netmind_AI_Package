@@ -9,6 +9,14 @@ Company
 """
 
 
+# python standard packages
+
+
+# python third-party packages
+
+
+# import from our modules
+from xyz.parameters import logger
 
 
 class Company:
