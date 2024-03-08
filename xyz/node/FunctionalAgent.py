@@ -17,7 +17,7 @@ from typing import Any
 # python third-party packages
 
 
-# python first-party packages
+# import from our modules
 from xyz.node.ABSAgent import ABSAgent
 from xyz.node.CoreAgent import CoreAgent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
@@ -107,7 +107,7 @@ class FunctionalAgent(ABSAgent):
         
         return response_dict["response"]
     
-    def get_api_info(self) -> str:
+    def get_info(self) -> str:
         """
         Get the API's description.
 

@@ -12,6 +12,7 @@ To define the BlackSheep-Agent(The BasicCLass of Agent)
 # python standard packages
 import time
 import traceback
+from typing import Generator
 
 # python third-party packages
 from openai import OpenAI
@@ -42,7 +43,7 @@ class CoreAgent():
 
         self.logger = logger
 
-    def run(self, messages):
+    def run(self, messages:list) -> str:
         """
         Run the agent with the given messages.
 
@@ -86,7 +87,7 @@ class CoreAgent():
         
         return answer
 
-    def stream_run(self, messages):
+    def stream_run(self, messages:list) -> Generator[str, None, None]:
         """
         Run the agent with the given messages in a streaming manner.
 
@@ -138,7 +139,7 @@ class CoreAgent():
         
         return answer
     
-    @staticmethod   # dollars per 1k tokens, REF: https://openai.com/pricings
+    @staticmethod   # dollars per 1k tokens, REF: https://openai.com/pricings Source: He Yan
     def get_oai_fees(model_name: str, prompt_tokens: int, completion_tokens: int) -> float:
         """
         Calculate the fees for using OpenAI models based on the model name, prompt tokens, and completion tokens.

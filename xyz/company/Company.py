@@ -17,11 +17,12 @@ Company
 
 # import from our modules
 from xyz.parameters import logger
+from xyz.node.Node import Node
 
 
 class Company:
     
-    def __init__(self, nodes_list, auto=False ):
+    def __init__(self, nodes_list:list, auto=False ):
         """
         TODO: 考虑一下同步 异步的事情
         自动/手动
@@ -45,7 +46,7 @@ class Company:
             raise TypeError("We do not complete the task automatically. Please set auto=False.")
         return result
     
-    def _add_connection(self, node_1, node_2) -> None:
+    def _add_connection(self, node_1:Node, node_2:Node) -> None:
         node_1.point_to(node_2)
         
     def _artificial_working(self, task:str) -> None:

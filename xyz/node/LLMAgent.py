@@ -9,9 +9,14 @@ LLMAgent
 """
 
 
+# python standard packages
 from copy import deepcopy
 from typing import Any, Generator
 
+# python third-party packages
+
+
+# import from our modules
 from xyz.node.ABSAgent import ABSAgent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
 
@@ -44,6 +49,7 @@ class LLMAgent(ABSAgent):
         # TODO: 目前使用 单例模式，去请求 API，但是有个问题 是否在使用的时候 每一次的调用都希望能够 特殊化设置 生成参数
         self.core_agent = core_agent
         self.template = node_config['template']
+        self.description = node_config['description']   
         self._set_prompts()
         self.generate_parameters = node_config['generate_parameters']
         self.messages = []
@@ -89,8 +95,20 @@ class LLMAgent(ABSAgent):
             response = self.core_agent.run(messages) 
             self.add_messages([user_message, {"role": "assistant", "content": response}])
             return response
+        
+    def get_info(self) -> str:
+        """
+        Get the agent's documentation.
+
+        Returns
+        -------
+        str
+            The agent's documentation.
+        """
+        
+        return self.description
     
-    def _stream_run(self, messages: list) -> Generator[str, None, None]:
+    def _stream_run(self, messages:list) -> Generator[str, None, None]:
         """
         Run the agent in a streaming manner with the given messages.
 
@@ -123,7 +141,7 @@ class LLMAgent(ABSAgent):
         
         self.messages = messages
         
-    def add_messages(self, messages) -> None:
+    def add_messages(self, messages:dict) -> None:
         """
         Add messages to the agent's messages.
 
@@ -194,7 +212,7 @@ class LLMAgent(ABSAgent):
         
         return [system_message, user_message]
         
-    def _get_messages(self, current_message: list) -> list:
+    def _get_messages(self, current_message:list) -> list:
         """
         Set the agent's messages based on the current message and the generate_parameters.
 

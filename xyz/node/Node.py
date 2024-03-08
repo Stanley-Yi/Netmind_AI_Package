@@ -9,8 +9,14 @@ Node
 """
 
 
+# python standard packages
+import json
 from typing import Any
 
+# python third-party packages
+
+
+# import from our modules
 from xyz.node.LLMAgent import LLMAgent
 from xyz.node.FunctionalAgent import FunctionalAgent
 from xyz.node.Manager import Manager
@@ -75,6 +81,11 @@ class Node:
         elif self.node_config['node_type'] == "functional":
             
             return self.node_config['description'] + self.node.get_function_call_info()
+        
+    def get_info():
+        # TODO: 为了能让 manager 能够获取到更多的信息，我们需要在这里返回node的具体信息。
+        # 这个功能服务于自驱动
+        raise NotImplementedError
     
     def load_memory(self, client, memory_config:dict) -> Any:
         """
@@ -132,7 +143,7 @@ class Node:
         
         return response
     
-    def save(self) -> None:
+    def save(self, type="dict", path="") -> None:
         """
         Save the node's data.
 
@@ -141,7 +152,13 @@ class Node:
         NotImplementedError
             If the method is not implemented.
         """
-        # TODO: 需要一个全局的 folder 对数据进行保存
-        raise NotImplementedError
+        
+        if type == "dict":
+            return self.node_config
+        elif type == "json":
+            with open (path, "w") as f:
+                json.dump(self.node_config, f)
+        else:
+            raise TypeError("The type is not supported")
         
     

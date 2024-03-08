@@ -4,19 +4,20 @@ Author: Netmind.AI, BlackSheep Team
 
 ## Project-XYZ
 
-The FIRST step for building the AI-Kingdom 
+The FIRST step for building the AI-Kingdom
+
+
+python==3.11
 
 ## Introduction:
 
 ![](documents/figures/structure.jpg)
-
 
 ## Month-1 Task
 
 Xiangpeng:
 
 ![](documents/figures/month_1.jpg)
-
 
 ```bash
 .
@@ -41,19 +42,8 @@ Xiangpeng:
 
 ### Government
 
-
-
-
-### Company 
-
-
-
-
+### Company
 
 ### School
 
-
-
-
 ### Magics(technologys)
-
