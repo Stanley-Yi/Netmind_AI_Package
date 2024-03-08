@@ -9,14 +9,14 @@ Options
 """
 
 
-from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
+from xyz.magics.thinkingflow.ThinkingStructure import ThinkingStructure
 from xyz.node.CoreAgent import CoreAgent
 
-class Options(ThinkingFlow):
+class Options(ThinkingStructure):
     
     def __init__(self):
         
-        ThinkingFlow.__isabstractmethod__ = True
+        ThinkingStructure.__isabstractmethod__ = True
 
     def process(self):
         pass

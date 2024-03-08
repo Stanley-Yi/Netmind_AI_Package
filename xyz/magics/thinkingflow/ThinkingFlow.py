@@ -9,10 +9,19 @@ ThinkingFlow
 """
 
 
-from abc import ABC, abstractmethod
+# python standard packages
 
 
-class ThinkingFlow(ABC):
+# python third-party packages
+
+
+# import from our modules
+from xyz.magics.thinkingflow.Planning import Planning
+from xyz.magics.thinkingflow.Dividing import Dividing   
+from xyz.magics.thinkingflow.Options import Options
+
+
+class ThinkingFlow():
     
-    @abstractmethod
-    def process(self):
+    def __init__(self):
+        pass

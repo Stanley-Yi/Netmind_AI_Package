@@ -38,7 +38,7 @@ class APIWrapTool:
         A list of servers where the API is available. Default is an empty list.
     """
     
-    def __init__(self, function, fun_doc, host="127..0.1", port=8501,
+    def __init__(self, function, fun_doc, host="127.0.0.1", port=8501,
                  servers=[]):
         """
         Initialize the APIWrapTool.

@@ -47,8 +47,8 @@ class FunctionalAgent(ABSAgent):
             - 'description': The description of the API.
             - 'parameters': The parameters for the API.
             - 'headers': The headers for the API requests. If not provided, it will be set to None.
-        core_agent : ABSAgent
-            The core agent to use for processing messages.
+        core_agent : CoreAgent
+            The core agent to use for requesting response from OpenAI.
         """
         
         self.url = node_config['api_url']
