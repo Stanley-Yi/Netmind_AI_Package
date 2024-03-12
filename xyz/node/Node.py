@@ -138,7 +138,7 @@ class Node:
             The response from the node.
         """
         
-        # TODO: 在自身的数据存储中，会对任务进行更新
+        # TODO: 在自身的数据存储中，会对任务 momentum 进行更新
         response = self.node(**kwargs)
         
         return response
