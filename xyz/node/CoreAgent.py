@@ -43,7 +43,7 @@ class CoreAgent():
 
         self.logger = logger
 
-    def run(self, messages:list) -> str:
+    def run(self, messages:list, tools=[]) -> str:
         """
         Run the agent with the given messages.
 
@@ -63,6 +63,11 @@ class CoreAgent():
             If there is an error while processing the messages.
         """
         
+        
+        if tools != []:
+            tool_choice = "auto"
+        else:
+            tool_choice = "none"
         get_response_signal = False
         count = 0
         while not get_response_signal and count < 10:
@@ -70,6 +75,8 @@ class CoreAgent():
                 response = self.client.chat.completions.create(
                     model=self.llm,
                     messages=messages,
+                    tools=tools,
+                    tool_choice=tool_choice,
                     temperature=self.temperature,
                 )
                 get_response_signal = True
@@ -79,13 +86,12 @@ class CoreAgent():
                 print(f"The error: {error_message}")
                 time.sleep(2)
                 
-        answer = response.choices[0].message.content
         prompt_tokens = response.usage.prompt_tokens
         completion_tokens = response.usage.completion_tokens
         this_time_price = self.get_oai_fees(self.llm, prompt_tokens, completion_tokens)
         # TODO: We do not compute the price for now, but we can add this feature in the future
         
-        return answer
+        return response
 
     def stream_run(self, messages:list) -> Generator[str, None, None]:
         """

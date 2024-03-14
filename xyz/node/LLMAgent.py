@@ -49,12 +49,12 @@ class LLMAgent(ABSAgent):
         # TODO: 目前使用 单例模式，去请求 API，但是有个问题 是否在使用的时候 每一次的调用都希望能够 特殊化设置 生成参数
         self.core_agent = core_agent
         self.template = node_config['template']
-        self.description = node_config['description']   
-        self._set_prompts()
         self.generate_parameters = node_config['generate_parameters']
         self.messages = []
         
-    def __call__(self, **kwargs) -> str:
+        self._set_prompts()
+        
+    def __call__(self, tools=[], **kwargs) -> str:
         """When you call this agent, we will run the agent with the given keyword arguments from the prompts.
             Before we call the OpenAI's API, we do some process on this message.
 
@@ -70,9 +70,9 @@ class LLMAgent(ABSAgent):
         current_message = self._using_thinking_flow(system_message, user_message)
         messages = self._get_messages(current_message)
         
-        return self.request(user_message=user_message, messages=messages)   # TODO: 这个 User message 传的不优雅。
+        return self.request(user_message=user_message, messages=messages, tools=tools)   # TODO: 这个 User message 传的不优雅。
     
-    def request(self, user_message:dict, messages:list) -> str:
+    def request(self, user_message:dict, messages:list, tools:list=[]) -> str:
         """
         Run the agent with the given keyword arguments.
 
@@ -92,21 +92,16 @@ class LLMAgent(ABSAgent):
             self.add_messages([user_message, {"role": "assistant", "content": ""}])
             return self._stream_run(messages)
         else:
-            response = self.core_agent.run(messages) 
-            self.add_messages([user_message, {"role": "assistant", "content": response}])
-            return response
-        
-    def get_info(self) -> str:
-        """
-        Get the agent's documentation.
-
-        Returns
-        -------
-        str
-            The agent's documentation.
-        """
-        
-        return self.description
+            response = self.core_agent.run(messages, tools=tools) 
+            content = response.choices[0].message.content
+            
+            # TODO: 简单做了一个 tools 的调用的返回，还需要调试
+            if content == None:
+                return response.choices[0].message.tool_calls[0].function
+            
+            self.add_messages([user_message, {"role": "assistant", "content": content}])
+            
+            return content
     
     def _stream_run(self, messages:list) -> Generator[str, None, None]:
         """

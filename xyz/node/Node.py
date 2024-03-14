@@ -22,6 +22,7 @@ from xyz.node.FunctionalAgent import FunctionalAgent
 from xyz.node.Manager import Manager
 
 
+
 class Node:
     """ 
     A node that can be of different types (LLM, functional, manager) based on the configuration.
@@ -52,58 +53,61 @@ class Node:
             If the node type is not supported.
         """
         
-        # save the information of the node
+        # save the common information of the node
         self.node_config = node_config
+        self.name = node_config["name"]
+        self.description = node_config["description"]
+        self.parameters = node_config["parameters"]
+        self.company_role = ""
+        
+        # TODO: 留出接口，我们目前要求 parameters 中所有的参数都是必须的
+        self.required= list(node_config["parameters"].keys())
         
         # initialize the agent with different type
         if node_config['node_type'] == "llm": 
-            self.node = LLMAgent(self.node_config, core_agent)   
+            self.node = LLMAgent(self.node_config['llm_config'], core_agent)   
         elif node_config['node_type'] == "functional":    
             self.node = FunctionalAgent(self.node_config, core_agent)  
         elif node_config['node_type'] == "manager":
             self.node = Manager(self.node_config)
         else:
             raise ValueError("node_type is not supported")
-            
-    def __str__(self) -> Any:
-        """
-        Get a string representation of the node.
-
-        Returns
-        -------
-        str
-            A string representation of the node.
-        """
         
-        # TODO: 需要精细化完善，考虑到 自驱动时需要 由 llm 进行粘合
-        if self.node_config['node_type'] == "llm":
-            return self.node_config['description'] + self.node_config['template'] 
-        elif self.node_config['node_type'] == "functional":
-            
-            return self.node_config['description'] + self.node.get_function_call_info()
+        self.input_format_agent = LLMAgent(core_agent=core_agent)
         
-    def get_info():
-        # TODO: 为了能让 manager 能够获取到更多的信息，我们需要在这里返回node的具体信息。
-        # 这个功能服务于自驱动
-        raise NotImplementedError
+    def get_info(self):
+        
+        request_info = {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": self.parameters,
+                "required": self.required,
+                },
+            }
+        
+        return request_info
     
-    def load_memory(self, client, memory_config:dict) -> Any:
+    def format_input(self, input:str) -> dict:
         """
-        Load the node's memory.
+        Format the input for the node.
 
         Parameters
         ----------
-        client : object
-            The client to use for loading the memory.
-        memory_config : dict
-            The configuration for the memory.
+        input : str
+            The input to format.
+
+        Returns
+        -------
+        dict
+            The formatted input.
         """
         
-        # 这一步 应该在 初始化 company 的时候进行，每一个 company 共用一个 client
-        if self.node_config['memory_config']:
-            # TODO 加载我们需要的 memory
-            # self.memory = self.load_memory(self.node_config['memory_config'])
-            pass
+        tools = [self.get_info(self)]
+        _, parameters = self.input_format_agent(tools=tools, input=input)
+        
+        return parameters
     
     def consciousness(self) -> str:
         """
@@ -120,6 +124,9 @@ class Node:
                 "job_description" : "",
                 "momentum" : "",
                 }
+        
+    def set_role(self, role:str) -> None:
+        self.company_role = role
     
     def working(self, task:str, **kwargs ) -> None:
         """ 
@@ -142,6 +149,24 @@ class Node:
         response = self.node(**kwargs)
         
         return response
+    
+    def load_memory(self, client, memory_config:dict) -> Any:
+        """
+        Load the node's memory.
+
+        Parameters
+        ----------
+        client : object
+            The client to use for loading the memory.
+        memory_config : dict
+            The configuration for the memory.
+        """
+        
+        # 这一步 应该在 初始化 company 的时候进行，每一个 company 共用一个 client
+        if self.node_config['memory_config']:
+            # TODO 加载我们需要的 memory， 什么时候加载？怎么使用？
+            # self.memory = self.load_memory(self.node_config['memory_config'])
+            pass
     
     def save(self, type="dict", path="") -> None:
         """

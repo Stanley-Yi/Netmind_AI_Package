@@ -44,19 +44,12 @@ class FunctionalAgent(ABSAgent):
         node_config : dict
             The configuration for the node. It should contain the following keys:
             - 'api_url': The URL of the API.
-            - 'api_name': The name of the API.
-            - 'description': The description of the API.
-            - 'parameters': The parameters for the API.
             - 'headers': The headers for the API requests. If not provided, it will be set to None.
         core_agent : CoreAgent
             The core agent to use for requesting response from OpenAI.
         """
         
         self.url = node_config['api_url']
-        
-        self.api_name = node_config['api_name']        
-        self.description = node_config['description']
-        self.parameters = node_config['parameters']  
         
         if node_config['headers']:
             self.headers = node_config['headers']
@@ -107,42 +100,9 @@ class FunctionalAgent(ABSAgent):
         
         return response_dict["response"]
     
-    def get_info(self) -> str:
-        """
-        Get the API's description.
-
-        Returns
-        -------
-        str
-            The description of the API.
-        """
-        
-        return self.description
+    def upload_file(self):
+        raise NotImplemented 
     
-    def get_function_call_info(self) -> dict:
-        """
-        Get the information for calling the function.
-
-        Returns
-        -------
-        dict
-            A dictionary containing the information for calling the function. It includes the following keys:
-            - 'type': The type of the call, which is "function".
-            - 'function': A dictionary containing the function's name, description, and parameters.
-        """
-
-        return {
-            "type": "function",
-            "function": {
-                "name": self.api_name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        self.parameters
-                    },
-                    "required": self.parameters.keys(),
-                },
-            },
-        }
-
+    def download_file(self):
+        raise NotImplemented
+    
