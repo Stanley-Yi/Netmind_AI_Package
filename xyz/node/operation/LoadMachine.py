@@ -15,8 +15,8 @@ import json
 # python third-party packages
 
 
-# import from our modules
-from xyz.node.Node import Node
+# import from our operation
+from xyz.node.XYZNode import Node
 
 
 class LoadMachine:

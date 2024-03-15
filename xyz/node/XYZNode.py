@@ -1,8 +1,8 @@
 """
-====
-Node
-====
-@file_name: Node.py 
+=======
+XYZNode
+=======
+@file_name: XYZNode.py
 @author: Bin Liang
 @date: 2023-2-29
 
@@ -11,19 +11,22 @@ Node
 
 # python standard packages
 import json
-from typing import Any
+from typing import Any, Dict
 
 # python third-party packages
 
 
-# import from our modules
-from xyz.node.LLMAgent import LLMAgent
-from xyz.node.FunctionalAgent import FunctionalAgent
-from xyz.node.Manager import Manager
+# import from our operation
+from xyz.node.agent import Agent
+from xyz.node.basic.LLMAgent import LLMAgent
+from xyz.node.basic.FunctionalAgent import FunctionalAgent
+from xyz.node.operation.Manager import Manager
+from xyz.node.operation.InputFormatAgent import InputFormatAgent
+from xyz.parameters import core_agent as default_agent
+from xyz.utils.llm.CoreAgent import CoreAgent
 
 
-
-class Node:
+class XYZNode(Agent):
     """ 
     A node that can be of different types (LLM, functional, manager) based on the configuration.
     This code implements a Dependency Injection (DI) pattern that allows for combining different agents and utilizing their methods.
@@ -36,7 +39,9 @@ class Node:
         The core agent to use for requesting response from OpenAI.
     """
     
-    def __init__(self, node_config:dict, core_agent) -> None:
+    def __init__(self,
+                 node_config: dict,
+                 core_agent: CoreAgent=default_agent) -> None:
         """ 
         Initialize the Node.
 
@@ -54,6 +59,8 @@ class Node:
         """
         
         # save the common information of the node
+        super().__init__(core_agent)
+
         self.node_config = node_config
         self.name = node_config["name"]
         self.description = node_config["description"]
@@ -65,7 +72,9 @@ class Node:
         
         # initialize the agent with different type
         if node_config['node_type'] == "llm": 
-            self.node = LLMAgent(self.node_config['llm_config'], core_agent)   
+            self.node = LLMAgent(self.node_config['llm_config']['template'],
+                                 self.node_config['llm_config']['generate_parameters'],
+                                 core_agent)
         elif node_config['node_type'] == "functional":    
             self.node = FunctionalAgent(self.node_config, core_agent)  
         elif node_config['node_type'] == "manager":
@@ -75,7 +84,7 @@ class Node:
         
         self.input_format_agent = LLMAgent(core_agent=core_agent)
         
-    def get_info(self):
+    def tools_format(self):
         
         request_info = {
             "type": "function",
@@ -88,8 +97,8 @@ class Node:
             }
         
         return request_info
-    
-    def format_input(self, input:str) -> dict:
+
+    def format_input(self, input:str) -> Dict[str, str]:
         """
         Format the input for the node.
 
@@ -104,12 +113,12 @@ class Node:
             The formatted input.
         """
         
-        tools = [self.get_info(self)]
+        tools = [self.as_tool]
         _, parameters = self.input_format_agent(tools=tools, input=input)
         
         return parameters
     
-    def consciousness(self) -> str:
+    def consciousness(self) -> dict:
         """
         Get the node's consciousness.
 
@@ -128,7 +137,7 @@ class Node:
     def set_role(self, role:str) -> None:
         self.company_role = role
     
-    def working(self, task:str, **kwargs ) -> None:
+    def flowing(self, task:str, **kwargs) -> None:
         """ 
         Assign a task to the node.
 
@@ -168,7 +177,7 @@ class Node:
             # self.memory = self.load_memory(self.node_config['memory_config'])
             pass
     
-    def save(self, type="dict", path="") -> None:
+    def save(self, type="dict", path="") -> Dict[str, str] :
         """
         Save the node's data.
 

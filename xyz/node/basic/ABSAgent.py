@@ -20,8 +20,11 @@ from typing import Any
 
 class ABSAgent(ABC):
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self.request(*args, **kwargs)
+
     @abstractmethod
-    def request(self, input:Any) -> Any:
+    def request(self, *args: Any, **kwargs: Any) -> Any:
         """All the agents should have a request method to process the messages.
 
         Parameters

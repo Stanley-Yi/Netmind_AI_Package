@@ -17,9 +17,9 @@ from typing import Any
 # python third-party packages
 
 
-# import from our modules
-from xyz.node.ABSAgent import ABSAgent
-from xyz.node.CoreAgent import CoreAgent
+# import from our operation
+from xyz.node.basic.ABSAgent import ABSAgent
+from xyz.utils.llm.CoreAgent import CoreAgent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
 
 

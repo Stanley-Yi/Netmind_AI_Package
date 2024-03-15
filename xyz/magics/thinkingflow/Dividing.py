@@ -10,7 +10,7 @@ Dividing
 
 
 from xyz.magics.thinkingflow.ThinkingStructure import ThinkingStructure
-from xyz.node.CoreAgent import CoreAgent
+
 
 class Dividing(ThinkingStructure):
     

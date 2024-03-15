@@ -191,7 +191,7 @@ class ConsciousnessModule:
         momentum_id : str
             momentum_id for momentum in self.momentums to update to
         new_attributes: dict
-            new attributes value to update in momentum modules attribute dict
+            new attributes value to update in momentum operation attribute dict
         """
         raise NotImplementedError
     

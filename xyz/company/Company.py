@@ -15,10 +15,9 @@ Company
 # python third-party packages
 
 
-# import from our modules
-from xyz.parameters import logger
-from xyz.node.Node import Node
-from xyz.node.Edge import Edge
+# import from our operation
+from xyz.node.XYZNode import Node
+from xyz.node.basic.Edge import Edge
 
 
 class Company:
@@ -73,7 +72,7 @@ class Company:
         
         full_process = []
         node = self.start
-        response = node.working(task)
+        response = node.flowing(task)
         step = 1
         full_process.append({
             "node": node.name,
@@ -89,7 +88,7 @@ class Company:
             node = self.edge[node.name].back_node
             
             sub_task_parameters = self.edge[node.name].bridge(response)
-            response = node.working(task=task, **sub_task_parameters)
+            response = node.flowing(task=task, **sub_task_parameters)
             full_process.append({
                 "node": node.name,
                 "response": response,

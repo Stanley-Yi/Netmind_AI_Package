@@ -12,16 +12,16 @@ To define the BlackSheep-Agent(The BasicCLass of Agent)
 # python standard packages
 import time
 import traceback
-from typing import Generator
+from typing import Generator, overload
 
 # python third-party packages
 from openai import OpenAI
 
-# import from our modules
+# import from our operation
 from xyz.parameters import logger
 
 
-class CoreAgent():
+class CoreAgent:
 
     def __init__(self, llm="gpt-4-1106-preview", temperature=0, logger=logger):
         """Initializes the agent.
@@ -43,6 +43,7 @@ class CoreAgent():
 
         self.logger = logger
 
+    @overload
     def run(self, messages:list, tools=[]) -> str:
         """
         Run the agent with the given messages.
@@ -92,6 +93,11 @@ class CoreAgent():
         # TODO: We do not compute the price for now, but we can add this feature in the future
         
         return response
+
+    @overload
+    def run(self, str) -> str:
+        @TODO: 增加重载版本, 给定一个 str 就给回应
+        pass
 
     def stream_run(self, messages:list) -> Generator[str, None, None]:
         """

@@ -15,8 +15,8 @@ Manager
 # python third-party packages
 
 
-# import from our modules
-from xyz.node.LLMAgent import LLMAgent
+# import from our operation
+from xyz.node.basic.LLMAgent import LLMAgent
 
 
 class Manager(LLMAgent):

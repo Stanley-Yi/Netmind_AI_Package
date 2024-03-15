@@ -8,8 +8,6 @@ Planning
 
 """
 
-
-from xyz.node.CoreAgent import CoreAgent
 from xyz.magics.thinkingflow.ThinkingStructure import ThinkingStructure
 
 

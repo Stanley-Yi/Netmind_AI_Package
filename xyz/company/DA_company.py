@@ -15,9 +15,9 @@ import threading
 # python third-party packages
 
 
-# import from our modules
+# import from our operation
 from xyz.company.Company import Company
-from xyz.node.Node import Node
+from xyz.node.XYZNode import Node
 from xyz.parameters import args
 from xyz.utils.APIWrapTool import APIWrapTool
 

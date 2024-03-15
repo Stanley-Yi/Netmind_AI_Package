@@ -1,7 +1,7 @@
 import numpy as np
 import re
 from xyz.magics.agent.ThinkingFlow import ThinkingFlow
-from xyz.node.CoreAgent import CoreAgent
+from xyz.utils.llm.CoreAgent import CoreAgent
 from xyz.magics.agent.prompts import *
 
 

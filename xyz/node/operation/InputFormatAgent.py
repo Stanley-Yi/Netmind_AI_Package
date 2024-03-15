@@ -9,20 +9,21 @@ InputFormatAgent
 """
 
 
-import json 
+import json
+from typing import Tuple, Any
 
-from xyz.node.LLMAgent import LLMAgent
-from xyz.node.system_prompts import input_format_config
+from xyz.node.basic.LLMAgent import LLMAgent
+from xyz.node.operation.operation_prompts import input_format_config
 
 class InputFormatAgent(LLMAgent):
     
     def __init__(self, core_agent, node_config=input_format_config) -> None:
-        super().__init__(node_config, core_agent)
+        super().__init__(node_config['template'], node_config['generate_parameters'], core_agent)
         
     def __call__(self, tools=[], **kwargs) -> str:
-        super().__call__(tools, **kwargs)
+        super().__call__(tools=tools, **kwargs)
         
-    def request(self, messages:list, tools:list=[]) -> str:
+    def request(self, messages:list, tools:list=[]) -> tuple[Any, Any]:
         """
         Request the agent to process the messages.
 

@@ -11,17 +11,17 @@ LLMAgent
 
 # python standard packages
 from copy import deepcopy
-from typing import Any, Generator
+from typing import Generator, List, Any
 
 # python third-party packages
 
-
-# import from our modules
-from xyz.node.ABSAgent import ABSAgent
+# import from our operation
+from xyz.node.basic.ABSAgent import ABSAgent
+from xyz.node.agent import Agent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
 
 
-class LLMAgent(ABSAgent):
+class LLMAgent(Agent):
     """ 
     An agent that uses the LLM (Language Learning Model) for processing messages.
 
@@ -33,7 +33,7 @@ class LLMAgent(ABSAgent):
         The core agent to use for requesting response from OpenAI.
     """
     
-    def __init__(self, node_config, core_agent) -> None:
+    def __init__(self, template, generate_parameters, core_agent) -> None:
         """
         Initialize the LLMAgent.
 
@@ -44,17 +44,21 @@ class LLMAgent(ABSAgent):
         core_agent : CoreAgent
             The core agent to use for requesting response from OpenAI.
         """
+        super().__init__(core_agent)
         ABSAgent.__isabstractmethod__ = True
         
         # TODO: 目前使用 单例模式，去请求 API，但是有个问题 是否在使用的时候 每一次的调用都希望能够 特殊化设置 生成参数
         self.core_agent = core_agent
-        self.template = node_config['template']
-        self.generate_parameters = node_config['generate_parameters']
+        self.node_config = {"template": template,
+                            "generate_parameters": generate_parameters}
+
+        self.template = self.node_config['template']
+        self.generate_parameters = self.node_config['generate_parameters']
         self.messages = []
         
         self._set_prompts()
         
-    def __call__(self, tools=[], **kwargs) -> str:
+    def flowing(self, tools:List=[], **kwargs) -> str:
         """When you call this agent, we will run the agent with the given keyword arguments from the prompts.
             Before we call the OpenAI's API, we do some process on this message.
 
@@ -72,7 +76,7 @@ class LLMAgent(ABSAgent):
         
         return self.request(user_message=user_message, messages=messages, tools=tools)   # TODO: 这个 User message 传的不优雅。
     
-    def request(self, user_message:dict, messages:list, tools:list=[]) -> str:
+    def request(self, user_message:dict, messages:list, tools:list=[]) -> Any:
         """
         Run the agent with the given keyword arguments.
 

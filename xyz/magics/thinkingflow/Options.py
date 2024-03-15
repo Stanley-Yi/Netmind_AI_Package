@@ -10,7 +10,7 @@ Options
 
 
 from xyz.magics.thinkingflow.ThinkingStructure import ThinkingStructure
-from xyz.node.CoreAgent import CoreAgent
+
 
 class Options(ThinkingStructure):
     

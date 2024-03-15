@@ -9,9 +9,6 @@ We use this object which can connect two nodes. And we can make the output of on
 """
 
 
-from xyz.node.CoreAgent import CoreAgent
-
-
 class Edge:
     
     

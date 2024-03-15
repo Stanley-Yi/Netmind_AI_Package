@@ -2,7 +2,7 @@
 ====
 Node
 ====
-@file_name: Node.py
+@file_name: XYZNode.py
 @author: Bin Liang 
 @date: 2024-2-23
 

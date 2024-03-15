@@ -2,7 +2,7 @@
 ==============
 system_prompts
 ==============
-@file_name: system_prompts.py
+@file_name: operation_prompts.py
 @author: Bin Liang
 @date: 2024-3-14 
 This file contains the system prompts for the node.
