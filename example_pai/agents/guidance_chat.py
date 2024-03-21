@@ -28,16 +28,14 @@ class GuidanceChat(Agent):
         self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, core_agent, multi=False, stream=True)
 
     def flowing(self, question: str, answer: str, process: str,
-                user_input: str, messages: list = None) -> str:
+                content: str, messages: list = None) -> str:
 
-        if messages is None:
-            response = self.llm_start_agent(question=question, answer=answer, process=process)
-            return response
+        if messages:
+            return self.llm_guidance_agent(messages=messages, language="English", content=content)
+            # return response
         else:
-            response = self.llm_guidance_agent(messages=messages, question=question, answer=answer,
-                                               process=process,
-                                               user_input=user_input)
-            return response
+            return self.llm_start_agent(language="English", question=question, answer=answer, process=process)
+            # return response
 
 
 # Prompts Set

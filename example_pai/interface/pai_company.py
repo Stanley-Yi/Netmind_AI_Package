@@ -50,24 +50,41 @@ class PaiCompany(Agent):
         if question_info["process"] == "":
             process = self.generate_process(question=question, answer=answer)
             question_info["process"] = process
+            print(process)
 
         messages = []
         in_progress = True
+        finish_signal = False
+        
         while in_progress:
 
+            user_input = ""
             response = self.guidance_chat(question=question, answer=question_info["answer"],
-                                          process=question_info["process"],messages=messages)
-            assistant_content, finish_signal = stream_print(response, "##||&&")
-
+                                          content=user_input, 
+                                          process=question_info["process"], messages=messages)
+            # assistant_content, finish_signal = stream_print(response, "##||&&")
+            assistant_content = ""
+            for res in response:
+                print(res, end="")
+                assistant_content += res
+            if "##||&&" in response:
+                finish_signal = True
+            
             if finish_signal:
                 response = self.summary(messages=messages)
-                assistant_content, finish_signal = stream_print(response)
+                assistant_content = ""
+                for res in response:
+                    print(res, end=" ")
+                    assistant_content += res
+                # assistant_content, finish_signal = stream_print(response)
                 messages.append({"role": "assistant", "content": assistant_content})
                 in_progress = False
             else:
                 messages.append({"role": "assistant", "content": assistant_content})
 
-            user_input = input("User: ")
+            user_input = input("\nUser: ")
             messages.append({"role": "user", "content": user_input})
+            if "end" in user_input:
+                break
 
         return messages

@@ -80,6 +80,8 @@ class LLMAgent(Agent):
         else:
             messages.extend(current_message)
 
+        self.messages = messages
+
         return self.request(user_message=user_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
 
     def request(self, user_message: dict, messages: list, tools: list = []) -> Any:
@@ -133,6 +135,8 @@ class LLMAgent(Agent):
             response += word
             self.messages[-1]["content"] = response
             yield word
+        
+        # return self.core_agent.stream_run(messages)
 
     def reset_messages(self, messages=[]) -> None:
         """
