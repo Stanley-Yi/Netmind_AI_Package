@@ -85,7 +85,7 @@ class ConsciousnessModule:
         # Set initial energy for the source node
         G.nodes[source]['energy'] = initial_energy
         
-        # Create a queue to process nodes level by level
+        # Create a queue to interface nodes level by level
         queue = [source]
         
         while queue:
@@ -196,7 +196,7 @@ class ConsciousnessModule:
         raise NotImplementedError
     
     def update_momentum_by_feedback(self, momentum_id, feedback) -> None:
-        """Update the momentum from its feedback from the core LLM that process it. If it is finished: delete from momentem list and save in long term memory
+        """Update the momentum from its feedback from the core LLM that interface it. If it is finished: delete from momentem list and save in long term memory
 
         Parameters
         ----------

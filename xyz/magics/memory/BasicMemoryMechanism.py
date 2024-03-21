@@ -402,7 +402,7 @@ class BasicMemoryMechanism:
         except:
             raise('There is some error encountered when searching the memory, please do check the filter expression provided')
         
-        # handle and process the search results; use set to avoid repetition
+        # handle and interface the search results; use set to avoid repetition
         result_data = list()
         visited_doc_ids = set()
         for hits in res:

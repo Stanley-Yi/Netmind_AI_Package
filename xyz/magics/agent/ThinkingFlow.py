@@ -2,7 +2,7 @@
 ============
 ThinkingFlow
 ============
-Using multi-agents to build a thinking-flow to process the complex tasks.
+Using multi-agents to build a thinking-flow to interface the complex tasks.
 """
 
 
@@ -22,7 +22,7 @@ class ThinkingFlow():
     # To Hongyi： 先按咱的老方法去做 Thinking-Flow。用固定的对象方法来表达。
     def run(self, **kwargs):
         """
-        Run the thinking-flow to process the complex tasks.
+        Run the thinking-flow to interface the complex tasks.
         """
         prefix = self.prompts.format(**kwargs)
         raise NotImplementedError

@@ -24,5 +24,5 @@ logger = create_logger(f"./logs")
 
 
 # ==================== 我们初始化一个 core_agent
-from xyz.utils.llm.CoreAgent import CoreAgent
+from xyz.utils.llm.core_agent import CoreAgent
 core_agent = CoreAgent()

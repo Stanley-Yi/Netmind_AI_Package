@@ -6,7 +6,7 @@ import os
 API_KEY = "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"
 os.environ["OPENAI_API_KEY"] = API_KEY 
 
-from xyz.utils.APIWrapTool import APIWrapTool
+from xyz.utils.api_wrap_tool import APIWrapTool
 
 def add_method(a,b):
     return a+b 

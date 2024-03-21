@@ -16,10 +16,9 @@ import threading
 
 
 # import from our operation
-from xyz.company.Company import Company
-from xyz.node.XYZNode import Node
-from xyz.parameters import args
-from xyz.utils.APIWrapTool import APIWrapTool
+from xyz.company.XYZCompany import Company
+from xyz.node.XYZNode import XYZNode
+from xyz.utils.api_wrap_tool import APIWrapTool
 
 # Step 0: 特殊的函数
 def special_function():

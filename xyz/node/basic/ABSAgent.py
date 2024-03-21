@@ -25,7 +25,7 @@ class ABSAgent(ABC):
 
     @abstractmethod
     def request(self, *args: Any, **kwargs: Any) -> Any:
-        """All the agents should have a request method to process the messages.
+        """All the agents should have a request method to interface the messages.
 
         Parameters
         ----------

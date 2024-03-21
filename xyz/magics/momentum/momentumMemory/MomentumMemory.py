@@ -94,7 +94,7 @@ class MomentumMemory:
         self.index_type = milvus_index
 
         try:
-            # process milvus db
+            # interface milvus db
             connections.connect(host=milvus_host, port=milvus_port, user=milvus_user, password=milvus_psw)
             if milvus_db not in db.list_database():
                 db.create_database(milvus_db)
@@ -107,7 +107,7 @@ class MomentumMemory:
             raise e
             
         try:
-            # process mysql db
+            # interface mysql db
             sql_con = pymysql.connect(host=sql_host, port=sql_port, user=sql_user, password=sql_psw,)
             
             with sql_con.cursor() as cursor:

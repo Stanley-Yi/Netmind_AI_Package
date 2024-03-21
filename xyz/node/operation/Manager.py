@@ -16,7 +16,7 @@ Manager
 
 
 # import from our operation
-from xyz.node.basic.LLMAgent import LLMAgent
+from xyz.node.basic.llm_agent import LLMAgent
 
 
 class Manager(LLMAgent):

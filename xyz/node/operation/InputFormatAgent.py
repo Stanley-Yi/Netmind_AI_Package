@@ -12,7 +12,7 @@ InputFormatAgent
 import json
 from typing import Tuple, Any
 
-from xyz.node.basic.LLMAgent import LLMAgent
+from xyz.node.basic.llm_agent import LLMAgent
 from xyz.node.operation.operation_prompts import input_format_config
 
 class InputFormatAgent(LLMAgent):
@@ -25,7 +25,7 @@ class InputFormatAgent(LLMAgent):
         
     def request(self, messages:list, tools:list=[]) -> tuple[Any, Any]:
         """
-        Request the agent to process the messages.
+        Request the agent to interface the messages.
 
         Parameters
         ----------

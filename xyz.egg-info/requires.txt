@@ -1,7 +1,0 @@
-openai
-langchain
-openpyxl
-networkx
-pymilvus
-pymongo
-pytest
