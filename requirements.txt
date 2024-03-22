@@ -3,8 +3,11 @@ openai
 pandas
 numpy
 scipy
-milvus
+pymilvus
 pymongo
 fastapi
 uvicorn
 requests
+pymysql
+towhee
+
