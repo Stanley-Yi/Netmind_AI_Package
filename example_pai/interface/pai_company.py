@@ -62,23 +62,13 @@ class PaiCompany(Agent):
             response = self.guidance_chat(question=question, answer=question_info["answer"],
                                           content=user_input, 
                                           process=question_info["process"], messages=messages)
-            # assistant_content, finish_signal = stream_print(response, "##||&&")
-            assistant_content = ""
-            for res in response:
-                print(res, end="")
-                assistant_content += res
-            if "##||&&" in response:
-                finish_signal = True
+            assistant_content, finish_signal = stream_print(response, "##||&&")
             
             if finish_signal:
                 response = self.summary(messages=messages)
-                assistant_content = ""
-                for res in response:
-                    print(res, end=" ")
-                    assistant_content += res
-                # assistant_content, finish_signal = stream_print(response)
+                assistant_content, in_progress = stream_print(response)
                 messages.append({"role": "assistant", "content": assistant_content})
-                in_progress = False
+                break
             else:
                 messages.append({"role": "assistant", "content": assistant_content})
 

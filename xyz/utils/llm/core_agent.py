@@ -11,10 +11,12 @@ To define the BlackSheep-Agent(The BasicCLass of Agent)
 # python standard packages
 import time
 import traceback
-from typing import Generator, overload
+from loguru import Logger
+from typing import Generator, List
 
 # python third-party packages
-from openai import OpenAI
+from openai import OpenAI, Stream
+from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 # import from our operation
 from xyz.parameters import logger
@@ -22,7 +24,7 @@ from xyz.parameters import logger
 
 class CoreAgent:
 
-    def __init__(self, llm="gpt-4-1106-preview", temperature=0, logger=logger):
+    def __init__(self, llm: str = "gpt-4-1106-preview", temperature: float = 0, logger: Logger = logger):
         """Initializes the agent.
 
         Parameters
@@ -42,7 +44,7 @@ class CoreAgent:
 
         self.logger = logger
 
-    def run(self, messages: list, tools=[]) -> str:
+    def run(self, messages: List, tools: List = []) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """
         Run the agent with the given messages.
 
@@ -50,6 +52,8 @@ class CoreAgent:
         ----------
         messages : list
             A list of messages to be processed by the agent.
+        tools : list, optional
+            A list of tools to be used by the agent, by default [].
 
         Returns
         -------
@@ -71,14 +75,30 @@ class CoreAgent:
         count = 0
         while not get_response_signal and count < 10:
             try:
-                response = self.client.chat.completions.create(
-                    model=self.llm,
-                    messages=messages,
-                    # tools=tools,
-                    # tool_choice=tool_choice,
-                    temperature=self.temperature,
-                )
+                # In OpenAI's api, if we request with tools == [], it will make an error
+                if tool_choice == "auto":
+                    response = self.client.chat.completions.create(
+                        model=self.llm,
+                        messages=messages,
+                        tools=tools,
+                        tool_choice="auto",
+                        temperature=self.temperature,
+                    )
+                else:
+                    response = self.client.chat.completions.create(
+                        model=self.llm,
+                        messages=messages,
+                        temperature=self.temperature,
+                    )
                 get_response_signal = True
+
+                prompt_tokens = response.usage.prompt_tokens
+                completion_tokens = response.usage.completion_tokens
+                this_time_price = self.get_oai_fees(self.llm, prompt_tokens, completion_tokens)
+                # TODO: We do not compute the price for now, but we can add this feature in the future
+
+                return response
+
             except Exception as e:
                 count += 1
                 error_message = str(traceback.format_exc())
@@ -86,19 +106,7 @@ class CoreAgent:
                 print(f"The messages: {messages}")
                 time.sleep(2)
 
-        prompt_tokens = response.usage.prompt_tokens
-        completion_tokens = response.usage.completion_tokens
-        this_time_price = self.get_oai_fees(self.llm, prompt_tokens, completion_tokens)
-        # TODO: We do not compute the price for now, but we can add this feature in the future
-
-        return response
-
-    # @overload
-    # def run(self, str) -> str:
-    #     # TODO: 增加重载版本, 给定一个 str 就给回应
-    #     pass
-
-    def stream_run(self, messages: list) -> Generator[str, None, None]:
+    def stream_run(self, messages: List) -> Generator[str, None, None]:
         """
         Run the agent with the given messages in a streaming manner.
 
