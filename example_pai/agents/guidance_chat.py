@@ -3,19 +3,24 @@
 GuidanceTeacher
 ===============
 @file_name: guidance_chat.py
-@
+@author: Bin Liang, Tianlei Shi
+@date: 2024-3-22
 """
 
 
+from typing import Generator
 from xyz.node.agent import Agent
-from xyz.parameters import core_agent
+from xyz.parameters import openai_agent
 from xyz.node.basic.llm_agent import LLMAgent
+
+
+
 
 
 class GuidanceChat(Agent):
 
     def __init__(self):
-        super().__init__(core_agent)
+        super().__init__(openai_agent)
 
         self.set_name("GuidanceTeacher")
         self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
@@ -24,18 +29,16 @@ class GuidanceChat(Agent):
                              "interface": {"type": "str", "description": "The detail interface about this question."},
                              "user_input": {"type": "str", "description": "The user's input in this time."}})
 
-        self.llm_start_agent = LLMAgent(GUIDE_START, core_agent, inner_multi=False, stream=True)
-        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, core_agent, inner_multi=False, stream=True)
+        self.llm_start_agent = LLMAgent(GUIDE_START, openai_agent, inner_multi=False, stream=True)
+        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, openai_agent, inner_multi=False, stream=True)
 
     def flowing(self, question: str, answer: str, process: str,
-                content: str, messages: list = None) -> str:
+                content: str, messages: list = None) -> Generator:
 
         if messages:
             return self.llm_guidance_agent(messages=messages, language="English", content=content)
-            # return response
         else:
             return self.llm_start_agent(language="English", question=question, answer=answer, process=process)
-            # return response
 
 
 # Prompts Set

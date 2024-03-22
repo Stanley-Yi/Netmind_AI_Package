@@ -19,7 +19,7 @@ from typing import Any
 
 # import from our operation
 from xyz.node.basic.ABSAgent import ABSAgent
-from xyz.utils.llm.core_agent import CoreAgent
+from xyz.utils.llm.openai_agent import OpenAIAgent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
 
 
@@ -31,11 +31,11 @@ class FunctionalAgent(ABSAgent):
     ----------
     node_config : dict
         The configuration for the node.
-    core_agent : CoreAgent
+    core_agent : OpenAIAgent
         The core agent to use for requesting response from OpenAI.
     """
     
-    def __init__(self, node_config:dict, core_agent:CoreAgent):
+    def __init__(self, node_config:dict, core_agent:OpenAIAgent):
         """ 
         Initialize the FunctionalAgent.
 
@@ -45,7 +45,7 @@ class FunctionalAgent(ABSAgent):
             The configuration for the node. It should contain the following keys:
             - 'api_url': The URL of the API.
             - 'headers': The headers for the API requests. If not provided, it will be set to None.
-        core_agent : CoreAgent
+        core_agent : OpenAIAgent
             The core agent to use for requesting response from OpenAI.
         """
         

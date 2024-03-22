@@ -8,15 +8,16 @@ LLMAgent
 
 """
 
-# python standard packages
+
 from copy import deepcopy
 from typing import Generator, List, Any, Dict
 
-# python third-party packages
-
-# import from our operation
+from xyz.utils.llm.openai_key_holder import OpenAIKeyHolder
 from xyz.node.agent import Agent
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
+
+
+__all__ = ["LLMAgent"]
 
 
 class LLMAgent(Agent):
@@ -105,8 +106,9 @@ class LLMAgent(Agent):
             # TODO: 简单做了一个 tools 的调用的返回，还需要调试
             if content is None:
                 return response.choices[0].message.tool_calls[0].function
-            if self.generate_parameters["inner_multi"]:
-                self.add_messages([user_message, {"role": "assistant", "content": content}])
+            else:
+                if self.generate_parameters["inner_multi"]:
+                    self.add_messages([user_message, {"role": "assistant", "content": content}])
 
             return content
 

@@ -2,7 +2,7 @@
 =========
 CoreAGent
 =========
-@file_name: core_agent.py
+@file_name: openai_agent.py
 @author: Netmind.AI BlackSheep team
 @date: 2024-1-10
 To define the BlackSheep-Agent(The BasicCLass of Agent)
@@ -11,10 +11,10 @@ To define the BlackSheep-Agent(The BasicCLass of Agent)
 
 from typing import Generator, overload
 
-from xyz.utils.llm.core_agent import CoreAgent
+from xyz.utils.llm.openai_agent import OpenAIAgent
 
 
-class DummyLLM(CoreAgent):
+class DummyLLM(OpenAIAgent):
 
     def __init__(self):
         super().__setattr__("name", "DummyLLM")

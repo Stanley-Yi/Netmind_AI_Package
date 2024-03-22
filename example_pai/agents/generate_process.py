@@ -1,13 +1,14 @@
 """
 ===============
-GuidanceTeacher
+GenerateProcess
 ===============
-@file_name: guidance_chat.py
-@
+@file_name: generate_process.py
+@author: Bin Liang, Tianlei Shi
+@date: 2024-3-22
 """
 
 
-from xyz.parameters import core_agent
+from xyz.parameters import openai_agent
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
@@ -15,7 +16,7 @@ from xyz.node.basic.llm_agent import LLMAgent
 class GenerateProcess(Agent):
 
     def __init__(self):
-        super().__init__(core_agent)
+        super().__init__(openai_agent)
 
         self.set_name("GenerateProcess")
         self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
@@ -23,9 +24,10 @@ class GenerateProcess(Agent):
                              "answer": {"type": "str", "description": "The answer of this question."}
                              })
 
-        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, core_agent, inner_multi=False, stream=False)
+        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, openai_agent, inner_multi=False, stream=False)
 
     def flowing(self, question: str, answer: str) -> str:
+
         response = self.llm_summary_agent(question=question, answer=answer)
         return response
 

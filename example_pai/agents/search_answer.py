@@ -3,8 +3,8 @@
 search_answer
 =============
 @file_name: search_answer.py
-@author: Bin Liang
-@date: 2024-3-20
+@author: Bin Liang, Tianlei Shi
+@date: 2024-3-22
 """
 
 
@@ -12,7 +12,7 @@ import pymysql
 from ast import literal_eval
 
 from xyz.node.agent import Agent
-from xyz.parameters import core_agent
+from xyz.parameters import openai_agent
 
 from example_pai.agents.search_answer_utils import question_search
 
@@ -51,7 +51,7 @@ class SearchAnswer(Agent):
     """
 
     def __init__(self):
-        super().__init__(core_agent)
+        super().__init__(openai_agent)
 
         self.set_name("SearchAnswer")
         self.set_description("This is a teacher which can guide the user to search similar problem.")

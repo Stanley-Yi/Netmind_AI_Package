@@ -7,7 +7,7 @@ pai_company_utils.py
 @author: Bin Liang, Tianlei
 """
 
-from typing import Generator, Tuple
+from typing import Generator
 
 
 def stream_print(response: Generator, justify_finish: str = "") -> tuple[str, bool]:

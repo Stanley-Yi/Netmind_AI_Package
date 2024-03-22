@@ -1,27 +1,28 @@
 """
-===============
-GuidanceTeacher
-===============
-@file_name: guidance_chat.py
-@
+==============
+CourseClassify
+==============
+@file_name: course_classify.py
+@author: Bin Liang, Tianlei Shi
+@date: 2024-3-22
 """
 
 
 from xyz.node.agent import Agent
-from xyz.parameters import core_agent
+from xyz.parameters import openai_agent
 from xyz.node.basic.llm_agent import LLMAgent
 
 
 class CourseClassify(Agent):
 
     def __init__(self):
-        super().__init__(core_agent)
+        super().__init__(openai_agent)
 
         self.set_name("GuidanceTeacher")
         self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
         self.set_parameters({"question": {"type": "str", "description": "The question here which need help."}})
 
-        self.llm_course_classify = LLMAgent(COURSE_CLASSIFY, core_agent, inner_multi=False, stream=False)
+        self.llm_course_classify = LLMAgent(COURSE_CLASSIFY, openai_agent, inner_multi=False, stream=False)
 
     def flowing(self, question: str) -> str:
 

@@ -9,7 +9,6 @@ This is a temporary client for now. We need a interface to setup the keys, and s
 """
 
 
-import argparse
 from xyz.utils.logger import create_logger
 
 
@@ -24,5 +23,5 @@ logger = create_logger(f"./logs")
 
 
 # ==================== 我们初始化一个 core_agent
-from xyz.utils.llm.core_agent import CoreAgent
-core_agent = CoreAgent()
+from xyz.utils.llm.openai_agent import OpenAIAgent
+openai_agent = OpenAIAgent()

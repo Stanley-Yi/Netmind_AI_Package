@@ -1,8 +1,10 @@
 """
+==========
+PaiCompany
+==========
 @file_name: pai_company.py
 @date: 2024-3-20
 @author: Bin Liang, Tianlei
-
 """
 
 
@@ -20,6 +22,7 @@ class PaiCompany(Agent):
 
     def __init__(self):
         super().__init__()
+
         self.set_name("PaiCompany")
         self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
         self.set_parameters({"question": {"type": "str", "description": "The question here which need help."},
@@ -37,24 +40,23 @@ class PaiCompany(Agent):
         question_info = self.search_answer(question=question, images=images, course=course)
 
         answer = question_info["answer"]
-        course = question_info["course"]
         question = question_info["question"]
 
         if question_info["process"] == "":
             process = self.generate_process(question=question, answer=answer)
             question_info["process"] = process
-            print(process)
 
         messages = []
         in_progress = True
-        finish_signal = False
         
         while in_progress:
 
             user_input = ""
-            response = self.guidance_chat(question=question, answer=question_info["answer"],
+            response = self.guidance_chat(question=question,
+                                          answer=question_info["answer"],
                                           content=user_input, 
-                                          process=question_info["process"], messages=messages)
+                                          process=question_info["process"],
+                                          messages=messages)
             assistant_content, finish_signal = stream_print(response, "##||&&")
             
             if finish_signal:

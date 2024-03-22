@@ -2,7 +2,7 @@
 =========
 CoreAGent
 =========
-@file_name: core_agent.py
+@file_name: openai_agent.py
 @author: Netmind.AI BlackSheep team 
 @date: 2024-1-10 
 To define the BlackSheep-Agent(The BasicCLass of Agent)
@@ -14,14 +14,17 @@ import traceback
 from typing import Generator, List
 
 # python third-party packages
-from openai import OpenAI, Stream
+from openai import Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 # import from our operation
 # from xyz.parameters import logger
 
 
-class CoreAgent:
+__all__ = ["OpenAIAgent"]
+
+
+class OpenAIAgent:
 
     def __init__(self, llm: str = "gpt-4-1106-preview", temperature: float = 0, logger = None):
         """Initializes the agent.
@@ -36,7 +39,11 @@ class CoreAgent:
             which logger we will use to store all the logs, by default logger
         """
 
-        self.client = OpenAI()
+        try:
+            from openai import OpenAI
+            self.client = OpenAI()
+        except:
+            raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
 
         self.llm = llm
         self.temperature = temperature
