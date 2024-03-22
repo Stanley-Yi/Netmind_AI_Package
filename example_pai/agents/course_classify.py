@@ -21,7 +21,7 @@ class CourseClassify(Agent):
         self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
         self.set_parameters({"question": {"type": "str", "description": "The question here which need help."}})
 
-        self.llm_course_classify = LLMAgent(COURSE_CLASSIFY, core_agent, multi=False, stream=False)
+        self.llm_course_classify = LLMAgent(COURSE_CLASSIFY, core_agent, inner_multi=False, stream=False)
 
     def flowing(self, question: str) -> str:
 

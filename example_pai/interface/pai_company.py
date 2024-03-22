@@ -13,7 +13,6 @@ from example_pai.agents.course_classify import CourseClassify
 from example_pai.agents.generate_process import GenerateProcess
 from example_pai.agents.guidance_chat import GuidanceChat
 from example_pai.agents.summary import Summary
-
 from example_pai.interface.pai_company_utils import stream_print
 
 
@@ -32,16 +31,10 @@ class PaiCompany(Agent):
         self.guidance_chat = GuidanceChat()
         self.summary = Summary()
 
-    # def flowing(self, question: str, image):
-    #
-    #     course = self.course_classify(question)
-    #     question_info = self.search_answer(question, image, course)
-    def flowing(self):
-        question_info = {
-            'question': 'As n ranges over all positive integers，how many possible values can $\operatorname{gcd}(6 n+ 15,10 n+21)$ equal？The notation $\operatorname{gcd}(a, b)$ represents the greatest common divisor of $a$ and $b$',
-            'answer': '2',
-            'process': "",
-            'course': 'Mathematics'}
+    def flowing(self, question: str, images=None):
+    
+        course = self.course_classify(question=question)
+        question_info = self.search_answer(question=question, images=images, course=course)
 
         answer = question_info["answer"]
         course = question_info["course"]

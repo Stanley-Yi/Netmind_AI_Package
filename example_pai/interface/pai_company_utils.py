@@ -16,10 +16,10 @@ def stream_print(response: Generator, justify_finish: str = "") -> tuple[str, bo
 
     Parameters
     ----------
-    justify_finish : str
-        The flag to justify if the conversation is finished.
     response : Generator
         The response from the generator.
+    justify_finish : str
+        The flag to justify if the conversation is finished.
 
     Returns
     -------
@@ -36,8 +36,7 @@ def stream_print(response: Generator, justify_finish: str = "") -> tuple[str, bo
         count = 0
         print_label = True
         for res in response:
-
-            whole_response += res + " "
+            whole_response += res
             if count <= 10:
                 if justify_finish in whole_response:
                     finish_signal = False
@@ -47,11 +46,14 @@ def stream_print(response: Generator, justify_finish: str = "") -> tuple[str, bo
                     print(whole_response)
                     print_label = False
                 else:
-                    print(res, end=" ")
+                    print(res, end="")
+            count += 1
+        if print_label:
+            print(whole_response)
     else:
         whole_response = ""
         for res in response:
-            print(res, end=" ")
+            print(res, end="")
             whole_response += res
 
     return whole_response, finish_signal

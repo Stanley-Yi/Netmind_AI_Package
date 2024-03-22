@@ -11,7 +11,6 @@ To define the BlackSheep-Agent(The BasicCLass of Agent)
 # python standard packages
 import time
 import traceback
-from loguru import Logger
 from typing import Generator, List
 
 # python third-party packages
@@ -19,12 +18,12 @@ from openai import OpenAI, Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
 # import from our operation
-from xyz.parameters import logger
+# from xyz.parameters import logger
 
 
 class CoreAgent:
 
-    def __init__(self, llm: str = "gpt-4-1106-preview", temperature: float = 0, logger: Logger = logger):
+    def __init__(self, llm: str = "gpt-4-1106-preview", temperature: float = 0, logger = None):
         """Initializes the agent.
 
         Parameters

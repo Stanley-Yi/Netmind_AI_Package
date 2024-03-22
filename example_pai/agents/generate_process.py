@@ -23,7 +23,7 @@ class GenerateProcess(Agent):
                              "answer": {"type": "str", "description": "The answer of this question."}
                              })
 
-        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, core_agent, multi=False, stream=False)
+        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, core_agent, inner_multi=False, stream=False)
 
     def flowing(self, question: str, answer: str) -> str:
         response = self.llm_summary_agent(question=question, answer=answer)

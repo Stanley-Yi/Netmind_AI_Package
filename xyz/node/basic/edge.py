@@ -29,3 +29,23 @@ class Edge:
             "front_node": self.front_node.name,
             "back_node": self.back_node.name
         }
+        
+    def format_input(self, input: str) -> Dict[str, str]:
+        """
+        Format the input for the node.
+
+        Parameters
+        ----------
+        input : str
+            The input to format.
+
+        Returns
+        -------
+        dict
+            The formatted input.
+        """
+
+        tools = [self.as_tool]
+        _, parameters = self.input_format_agent(tools=tools, input=input)
+
+        return parameters

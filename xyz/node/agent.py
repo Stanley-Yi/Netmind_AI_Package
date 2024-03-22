@@ -49,6 +49,13 @@ class Agent:
             return self.flowing(**kwargs)
 
     __call__: Callable[..., Any] = _wrap_call
+    
+    @abstractmethod
+    def flowing(self, *args, **kwargs) -> Any:
+        """
+        We can use the overload for multimodal
+        """
+        ...
 
     def __str__(self) -> str:
 
@@ -57,18 +64,25 @@ class Agent:
         for key, value in vars(self).items():
             try:
                 if "type" in vars(value) and value.type == "agent":
-                    info += f"\n\nSubAgent: {key}: {value}"
+                    info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
             except:
                 pass
 
         return info
+    
+    def _structure(self, order):
 
-    @abstractmethod
-    def flowing(self, *args, **kwargs) -> Any:
-        """
-        We can use the overload for multimodal
-        """
-        ...
+        pre_blank = "\t"*order
+        info = f"{pre_blank}Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
+
+        for key, value in vars(self).items():
+            try:
+                if "type" in vars(value) and value.type == "agent":
+                    info += f"\n{pre_blank}[SubAgent: {key}: {value._structure(order+1)}]"
+            except:
+                pass
+
+        return info
 
     def set_name(self, name: str) -> None:
         self.name = name
@@ -80,25 +94,6 @@ class Agent:
         self.parameters = parameters
         self.required = [key for key in self.parameters.keys()]
 
-    def format_input(self, input: str) -> Dict[str, str]:
-        """
-        Format the input for the node.
-
-        Parameters
-        ----------
-        input : str
-            The input to format.
-
-        Returns
-        -------
-        dict
-            The formatted input.
-        """
-
-        tools = [self.as_tool]
-        _, parameters = self.input_format_agent(tools=tools, input=input)
-
-        return parameters
 
     def tools_format(self) -> Dict[str, str]:
 

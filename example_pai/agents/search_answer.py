@@ -61,7 +61,7 @@ class SearchAnswer(Agent):
 
         # 配置我们的 memory agent
 
-    def flowing(self, question: str, images, course: str):
+    def flowing(self, question: str, course: str, images=None):
         """
         流程1: 根据 ocr 结果进行搜索
 
@@ -111,5 +111,4 @@ class SearchAnswer(Agent):
                 "process": process,
                 "course": course,
                 "knowledge_point": knowledge_point}
-
 

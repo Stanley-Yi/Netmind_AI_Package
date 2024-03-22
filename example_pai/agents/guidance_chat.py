@@ -24,8 +24,8 @@ class GuidanceChat(Agent):
                              "interface": {"type": "str", "description": "The detail interface about this question."},
                              "user_input": {"type": "str", "description": "The user's input in this time."}})
 
-        self.llm_start_agent = LLMAgent(GUIDE_START, core_agent, multi=False, stream=True)
-        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, core_agent, multi=False, stream=True)
+        self.llm_start_agent = LLMAgent(GUIDE_START, core_agent, inner_multi=False, stream=True)
+        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, core_agent, inner_multi=False, stream=True)
 
     def flowing(self, question: str, answer: str, process: str,
                 content: str, messages: list = None) -> str:

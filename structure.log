@@ -1,0 +1,16 @@
+Agent(name=PaiCompany, description=This is a teacher which can guide the user to solve the problem step by step., parameters={'question': {'type': 'str', 'description': 'The question here which need help.'}, 'images': {'type': 'str', 'description': 'The image of this question.'}})
+
+	[SubAgent: search_answer: 		Agent(name=SearchAnswer, description=This is a teacher which can guide the user to search similar problem., parameters={'question': {'type': 'str', 'description': 'The question here which need be researched.'}, 'images': {'type': 'str', 'description': 'The image of this question.'}, 'course': {'type': 'str', 'description': 'The course about this question.'}})]
+
+	[SubAgent: course_classify: 		Agent(name=GuidanceTeacher, description=This is a teacher which can guide the user to solve the problem step by step., parameters={'question': {'type': 'str', 'description': 'The question here which need help.'}})
+		[SubAgent: llm_course_classify: 			Agent(name=, description=, parameters={})]]
+
+	[SubAgent: generate_process: 		Agent(name=GenerateProcess, description=This is a teacher which can guide the user to solve the problem step by step., parameters={'question': {'type': 'str', 'description': 'The question here which need help.'}, 'answer': {'type': 'str', 'description': 'The answer of this question.'}})
+		[SubAgent: llm_summary_agent: 			Agent(name=, description=, parameters={})]]
+
+	[SubAgent: guidance_chat: 		Agent(name=GuidanceTeacher, description=This is a teacher which can guide the user to solve the problem step by step., parameters={'question': {'type': 'str', 'description': 'The question here which need help.'}, 'answer': {'type': 'str', 'description': 'The answer of this question.'}, 'interface': {'type': 'str', 'description': 'The detail interface about this question.'}, 'user_input': {'type': 'str', 'description': "The user's input in this time."}})
+		[SubAgent: llm_start_agent: 			Agent(name=, description=, parameters={})]
+		[SubAgent: llm_guidance_agent: 			Agent(name=, description=, parameters={})]]
+
+	[SubAgent: summary: 		Agent(name=Summary, description=This is a teacher which can guide the user to solve the problem step by step., parameters={'messages': {'type': 'list', 'description': 'The OpenAI messages list which store the chat history between the user and assistant.'}})
+		[SubAgent: llm_summary_agent: 			Agent(name=, description=, parameters={})]]

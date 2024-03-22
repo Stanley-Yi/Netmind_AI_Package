@@ -23,7 +23,7 @@ class Summary(Agent):
                                                                          "chat history between the user and assistant."}
                              })
 
-        self.llm_summary_agent = LLMAgent(SUMMARIZE, core_agent, multi=False, stream=True)
+        self.llm_summary_agent = LLMAgent(SUMMARIZE, core_agent, inner_multi=False, stream=True)
 
     def flowing(self,  messages: list) -> str:
 
