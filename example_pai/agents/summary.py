@@ -29,7 +29,7 @@ class Summary(Agent):
 
     def flowing(self,  messages: list) -> str:
 
-        if messages is None:
+        if messages is not None:
             return self.llm_summary_agent(messages=messages)
 
 
