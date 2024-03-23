@@ -12,9 +12,9 @@ import pymysql
 from ast import literal_eval
 
 from xyz.node.agent import Agent
-from xyz.parameters import openai_agent
 
 from example_pai.agents.search_answer_utils import question_search
+from example_pai.global_parameters import openai_agent
 
 
 SQL_READER = 'netmind-rds-dev.cluster-ro-czi0esc0atmh.eu-west-2.rds.amazonaws.com'

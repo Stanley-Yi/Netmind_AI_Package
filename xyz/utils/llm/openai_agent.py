@@ -26,17 +26,15 @@ __all__ = ["OpenAIAgent"]
 
 class OpenAIAgent:
 
-    def __init__(self, llm: str = "gpt-4-1106-preview", temperature: float = 0, logger = None):
+    def __init__(self, logger = None, **generate_args):
         """Initializes the agent.
 
         Parameters
         ----------
-        llm : str, optional
-            the openai model name for this llm, by default "gpt-4-1106-preview"
-        temperature : int, optional
-            the generation parameters, by default 0
-        logger : logger object, optional
-            which logger we will use to store all the logs, by default logger
+        logger : logging.Logger, optional
+            A logger for logging messages, by default None.
+        generate_args : dict
+            A dictionary of keyword arguments to be passed to the OpenAI API.
         """
 
         try:
@@ -44,9 +42,8 @@ class OpenAIAgent:
             self.client = OpenAI()
         except:
             raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
-
-        self.llm = llm
-        self.temperature = temperature
+        
+        self.generate_args = generate_args
 
         self.logger = logger
 
@@ -84,17 +81,15 @@ class OpenAIAgent:
                 # In OpenAI's api, if we request with tools == [], it will make an error
                 if tool_choice == "auto":
                     response = self.client.chat.completions.create(
-                        model=self.llm,
                         messages=messages,
                         tools=tools,
                         tool_choice="auto",
-                        temperature=self.temperature,
+                        **self.generate_args
                     )
                 else:
                     response = self.client.chat.completions.create(
-                        model=self.llm,
                         messages=messages,
-                        temperature=self.temperature,
+                        **self.generate_args
                     )
                 get_response_signal = True
 
@@ -139,11 +134,10 @@ class OpenAIAgent:
         while not get_response_signal and count < 10:
             try:
                 for response in self.client.chat.completions.create(
-                        model=self.llm,
                         messages=messages,
-                        temperature=self.temperature,
                         stream=True,
-                        timeout=5
+                        timeout=5,
+                        **self.generate_args
                 ):
 
                     if response.choices[0].delta.content == None:
@@ -158,11 +152,29 @@ class OpenAIAgent:
                 count += 1
                 error_message = str(traceback.format_exc())
                 time.sleep(2)
-                logger.error(f"The error: {error_message}")
+                self.logger.error(f"The error: {error_message}")
 
         answer = response.choices[0].message.content
 
         return answer
+    
+    def check_generate_args(self, generate_args: dict) -> dict:
+        """
+        Check the generate arguments.
+
+        Parameters
+        ----------
+        generate_args : dict
+            The generate arguments to be checked.
+
+        Returns
+        -------
+        dict
+            The checked generate arguments.
+        """
+        
+        assert "llm" in generate_args 
+        
 
     @staticmethod  # dollars per 1k tokens, REF: https://openai.com/pricings Source: He Yan
     def get_oai_fees(model_name: str, prompt_tokens: int, completion_tokens: int) -> float:

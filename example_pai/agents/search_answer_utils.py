@@ -11,8 +11,6 @@ import numpy as np
 import os
 from openai import OpenAI
 
-API_KEY = "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"
-os.environ["OPENAI_API_KEY"] = API_KEY
 
 client = OpenAI(
     api_key=os.environ.get(
