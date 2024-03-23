@@ -43,7 +43,15 @@ class OpenAIAgent:
         except:
             raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
         
-        self.generate_args = generate_args
+        self.generate_args = {
+            "model": "gpt-4-0125-preview",
+            "temperature" : 0., 
+            "top_p" : 1.0
+        }
+        
+        self.generate_args.update(generate_args)
+        
+        # Set some default values for the generate arguments
 
         self.logger = logger
 
