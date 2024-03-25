@@ -1,10 +1,11 @@
 import os
+from dotenv import load_dotenv
 
-API_KEY = ""
-os.environ["OPENAI_API_KEY"] = API_KEY
+# Load the environment variables from the .env file
+load_dotenv()
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-
-from example_mathEducator.agents.cot import Cot 
+from agents.cot import Cot 
 
 
 if __name__ == "__main__":
@@ -19,6 +20,5 @@ if __name__ == "__main__":
     
     for ans in info:
         print(ans, end="")
-    
     
     

@@ -6,7 +6,10 @@ cot
 @author: Xiangpeng Wan
 @date: 2024-3-22
 """
-
+import sys
+from os import path
+sys.path.append(path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__))))))
+print(sys.path)
 
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
