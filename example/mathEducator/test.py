@@ -5,6 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+# example:
+# openai_key = ""
+# from xyz.utils.llm.openai_agent import OpenAIAgent
+# selected_key_openai_agent = OpenAIAgent(api_key=openai_key)
+
 from agents.cot import Cot 
 
 

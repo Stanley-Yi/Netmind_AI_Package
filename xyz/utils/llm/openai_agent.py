@@ -26,7 +26,7 @@ __all__ = ["OpenAIAgent"]
 
 class OpenAIAgent:
 
-    def __init__(self, logger = None, **generate_args):
+    def __init__(self, api_key=None, logger = None, **generate_args):
         """Initializes the agent.
 
         Parameters
@@ -39,7 +39,7 @@ class OpenAIAgent:
 
         try:
             from openai import OpenAI
-            self.client = OpenAI()
+            self.client = OpenAI(api_key=api_key)
         except:
             raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
         

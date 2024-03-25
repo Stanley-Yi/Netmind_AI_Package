@@ -7,7 +7,7 @@ import os
 API_KEY = ""
 os.environ["OPENAI_API_KEY"] = API_KEY
 
-from example_pai.interface.pai_company import PaiCompany
+from example.pai.interface.pai_company import PaiCompany
 
 if __name__ == "__main__":
     company = PaiCompany()

@@ -8,5 +8,6 @@ export PYTHONPATH=.:$PYTHONPATH
 # python example_pai/test_company.py 
 # python example_pai/agents/search_answer.py
 
-python example_mathEducator/test.py
+# python example_mathEducator/test.py
+python example/pai/test_company.py
 
