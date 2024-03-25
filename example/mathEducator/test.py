@@ -1,10 +1,3 @@
-import os
-from dotenv import load_dotenv
-
-# Load the environment variables from the .env file
-load_dotenv()
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
 # example:
 # openai_key = ""
 # from xyz.utils.llm.openai_agent import OpenAIAgent
