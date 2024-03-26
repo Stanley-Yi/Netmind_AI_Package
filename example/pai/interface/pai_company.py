@@ -10,12 +10,12 @@ PaiCompany
 
 from xyz.node.agent import Agent
 
-from pai.agents.search_answer import SearchAnswer
-from pai.agents.course_classify import CourseClassify
-from pai.agents.generate_process import GenerateProcess
-from pai.agents.guidance_chat import GuidanceChat
-from pai.agents.summary import Summary
-from pai.interface.pai_company_utils import stream_print
+from example.pai.agents.search_answer import SearchAnswer
+from example.pai.agents.course_classify import CourseClassify
+from example.pai.agents.generate_process import GenerateProcess
+from example.pai.agents.guidance_chat import GuidanceChat
+from example.pai.agents.summary import Summary
+from example.pai.interface.pai_company_utils import stream_print
 
 
 class PaiCompany(Agent):

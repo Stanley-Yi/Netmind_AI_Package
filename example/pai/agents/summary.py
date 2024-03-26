@@ -11,7 +11,7 @@ Summary
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
-from pai.global_parameters import openai_agent
+from example.pai.global_parameters import openai_agent
 
 
 class Summary(Agent):

@@ -26,7 +26,7 @@ __all__ = ["OpenAIAgent"]
 
 class OpenAIAgent:
 
-    def __init__(self, api_key=None, logger = None, **generate_args):
+    def __init__(self, api_key=None, logger=None, **generate_args):
         """Initializes the agent.
 
         Parameters
@@ -42,15 +42,15 @@ class OpenAIAgent:
             self.client = OpenAI(api_key=api_key)
         except:
             raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
-        
+
         self.generate_args = {
             "model": "gpt-4-0125-preview",
-            "temperature" : 0., 
-            "top_p" : 1.0
+            "temperature": 0.,
+            "top_p": 1.0
         }
-        
+
         self.generate_args.update(generate_args)
-        
+
         # Set some default values for the generate arguments
 
         self.logger = logger
@@ -165,7 +165,7 @@ class OpenAIAgent:
         answer = response.choices[0].message.content
 
         return answer
-    
+
     def check_generate_args(self, generate_args: dict) -> dict:
         """
         Check the generate arguments.
@@ -180,9 +180,8 @@ class OpenAIAgent:
         dict
             The checked generate arguments.
         """
-        
-        assert "llm" in generate_args 
-        
+
+        assert "llm" in generate_args
 
     @staticmethod  # dollars per 1k tokens, REF: https://openai.com/pricings Source: He Yan
     def get_oai_fees(model_name: str, prompt_tokens: int, completion_tokens: int) -> float:

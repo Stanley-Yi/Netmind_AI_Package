@@ -49,19 +49,12 @@ class LLMAgent(Agent):
         self.generate_parameters = self.node_config['generate_parameters']
         self.messages = []
 
-        self._set_prompts()
-
     def flowing(self, messages=[], tools=[], **kwargs) -> str:
         """When you call this agent, we will run the agent with the given keyword arguments from the prompts.
             Before we call the OpenAI's API, we do some interface on this message.
-
-        Returns
-        -------
-        str
-            The response from the OpenAI's API
         """
-        [system_message, user_message] = self._complete_prompts(**kwargs)
-        current_message = self._using_thinking_flow(system_message, user_message)
+        system_message, current_message = self._complete_prompts(**kwargs)
+        # current_message = self._using_thinking_flow(system_message, user_message)
 
         if self.generate_parameters["inner_multi"]:
             try:
@@ -69,35 +62,23 @@ class LLMAgent(Agent):
             except:
                 raise ValueError("The messages should be None when the inner-multi is True.")
             messages = self._get_messages(current_message)
-            return self.request(user_message=user_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
+            return self.request(user_message=current_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
 
         else:
             messages.extend(current_message)
-            return self.request(user_message=user_message, messages=messages, tools=tools)
+            return self.request(user_message=current_message, messages=messages, tools=tools)
 
-    def request(self, user_message: Dict, messages: List, tools=[]) -> Any:
+    def request(self, user_message: List, messages: List, tools=[]) -> Any:
         """
         Run the agent with the given keyword arguments.
-
-        Parameters
-        ----------
-        tools
-        messages
-        user_message
-        **kwargs
-            The keyword arguments to use for running the agent.
-
-        Returns
-        -------
-        str
-            The agent's response.
         """
 
         # TODO: 获取输出的时候，要进行参数的设置，参数的来源 self.generate_parameters
         if self.generate_parameters["stream"]:
             # If inner multi is True, we need to update the messages
             if self.generate_parameters["inner_multi"]:
-                self.add_messages([user_message, {"role": "assistant", "content": ""}])
+                user_message.extend({"role": "assistant", "content": ""})
+                self.add_messages(user_message)
             return self._stream_run(messages)
         else:
             response = self.core_agent.run(messages, tools=tools)
@@ -108,23 +89,14 @@ class LLMAgent(Agent):
                 return response.choices[0].message.tool_calls[0].function
             else:
                 if self.generate_parameters["inner_multi"]:
-                    self.add_messages([user_message, {"role": "assistant", "content": content}])
+                    user_message.extend({"role": "assistant", "content": ""})
+                    self.add_messages(user_message)
 
             return content
 
     def _stream_run(self, messages: list) -> Generator[str, None, None]:
         """
         Run the agent in a streaming manner with the given messages.
-
-        Parameters
-        ----------
-        messages : list
-            The messages to use for running the agent.
-
-        Yields
-        ------
-        str
-            The agent's response, yielded one piece at a time.
         """
 
         # The reason why we not return the Generator is that we may need update the messages with inner_multi
@@ -160,16 +132,6 @@ class LLMAgent(Agent):
                 if message["role"] != "system":
                     self.messages.append(message)
 
-    def _set_prompts(self) -> None:
-        """
-        Set the agent's prompts based on its template.
-        """
-
-        system_message = self.template["system"]
-        user_message = self.template["user"]
-
-        self.prompts = system_message + "||--||" + user_message
-
     def _complete_prompts(self, **kwargs) -> tuple:  # TODO: 这里的返回值不够明确
         """
         Complete the agent's prompts with the given keyword arguments.
@@ -185,16 +147,31 @@ class LLMAgent(Agent):
             A tuple containing the system message and the user message.
         """
 
-        system = self.template["system"]
-        user = self.template["user"]
+        # TODO: 这个是旧版本的 prompts 的处理，之后会删除
+        if type(self.template) == dict:
+            system = self.template["system"]
+            user = self.template["user"]
 
-        self.prompts = system + "||--||" + user
+            self.prompts = system + "||--||" + user
 
-        prefix = self.prompts.format(**kwargs)
+            prefix = self.prompts.format(**kwargs)
 
-        [system, user] = prefix.split("||--||")
+            [system, user] = prefix.split("||--||")
 
-        return {"role": "system", "content": system}, {"role": "user", "content": user}
+            return {"role": "system", "content": system}, [{"role": "system", "content": system},
+                                                           {"role": "user", "content": user}]
+
+        elif type(self.template) == list:
+
+            current_messages = deepcopy(self.template)
+            system_message = {}
+
+            for i in range(len(current_messages)):
+                current_messages[i]['content'] = current_messages[i]['content'].format(**kwargs)
+                if current_messages[i]['role'] == 'system':
+                    system_message = current_messages[i]
+
+            return system_message, current_messages
 
     def _using_thinking_flow(self, system_message: dict, user_message: dict) -> List:
         """
