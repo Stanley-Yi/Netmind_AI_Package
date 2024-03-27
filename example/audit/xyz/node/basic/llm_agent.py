@@ -155,6 +155,7 @@ class LLMAgent(Agent):
             self.prompts = system + "||--||" + user
 
             prefix = self.prompts.format(**kwargs)
+
             [system, user] = prefix.split("||--||")
 
             return {"role": "system", "content": system}, [{"role": "system", "content": system},

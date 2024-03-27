@@ -103,7 +103,7 @@ class OpenAIAgent:
 
                 prompt_tokens = response.usage.prompt_tokens
                 completion_tokens = response.usage.completion_tokens
-                this_time_price = self.get_oai_fees(self.llm, prompt_tokens, completion_tokens)
+                this_time_price = self.get_oai_fees(self.generate_args['model'], prompt_tokens, completion_tokens)
                 # TODO: We do not compute the price for now, but we can add this feature in the future
 
                 return response
