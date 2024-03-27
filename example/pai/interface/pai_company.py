@@ -6,7 +6,7 @@ PaiCompany
 @date: 2024-3-20
 @author: Bin Liang, Tianlei
 """
-
+import langchain
 
 from xyz.node.agent import Agent
 

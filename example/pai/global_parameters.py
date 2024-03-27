@@ -23,5 +23,5 @@ logger = create_logger(f"./logs")
 
 
 # ==================== 我们初始化一个 core_agent
-from xyz.utils.llm.openai_agent import OpenAIAgent
-openai_agent = OpenAIAgent(api_key="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")
+from xyz.utils.llm.openai_client import OpenAIClient
+openai_agent = OpenAIClient(api_key="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")

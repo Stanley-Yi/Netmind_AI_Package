@@ -2,7 +2,7 @@
 =========
 CoreAGent
 =========
-@file_name: openai_agent.py
+@file_name: openai_client.py
 @author: Netmind.AI BlackSheep team 
 @date: 2024-1-10 
 To define the BlackSheep-Agent(The BasicCLass of Agent)

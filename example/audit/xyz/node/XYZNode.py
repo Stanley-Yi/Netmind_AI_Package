@@ -22,7 +22,7 @@ from xyz.node.basic.functional_agent import FunctionalAgent
 from xyz.node.operation.Manager import Manager
 from xyz.node.operation.InputFormatAgent import InputFormatAgent
 from xyz.parameters import openai_agent as default_agent
-from xyz.utils.llm.openai_agent import OpenAIAgent
+from xyz.utils.llm.openai_client import OpenAIClient
 
 
 class XYZNode(Agent):
@@ -34,13 +34,13 @@ class XYZNode(Agent):
     ----------
     node_config : dict
         The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
-    core_agent : OpenAIAgent
+    core_agent : OpenAIClient
         The core agent to use for requesting response from OpenAI.
     """
 
     def __init__(self,
                  node_config: dict,
-                 core_agent: OpenAIAgent = default_agent) -> None:
+                 core_agent: OpenAIClient = default_agent) -> None:
         """ 
         Initialize the Node.
 
@@ -48,7 +48,7 @@ class XYZNode(Agent):
         ----------
         node_config : dict
             The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
-        core_agent : OpenAIAgent
+        core_agent : OpenAIClient
             The core agent to use for requesting response from OpenAI.
 
         Raises

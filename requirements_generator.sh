@@ -1,5 +1,3 @@
-pip install pip install pipreqs
+pip list | grep 'pipreqs' || pip install pipreqs
 
-pipreqs .
-
-# 之后还会更新
+pipreqs --force --ignore example,test .
