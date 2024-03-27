@@ -28,32 +28,40 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 class Gen_pdf(Agent):
     def __init__(self):
+        
+        super().__init__()  
+
+        self.set_name("bank_statementGenerator")
+        self.set_description("This is a pdf generator to generate pdf given html template.")
+        self.set_parameters({"pdf_path": {"type": "str", "description": "The path to store pdf."},
+                             "img_path": {"type": "str", "description": "The path to store img."},
+                             "html_path": {"type": "str", "description": "The path to load trml template."}})
+
         self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview', temperature=0., top_p=1.0,
                                          max_tokens=2096)
-        super().__init__(
-            self.openai_agent)  # 这里需要传进去一个 xyz.utils.llm 里的语言模型，目前只有 openai（为了 之后的自驱动做准备，其实也并不是必须的。可以什么也不传。）
+        self.llm_bank_agent = LLMAgent(BANK_INFO, self.openai_agent, inner_multi=False, stream=False)
 
-        self.set_name("mathSolver")
-        self.set_description("This is a teacher who can solve math questions.")
-        self.set_parameters({"question": {"type": "str", "description": "The question here which need help."}})
+    def pdftopages(self,pdf_path):
+        """Input: PDF Filepath, Output: List of Page objects."""
+        pil_pages = pdf2image.convert_from_path(pdf_path)
+        #save_pil_images(pil_pages, os.path.join(local_store_folder, self.name + "pages"))
+        page_imgs = [cv2.cvtColor(np.asarray(p), cv2.COLOR_RGB2BGR) for p in pil_pages]
+        return page_imgs
 
-        self.llm_cot_agent = LLMAgent(COTMATH, self.openai_agent, inner_multi=False, stream=True)
+    def flowing(self, pdf_path: str, img_path: str,html_path: str) -> str:
+        data = self.llm_bank_agent()
+        env = Environment(loader=FileSystemLoader(''))
+        template = env.get_template(html_path)
+        html_content = template.render(**data)
+        # Generate PDF
+        HTML(string=html_content).write_pdf(pdf_path)
+        # load pdf
+        imgs = self.pdftopages(pdf_path)
+        cv2.imwrite(img_path, imgs[0])
 
-    def flowing(self, question: str) -> str:
-        response = self.llm_cot_agent(question=question)
-
-        return response
+        return img_path
 
 
-# COTMATH = {
-#     "system": """Now, you are a Mathematics assistant who can help user to solve the questions.
-#     """,
-#     "user": """
-# Hi! Please solve this question:
-#
-# {question}
-# """}
-    
 # Example data, including transactions and other dynamic content
 data = {
     "Account_Number": "123-456-789",
@@ -70,6 +78,46 @@ data = {
     "Number_Transactions": "10",
     "transactions": [
         {"Date": "2024-03-01", "Description": "Coffee Shop", "Credit": "$50.00", "Debit": "-$5.00", "Balance": "$995.00"},
-        # More transactions
+        {"Date": "2024-03-01", "Description": "Online Purchase", "Credit": "$121.51", "Debit": "-", "Balance": "$1,116.51"}, 
+        {"Date": "2024-03-02", "Description": "Coffee Shop", "Credit": "$143.06", "Debit": "-", "Balance": "$1,259.57"}, 
+        {"Date": "2024-03-03", "Description": "Utility Bill", "Credit": "-", "Debit": "-$60.72", "Balance": "$1,198.85"}, 
     ]
 }
+
+BANK_INFO = {
+    "system": """Now, you are a Banking assistant who can help user to generate logical user information for bank statement.
+    Here is a sample of information that you need to follow:
+    {{
+        "Account_Number": "123-456-789",
+        "Statement_Date": "2024-03-01",
+        "Period_Covered": "2024-02-01 to 2024-02-29",
+        "name": "John Doe",
+        "address_line1": "2450 Courage St, STE 108",
+        "address_line2": "Brownsville, TX 78521",
+        "Opening_Balance": "175,800.00",
+        "Total_Credit_Amount": "510,000.00",
+        "Total_Debit_Amount": "94,000.00",
+        "Closing_Balance": "591,800.00",
+        "Account_Type": "Savings",
+        "Number_Transactions": "10",
+        "transactions": [
+            {{"Date": "2024-03-01", "Description": "Coffee Shop", "Credit": "$50.00", "Debit": "-$5.00", "Balance": "$995.00"}},
+            {{"Date": "2024-03-01", "Description": "Online Purchase", "Credit": "$121.51", "Debit": "-", "Balance": "$1,116.51"}}, 
+            {{"Date": "2024-03-02", "Description": "Coffee Shop", "Credit": "$143.06", "Debit": "-", "Balance": "$1,259.57"}}, 
+            {{"Date": "2024-03-03", "Description": "Utility Bill", "Credit": "-", "Debit": "-$60.72", "Balance": "$1,198.85"}}, 
+        ]
+    }}
+    ## You must follow all the requirements to modify the draft:
+        1. You must generate information given in the sample, including "Account_Number", "Statement_Date", etc.  
+        2. You must generate several "transactions", the number could vary.
+        3. You must generate logical values, the "Statement_Date", "Period_Covered" and "Date" in "transactions" must be resaonable.
+    
+    ## About the output:
+        Your output must be a json file containing a python dictionary to store the extracted information in the format looks like the sample above. 
+        You must follow all requirements listed above. 
+        Your output must contain the json file quoted by "```json" and "```"
+
+    """,
+    "user": """
+    Please generate logical user information for bank statement
+"""}
