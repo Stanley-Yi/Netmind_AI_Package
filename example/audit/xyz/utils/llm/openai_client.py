@@ -21,10 +21,10 @@ from openai.types.chat import ChatCompletion, ChatCompletionChunk
 # from xyz.parameters import logger
 
 
-__all__ = ["OpenAIAgent"]
+__all__ = ["OpenAIClient"]
 
 
-class OpenAIAgent:
+class OpenAIClient:
 
     def __init__(self, api_key=None, logger=None, **generate_args):
         """Initializes the agent.

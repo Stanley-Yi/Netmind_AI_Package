@@ -93,7 +93,7 @@
 		</tr>
 	<tr>
 		<td height="21" align="left" valign=middle><font color="#000000">Account Number:</font></td>
-		<td colspan=2 align="left" valign=middle><font color="#000000">111-234-567-890</font></td>
+		<td colspan=2 align="left" valign=middle><font color="#000000">{{ Account_Number }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
@@ -104,7 +104,7 @@
 	</tr>
 	<tr>
 		<td height="21" align="left" valign=middle><font color="#000000">Statement Date:</font></td>
-		<td colspan=2 align="left" valign=middle><font color="#000000">mm/dd/yyyy</font></td>
+		<td colspan=2 align="left" valign=middle><font color="#000000">{{ Statement_Date }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
@@ -114,7 +114,7 @@
 		</tr>
 	<tr>
 		<td height="21" align="left" valign=middle><font color="#000000">Period Covered:</font></td>
-		<td align="left" valign=middle><font color="#000000">mm/dd/yyyy to mm/dd/yyyy</font></td>
+		<td align="left" valign=middle><font color="#000000">{{ Period_Covered }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
@@ -137,22 +137,22 @@
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 	</tr>
 	<tr>
-		<td colspan=3 height="22" align="left" valign=middle><font size=3 color="#000000">John Smith</font></td>
+		<td colspan=3 height="22" align="left" valign=middle><font size=3 color="#000000">{{ name }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Opening Balance:</font></td>
-		<td colspan=2 align="right" valign=middle sdval="175800" sdnum="1033;0;#,##0.00"><font color="#000000">175,800.00</font></td>
+		<td colspan=2 align="right" valign=middle sdval="175800" sdnum="1033;0;#,##0.00"><font color="#000000">{{ Opening_Balance }}</font></td>
 		</tr>
 	<tr>
-		<td colspan=3 height="22" align="left" valign=middle><font color="#000000">2450 Courage St, STE 108</font></td>
+		<td colspan=3 height="22" align="left" valign=middle><font color="#000000">{{ address_line1 }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Total Credit Amount:</font></td>
-		<td colspan=2 align="right" valign=middle sdval="510000" sdnum="1033;0;#,##0.00"><font color="#000000">510,000.00</font></td>
+		<td colspan=2 align="right" valign=middle sdval="510000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ Total_Credit_Amount }}</font></td>
 		</tr>
 	<tr>
-		<td colspan=3 height="22" align="left" valign=middle><font color="#000000">Brownsville, TX 78521</font></td>
+		<td colspan=3 height="22" align="left" valign=middle><font color="#000000">{{ address_line2 }}</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Total Debit Amount:</font></td>
-		<td colspan=2 align="right" valign=middle sdval="94000" sdnum="1033;0;#,##0.00"><font color="#000000">94,000.00</font></td>
+		<td colspan=2 align="right" valign=middle sdval="94000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ Total_Debit_Amount }}</font></td>
 		</tr>
 	<tr>
 		<td height="22" align="left" valign=middle><font color="#000000"><br></font></td>
@@ -160,13 +160,13 @@
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Closing Balance:</font></td>
-		<td colspan=2 align="right" valign=middle sdval="591800" sdnum="1033;0;#,##0.00"><font color="#000000">591,800.00</font></td>
+		<td colspan=2 align="right" valign=middle sdval="591800" sdnum="1033;0;#,##0.00"><font color="#000000">{{ Closing_Balance }}</font></td>
 		</tr>
 	<tr>
 		<td colspan=3 height="22" align="left" valign=middle><font color="#000000">&lt;Branch Name&gt;</font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Account Type:</font></td>
-		<td colspan=2 align="center" valign=middle><font color="#000000">Current Account</font></td>
+		<td colspan=2 align="center" valign=middle><font color="#000000">{{ Account_Type }}</font></td>
 		</tr>
 	<tr>
 		<td height="22" align="left" valign=middle><font color="#000000"><br></font></td>
@@ -174,7 +174,7 @@
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td align="left" valign=middle><font color="#000000"><br></font></td>
 		<td colspan=4 align="right" valign=middle><font color="#000000">Number of Transactions:</font></td>
-		<td colspan=2 align="center" valign=middle sdval="8" sdnum="1033;"><font color="#000000">8</font></td>
+		<td colspan=2 align="center" valign=middle sdval="8" sdnum="1033;"><font color="#000000">{{ Number_Transactions }}</font></td>
 		</tr>
 	<tr>
 		<td height="11" align="left" valign=middle><font color="#000000"><br></font></td>
@@ -201,60 +201,60 @@
 	{% for transaction in transactions %}
 	<tr bgcolor="{{ loop.cycle('','#F2F2F2') }}">
 		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
-		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Description }}d</font></td>
+		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Description }}</font></td>
 		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
 		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="5400" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
 		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="170400" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
+		{% endfor %}
 	<tr>
-	{% endfor %}
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle><font color="#000000">Payment - Insurance</font></td>
-		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle sdval="3000" sdnum="1033;0;#,##0.00"><font color="#000000">3,000.00</font></td>
-		<td colspan=2 align="right" valign=middle sdval="167400" sdnum="1033;0;#,##0.00"><font color="#000000">167,400.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="3000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="167400" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">Account Transfer In</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="500000" sdnum="1033;0;#,##0.00"><font color="#000000">500,000.00</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="667400" sdnum="1033;0;#,##0.00"><font color="#000000">667,400.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="500000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="667400" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle><font color="#000000">Cheque Deposite</font></td>
-		<td colspan=2 align="right" valign=middle sdval="10000" sdnum="1033;0;#,##0.00"><font color="#000000">10,000.00</font></td>
-		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle sdval="677400" sdnum="1033;0;#,##0.00"><font color="#000000">677,400.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="10000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="677400" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">Payment - Electricity</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="1500" sdnum="1033;0;#,##0.00"><font color="#000000">1,500.00</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="675900" sdnum="1033;0;#,##0.00"><font color="#000000">675,900.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="1500" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="675900" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle><font color="#000000">Payment - Water Utility</font></td>
-		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle sdval="600" sdnum="1033;0;#,##0.00"><font color="#000000">600.00</font></td>
-		<td colspan=2 align="right" valign=middle sdval="675300" sdnum="1033;0;#,##0.00"><font color="#000000">675,300.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="600" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="675300" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">Payment - Car Loan</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="3500" sdnum="1033;0;#,##0.00"><font color="#000000">3,500.00</font></td>
-		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="671800" sdnum="1033;0;#,##0.00"><font color="#000000">671,800.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="3500" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle bgcolor="#F2F2F2" sdval="671800" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
-		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">mm/dd/yyyy</font></td>
-		<td colspan=3 align="left" valign=middle><font color="#000000">Account Transfer Out</font></td>
-		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000"><br></font></td>
-		<td colspan=2 align="right" valign=middle sdval="80000" sdnum="1033;0;#,##0.00"><font color="#000000">80,000.00</font></td>
-		<td colspan=2 align="right" valign=middle sdval="591800" sdnum="1033;0;#,##0.00"><font color="#000000">591,800.00</font></td>
+		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000">{{ transaction.Date }}</font></td>
+		<td colspan=3 align="left" valign=middle><font color="#000000">{{ transaction.Description }}</font></td>
+		<td colspan=2 align="right" valign=middle sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Credit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="80000" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Debit }}</font></td>
+		<td colspan=2 align="right" valign=middle sdval="591800" sdnum="1033;0;#,##0.00"><font color="#000000">{{ transaction.Balance }}</font></td>
 		</tr>
 	<tr>
 		<td height="22" align="center" valign=middle bgcolor="#F2F2F2"><font color="#000000"><br></font></td>
