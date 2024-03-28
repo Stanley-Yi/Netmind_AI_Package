@@ -19,6 +19,8 @@ from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 from xyz.utils.llm.openai_client import OpenAIClient
 import os
+import json
+import re
 from dotenv import load_dotenv
 
 # Load the environment variables from the .env file
@@ -47,19 +49,30 @@ class Gen_pdf(Agent):
         #save_pil_images(pil_pages, os.path.join(local_store_folder, self.name + "pages"))
         page_imgs = [cv2.cvtColor(np.asarray(p), cv2.COLOR_RGB2BGR) for p in pil_pages]
         return page_imgs
+    
+    def extract_dict_from_json(self,text: str):
+        """
+        Extract the dictionary between "```json" and "```". 
+        """
+        pattern = r'```json(.*?)```'
+        extracted_text = re.findall(pattern, text, re.DOTALL)
+
+        return extracted_text[0].strip()
 
     def flowing(self, pdf_path: str, img_path: str,html_path: str) -> str:
         data = self.llm_bank_agent()
+        data_clean = self.extract_dict_from_json(data)
+        data_clean = json.loads(data_clean)
         env = Environment(loader=FileSystemLoader(''))
         template = env.get_template(html_path)
-        html_content = template.render(**data)
+        html_content = template.render(**data_clean)
         # Generate PDF
         HTML(string=html_content).write_pdf(pdf_path)
-        # load pdf
+        # convert pdf to images
         imgs = self.pdftopages(pdf_path)
         cv2.imwrite(img_path, imgs[0])
 
-        return img_path
+        return data
 
 
 # Example data, including transactions and other dynamic content
