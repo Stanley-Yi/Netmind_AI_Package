@@ -11,7 +11,7 @@ MomentumModule
 
 import numpy as np
 from xyz.magics.memory.MemoryAgent import MemoryAgent
-from xyz.magics.agent.MomentumThinkingFlow import MomentumThinkingflow
+from xyz.magics.assistant.MomentumThinkingFlow import MomentumThinkingflow
 
 
 
@@ -23,11 +23,11 @@ class MomentumModule:
         Parameters
         ----------
         goal : str
-            The goal that agent needs to finish in the momentum
+            The goal that assistant needs to finish in the momentum
         energy : np.array
-            Energy is how the agent is deciding on which task to do, when dividing task, energy will be divided as well
+            Energy is how the assistant is deciding on which task to do, when dividing task, energy will be divided as well
         longterm_memory : MemoryAgent
-            The memory agent, which connects to where past momentum and feedbacks are stored
+            The memory assistant, which connects to where past momentum and feedbacks are stored
         shortterm_memory : _type_
             Shortterm memory storing the current momentum and its parents, children
         progress : float
@@ -72,7 +72,7 @@ class MomentumModule:
         max_retry: int
             The max retry number when evaluating and extracting energy using agents to avoid circumstance the extraction failed because of format issue
         """
-        # if not specified, return energy by agent
+        # if not specified, return energy by assistant
         if (self.energy==np.zeros(2)).all():
             agent_extract_energy = self.thinkingflow.get_energy(task=self.goal, max_retry=max_retry)
             self.energy = agent_extract_energy

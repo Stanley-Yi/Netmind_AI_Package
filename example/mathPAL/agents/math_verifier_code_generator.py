@@ -18,8 +18,8 @@ class MathVerifierCodeGenerator(Agent):
         super().__init__(openai_client)
         
         # 1. Set Agent attributes for building society in XYZ later version
-        # For example, description might be used to show the agent's function 
-        # in the society and guide a manager agent to choose the right agent.
+        # For example, description might be used to show the assistant's function
+        # in the society and guide a manager assistant to choose the right assistant.
         self.set_name("MathVerifierCodeGenerator")
         self.set_description("This is a Python programming and math teacher, who can verify the answer of a math problem by implementing a Python function named `solution`.")
         self.set_parameters({
@@ -33,9 +33,9 @@ class MathVerifierCodeGenerator(Agent):
                 }
             })
         
-        # 2. Initialize sub-agents for your custom agent
-        # In your custom agent, you may integrate multiple other agents to achieve the goal.
-        # LLMAgent is a built-in agent in XYZ, which can be used to interact with OpenAI API.
+        # 2. Initialize sub-agents for your custom assistant
+        # In your custom assistant, you may integrate multiple other agents to achieve the goal.
+        # LLMAgent is a built-in assistant in XYZ, which can be used to interact with OpenAI API.
         self.llm_code_verifier = LLMAgent(template=MATHANSWER_VERIFIER_TEMPLATE, 
                                         core_agent=openai_client, 
                                         inner_multi=False, 

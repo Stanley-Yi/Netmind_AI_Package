@@ -35,7 +35,7 @@ class Extract_info(Agent):
             self.openai_agent)  # 这里需要传进去一个 xyz.utils.llm 里的语言模型，目前只有 openai（为了 之后的自驱动做准备，其实也并不是必须的。可以什么也不传。）
 
         self.set_name("auditSolver")
-        self.set_description("This is a audit agent that extracting information from bank statement.")
+        self.set_description("This is a audit assistant that extracting information from bank statement.")
         self.set_parameters({"file": {"type": "str", "description": "The latex version of the pdf file"}})
 
         self.llm_cot_agent = LLMAgent(AUDIT, self.openai_agent, inner_multi=False, stream=False)

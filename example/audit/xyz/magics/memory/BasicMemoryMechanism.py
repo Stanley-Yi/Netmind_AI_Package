@@ -77,7 +77,7 @@ class BasicMemoryMechanism:
         storage_engine : Optional[str]
             Optional, specify in which server the collection is to be created; in Milvus cluster, there can be more than one server, each server will have a server alias
         num_shards : Optional[int]
-            Optional, specify the amount of nodes that one write operation in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
+            Optional, specify the amount of nodes that one write tools in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
         embedding_type : Optional[EmbeddingType]
             Optional, the embedding algorithm to be use when embedding the description sentence into a vector
         metric_type : Optional[MetricType]
@@ -227,7 +227,7 @@ class BasicMemoryMechanism:
         collection_name : str
             the name of used Milvus collection
         num_shards : int
-            specify the amount of nodes that one write operation in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
+            specify the amount of nodes that one write tools in collection is distributed to, thus enhence the capabality of parallel computing potential of Milvus cluster
         metric_type :  MetricType
             the algorithm used to measure similarity among different vectors
         idx_type : IdxType

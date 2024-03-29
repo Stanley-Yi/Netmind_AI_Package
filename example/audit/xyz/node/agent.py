@@ -2,7 +2,7 @@
 ====
 Node
 ====
-@file_name: agent.py
+@file_name: assistant.py
 @author: Bin Liang
 @date: 2024-3-15
 
@@ -33,7 +33,7 @@ class Agent:
         super().__setattr__("description", "")
         super().__setattr__("parameters", {})
         super().__setattr__("required", [])
-        super().__setattr__("type", "agent")
+        super().__setattr__("type", "assistant")
         super().__setattr__("input_format_agent", None)
 
     def _wrap_call(self, **kwargs) -> Callable:
@@ -76,7 +76,7 @@ class Agent:
 
         for key, value in vars(self).items():
             try:
-                if "type" in vars(value) and value.type == "agent":
+                if "type" in vars(value) and value.type == "assistant":
                     info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
             except:
                 pass
@@ -90,7 +90,7 @@ class Agent:
 
         for key, value in vars(self).items():
             try:
-                if "type" in vars(value) and value.type == "agent":
+                if "type" in vars(value) and value.type == "assistant":
                     info += f"\n{pre_blank}[SubAgent: {key}: {value._structure(order+1)}]"
             except:
                 pass

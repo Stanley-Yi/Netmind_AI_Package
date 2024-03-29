@@ -2,7 +2,7 @@
 ====
 Node
 ====
-@file_name: agent.py
+@file_name: assistant.py
 @author: Bin Liang
 @date: 2024-3-15
 
@@ -18,7 +18,7 @@ __all__ = ["Agent"]
 
 class Agent:
     name: str
-    description: str
+    description: Dict[str, str]
     parameters: Dict[str, str]
     required: list
     input_format_agent: None
@@ -30,10 +30,10 @@ class Agent:
         self.core_agent = core_agent
 
         super().__setattr__("name", "")
-        super().__setattr__("description", "")
+        super().__setattr__("description", {})
         super().__setattr__("parameters", {})
         super().__setattr__("required", [])
-        super().__setattr__("type", "agent")
+        super().__setattr__("type", "assistant")
         super().__setattr__("input_format_agent", None)
 
     def _wrap_call(self, **kwargs) -> Callable:
@@ -76,7 +76,7 @@ class Agent:
 
         for key, value in vars(self).items():
             try:
-                if "type" in vars(value) and value.type == "agent":
+                if "type" in vars(value) and value.type == "assistant":
                     info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
             except:
                 pass
@@ -90,7 +90,7 @@ class Agent:
 
         for key, value in vars(self).items():
             try:
-                if "type" in vars(value) and value.type == "agent":
+                if "type" in vars(value) and value.type == "assistant":
                     info += f"\n{pre_blank}[SubAgent: {key}: {value._structure(order+1)}]"
             except:
                 pass

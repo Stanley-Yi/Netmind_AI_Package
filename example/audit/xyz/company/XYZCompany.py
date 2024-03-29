@@ -14,7 +14,7 @@ XYZCompany
 # python third-party packages
 
 
-# import from our operation
+# import from our tools
 from xyz.node.XYZNode import XYZNode
 from xyz.node.basic.edge import Edge
 

@@ -1,11 +1,11 @@
 import numpy as np
 import re
-from xyz.magics.agent.ThinkingFlow import ThinkingFlow
-from xyz.magics.agent.CoreAgent import CoreAgent
-from xyz.magics.agent.prompts import *
+from xyz.magics.assistant.ThinkingFlow import ThinkingFlow
+from xyz.magics.assistant.CoreAgent import CoreAgent
+from xyz.magics.assistant.prompts import *
 
 
-# define energy identify and divide agent
+# define energy identify and divide assistant
 task_evaluating_agent = CoreAgent(template=task_evaluating_prompt_new)
 task_dividing_agent = CoreAgent(template=task_dividing_prompt_new)
 agents_dict = {"task_evalutating_agent": task_evaluating_agent,
@@ -21,7 +21,7 @@ class MomentumThinkingflow(ThinkingFlow):
         self.task_dividing_agent = task_dividing_agent
         
     def get_energy(self, task:str, max_retry:int = 5) -> np.array:
-        """Function for calculating energy for a task using agent
+        """Function for calculating energy for a task using assistant
 
         Parameters
         ----------

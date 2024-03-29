@@ -17,7 +17,7 @@ from typing import Any
 # python third-party packages
 
 
-# import from our operation
+# import from our tools
 from xyz.node.basic.ABSAgent import ABSAgent
 from xyz.utils.llm.openai_client import OpenAIClient
 # from xyz.magics.thinkingflow.ThinkingFlow import ThinkingFlow
@@ -25,14 +25,14 @@ from xyz.utils.llm.openai_client import OpenAIClient
 
 class FunctionalAgent(ABSAgent):
     """ 
-    An agent that uses a functional API for processing messages.
+    An assistant that uses a functional API for processing messages.
 
     Parameters
     ----------
     node_config : dict
         The configuration for the node.
     core_agent : OpenAIClient
-        The core agent to use for requesting response from OpenAI.
+        The core assistant to use for requesting response from OpenAI.
     """
     
     def __init__(self, node_config:dict, core_agent:OpenAIClient):
@@ -46,7 +46,7 @@ class FunctionalAgent(ABSAgent):
             - 'api_url': The URL of the API.
             - 'headers': The headers for the API requests. If not provided, it will be set to None.
         core_agent : OpenAIClient
-            The core agent to use for requesting response from OpenAI.
+            The core assistant to use for requesting response from OpenAI.
         """
         
         self.url = node_config['api_url']
@@ -77,12 +77,12 @@ class FunctionalAgent(ABSAgent):
     
     def request(self, parameters_dict:dict) -> Any: 
         """ 
-        Run the agent with the given parameters.
+        Run the assistant with the given parameters.
 
         Parameters
         ----------
         parameters_dict : dict
-            The parameters to use for running the agent.
+            The parameters to use for running the assistant.
 
         Returns
         -------

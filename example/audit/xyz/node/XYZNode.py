@@ -15,12 +15,12 @@ from typing import Any, Dict
 # python third-party packages
 
 
-# import from our operation
+# import from our tools
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 from xyz.node.basic.functional_agent import FunctionalAgent
-from xyz.node.operation.Manager import Manager
-from xyz.node.operation.InputFormatAgent import InputFormatAgent
+from xyz.magics.assistant.Manager import Manager
+from xyz.magics.assistant.input_format_assistant import InputFormatAgent
 from xyz.parameters import openai_agent as default_agent
 from xyz.utils.llm.openai_client import OpenAIClient
 
@@ -35,7 +35,7 @@ class XYZNode(Agent):
     node_config : dict
         The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
     core_agent : OpenAIClient
-        The core agent to use for requesting response from OpenAI.
+        The core assistant to use for requesting response from OpenAI.
     """
 
     def __init__(self,
@@ -49,7 +49,7 @@ class XYZNode(Agent):
         node_config : dict
             The configuration for the node. It should contain the key 'node_type' which can be "llm", "functional", or "manager".
         core_agent : OpenAIClient
-            The core agent to use for requesting response from OpenAI.
+            The core assistant to use for requesting response from OpenAI.
 
         Raises
         ------
@@ -69,7 +69,7 @@ class XYZNode(Agent):
         # TODO: 留出接口，我们目前要求 parameters 中所有的参数都是必须的
         self.required = list(node_config["parameters"].keys())
 
-        # initialize the agent with different type
+        # initialize the assistant with different type
         if node_config['node_type'] == "llm":
             self.node = LLMAgent(self.node_config['llm_config']['template'],
                                  self.node_config['llm_config']['generate_parameters'],

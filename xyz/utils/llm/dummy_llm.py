@@ -22,13 +22,13 @@ class DummyLLM(OpenAIClient):
 
     def run(self, messages: list, tools=[]) -> str:
 
-        raise TypeError("You do not set a llm-agent in this progress. Please ser a llm-agent first.")
+        raise TypeError("You do not set a llm-assistant in this progress. Please ser a llm-assistant first.")
 
         return None
 
     def stream_run(self, messages: list) -> Generator[str, None, None]:
 
-        raise TypeError("You do not set a llm-agent in this progress. Please ser a llm-agent first.")
+        raise TypeError("You do not set a llm-assistant in this progress. Please ser a llm-assistant first.")
 
         yield None
 

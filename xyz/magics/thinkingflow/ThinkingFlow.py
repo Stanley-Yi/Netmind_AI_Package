@@ -15,7 +15,7 @@ ThinkingFlow
 # python third-party packages
 
 
-# import from our operation
+# import from our tools
 from xyz.magics.thinkingflow.Planning import Planning
 from xyz.magics.thinkingflow.Dividing import Dividing   
 from xyz.magics.thinkingflow.Options import Options

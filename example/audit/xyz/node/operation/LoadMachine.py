@@ -15,7 +15,7 @@ import json
 # python third-party packages
 
 
-# import from our operation
+# import from our tools
 from xyz.node.XYZNode import Node
 
 

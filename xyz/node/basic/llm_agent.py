@@ -22,14 +22,14 @@ __all__ = ["LLMAgent"]
 
 class LLMAgent(Agent):
     """ 
-    An agent that uses the LLM (Language Learning Model) for processing messages.
+    An assistant that uses the LLM (Language Learning Model) for processing messages.
 
     Parameters
     ----------
     node_config : dict
         The configuration for the node.
     core_agent : CoreAgent
-        The core agent to use for requesting response from OpenAI.
+        The core assistant to use for requesting response from OpenAI.
     """
 
     def __init__(self, template, core_agent, inner_multi=False, stream=False) -> None:
@@ -50,7 +50,7 @@ class LLMAgent(Agent):
         self.messages = []
 
     def flowing(self, messages=[], tools=[], **kwargs) -> str:
-        """When you call this agent, we will run the agent with the given keyword arguments from the prompts.
+        """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
             Before we call the OpenAI's API, we do some interface on this message.
         """
         system_message, current_message = self._complete_prompts(**kwargs)
@@ -70,7 +70,7 @@ class LLMAgent(Agent):
 
     def request(self, user_message: List, messages: List, tools=[]) -> Any:
         """
-        Run the agent with the given keyword arguments.
+        Run the assistant with the given keyword arguments.
         """
 
         # TODO: 获取输出的时候，要进行参数的设置，参数的来源 self.generate_parameters
@@ -96,7 +96,7 @@ class LLMAgent(Agent):
 
     def _stream_run(self, messages: list) -> Generator[str, None, None]:
         """
-        Run the agent in a streaming manner with the given messages.
+        Run the assistant in a streaming manner with the given messages.
         """
 
         # The reason why we not return the Generator is that we may need update the messages with inner_multi
@@ -107,19 +107,19 @@ class LLMAgent(Agent):
 
     def reset_messages(self, messages=[]) -> None:
         """
-        Reset the agent's messages.
+        Reset the assistant's messages.
 
         Parameters
         ----------
         messages : list, optional
-            The new messages for the agent. Default is an empty list.
+            The new messages for the assistant. Default is an empty list.
         """
 
         self.messages = messages
 
     def add_messages(self, messages: list) -> None:
         """
-        Add messages to the agent's messages.
+        Add messages to the assistant's messages.
 
         Parameters
         ----------
@@ -134,7 +134,7 @@ class LLMAgent(Agent):
 
     def _complete_prompts(self, **kwargs) -> tuple:  # TODO: 这里的返回值不够明确
         """
-        Complete the agent's prompts with the given keyword arguments.
+        Complete the assistant's prompts with the given keyword arguments.
 
         Parameters
         ----------
@@ -195,7 +195,7 @@ class LLMAgent(Agent):
 
     def _get_messages(self, current_message: List) -> List:
         """
-        Set the agent's messages based on the current message and the generate_parameters.
+        Set the assistant's messages based on the current message and the generate_parameters.
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class LLMAgent(Agent):
         Returns
         -------
         list
-            The agent's messages.
+            The assistant's messages.
         """
 
         messages = deepcopy(self.messages)

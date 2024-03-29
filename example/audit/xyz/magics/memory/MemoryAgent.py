@@ -19,15 +19,15 @@ from xyz.magics.memory.MemoryClient import MemoryClient
 class MemoryAgent:
     
     def __init__(self, memory_client:MemoryClient, config_path:str) -> None: 
-        """The agent memory, which is used to connect to the memory server via the memory client.
+        """The assistant memory, which is used to connect to the memory server via the memory client.
 
         Parameters
         ----------
         memory_client : MemoryClient
             The memory client, which is used to connect to the memory server, and manage the memory units.
-            The user should initialize the memory client before creating the agent memory.
+            The user should initialize the memory client before creating the assistant memory.
         config_path : str
-            The path of the memory info file, which is used to store the memory configuration for this agent.
+            The path of the memory info file, which is used to store the memory configuration for this assistant.
         """
         
         self.memory_client = memory_client
@@ -88,10 +88,10 @@ class MemoryAgent:
         if memory_name in self.memory_name:
             return self.memory_client.memory[memory_name]
         else:
-            raise Exception("The memory name is not existed in this agent.")
+            raise Exception("The memory name is not existed in this assistant.")
     
     def save_config(self) -> None:
-        """To save this agent memory configuration to the info file.
+        """To save this assistant memory configuration to the info file.
         """
         
         with open(self.config_path, 'w') as f:

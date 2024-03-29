@@ -35,7 +35,7 @@ class ABSAgent(ABC):
         Returns
         -------
         Any
-            The response from the agent.
+            The response from the assistant.
         """
         pass
     

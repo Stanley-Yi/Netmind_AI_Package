@@ -10,8 +10,8 @@ class MathPALCompany(Agent):
         super().__init__()
         
         # 1. Set Agent attributes for building society in XYZ later version
-        # For example, description might be used to show the agent's function 
-        # in the society and guide a manager agent to choose the right agent.
+        # For example, description might be used to show the assistant's function
+        # in the society and guide a manager assistant to choose the right assistant.
         self.set_name("MathPALCompany")
         self.set_description("This is a company that uses Python programming and math to solve math problems and return a numerical answer.")
         self.set_parameters({
@@ -25,8 +25,8 @@ class MathPALCompany(Agent):
                 }
             })
         
-        # 2. Initialize sub-agents for your custom agent
-        # In your custom agent, you may integrate multiple other agents to achieve the goal.
+        # 2. Initialize sub-agents for your custom assistant
+        # In your custom assistant, you may integrate multiple other agents to achieve the goal.
         self.math_code_generator = MathCodeGenerator()
         self.math_code_interpreter = MathCodeInterpreter()
         self.math_verifier_code_generator = MathVerifierCodeGenerator()

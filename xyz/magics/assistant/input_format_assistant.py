@@ -2,7 +2,7 @@
 ================
 InputFormatAgent
 ================
-@file_name: InputFormatAgent.py
+@file_name: input_format_assistant.py
 @author: Bin Liang
 @date: 2024-3-14
 
@@ -10,10 +10,10 @@ InputFormatAgent
 
 
 import json
-from typing import Tuple, Any
+from typing import Any
 
 from xyz.node.basic.llm_agent import LLMAgent
-from xyz.node.operation.operation_prompts import input_format_config
+from xyz.magics.assistant.operation_prompts import input_format_config
 
 class InputFormatAgent(LLMAgent):
     
@@ -22,19 +22,19 @@ class InputFormatAgent(LLMAgent):
         
     def request(self, messages:list, tools:list=[]) -> tuple[Any, Any]:
         """
-        Request the agent to interface the messages.
+        Request the assistant to interface the messages.
 
         Parameters
         ----------
         messages : list
-            A list of messages to be processed by the agent.
+            A list of messages to be processed by the assistant.
         tools : list, optional
-            A list of tools to be used by the agent, by default [].
+            A list of tools to be used by the assistant, by default [].
 
         Returns
         -------
         dict
-            The agent's response to the messages.
+            The assistant's response to the messages.
         """
         response = self.core_agent.run(messages, tools=tools) 
         function_infos = response.choices[0].message.tool_calls[0]

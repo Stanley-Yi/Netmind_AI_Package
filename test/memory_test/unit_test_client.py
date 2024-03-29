@@ -55,7 +55,7 @@ def client_create():
     
     return MemoryClient(client_config_path)
     
-# Create the memory agent via client.
+# Create the memory assistant via client.
 @pytest.fixture(scope='module')
 def agent_create(client_create):
     

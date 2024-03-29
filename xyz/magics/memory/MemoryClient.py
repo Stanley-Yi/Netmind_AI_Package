@@ -26,7 +26,7 @@ class MemoryClient:
         """To create a memory client, which is used to connect to the memory server, and manage the memory units. 
         All the memory should in one remote-server.
         In using, we should create a memory client be the global varivable. 
-        For each agent, we should connect to the real memory server via the memory client.
+        For each assistant, we should connect to the real memory server via the memory client.
 
         Parameters
         ----------

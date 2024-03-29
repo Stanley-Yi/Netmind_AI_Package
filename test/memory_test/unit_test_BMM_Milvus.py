@@ -8,7 +8,7 @@ The unit test case for BasicMemoryMechanism class, specifically test Milvus rela
 
 add_memory(), search_memory(), filter_memory(), delete_memory()
 
-Since the collection-level and partition-level shares the same operation on above methods, 
+Since the collection-level and partition-level shares the same tools on above methods, 
 the partiton-level tests has been comment out; you can remove the comment and run test as you wish
 """
 

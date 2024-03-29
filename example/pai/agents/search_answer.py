@@ -59,7 +59,7 @@ class SearchAnswer(Agent):
                              "images": {"type": "str", "description": "The image of this question."},
                              "course": {"type": "str", "description": "The course about this question."}})
 
-        # 配置我们的 memory agent
+        # 配置我们的 memory assistant
 
     def flowing(self, question: str, course: str, images=None):
         """

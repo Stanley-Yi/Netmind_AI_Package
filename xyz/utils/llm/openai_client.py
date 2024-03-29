@@ -17,7 +17,7 @@ from typing import Generator, List
 from openai import Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
-# import from our operation
+# import from our tools
 # from xyz.parameters import logger
 
 
@@ -27,7 +27,7 @@ __all__ = ["OpenAIClient"]
 class OpenAIClient:
 
     def __init__(self, api_key=None, logger=None, **generate_args):
-        """Initializes the agent.
+        """Initializes the assistant.
 
         Parameters
         ----------
@@ -57,19 +57,19 @@ class OpenAIClient:
 
     def run(self, messages: List, tools: List = []) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """
-        Run the agent with the given messages.
+        Run the assistant with the given messages.
 
         Parameters
         ----------
         messages : list
-            A list of messages to be processed by the agent.
+            A list of messages to be processed by the assistant.
         tools : list, optional
-            A list of tools to be used by the agent, by default [].
+            A list of tools to be used by the assistant, by default [].
 
         Returns
         -------
         str
-            The agent's response to the messages.
+            The assistant's response to the messages.
 
         Raises
         ------
@@ -117,17 +117,17 @@ class OpenAIClient:
 
     def stream_run(self, messages: List) -> Generator[str, None, None]:
         """
-        Run the agent with the given messages in a streaming manner.
+        Run the assistant with the given messages in a streaming manner.
 
         Parameters
         ----------
         messages : list
-            A list of messages to be processed by the agent.
+            A list of messages to be processed by the assistant.
 
         Yields
         ------
         str
-            The agent's response to the messages, yielded one piece at a time.
+            The assistant's response to the messages, yielded one piece at a time.
 
         Raises
         ------

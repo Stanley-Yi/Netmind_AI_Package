@@ -16,8 +16,8 @@ class VerifyAndVote(Agent):
         super().__init__(core_agent)
         
         # 1. Set Agent attributes for building society in XYZ later version
-        # For example, description might be used to show the agent's function 
-        # in the society and guide a manager agent to choose the right agent.
+        # For example, description might be used to show the assistant's function
+        # in the society and guide a manager assistant to choose the right assistant.
         self.set_name("VerifyAndVote")
         self.set_descriptions = ("This is a Python programming and math teacher tool designed to validate a list of answers"
                                     " for a math problem by executing a Python function named solution. It can also identify or"
@@ -33,8 +33,8 @@ class VerifyAndVote(Agent):
                 }
             })
         
-        # 2. Initialize sub-agents for your custom agent
-        # In your custom agent, you may integrate multiple other agents to achieve the goal.
+        # 2. Initialize sub-agents for your custom assistant
+        # In your custom assistant, you may integrate multiple other agents to achieve the goal.
         self.base_code_interpreter = BaseCodeInterpreter()
     
     def flowing(self, answers: list[str], code: str) -> str:

@@ -8,8 +8,8 @@ class MathCodeInterpreter(Agent):
         super().__init__(core_agent)
         
         # 1. Set Agent attributes for building society in XYZ later version
-        # For example, description might be used to show the agent's function 
-        # in the society and guide a manager agent to choose the right agent.
+        # For example, description might be used to show the assistant's function
+        # in the society and guide a manager assistant to choose the right assistant.
         self.set_name("MathCodeInterpreter")
         self.set_description("This is a python code interpreter, which can execute the code to solve a math problem and finally return a numerical answer.")
         self.set_parameters({
@@ -74,12 +74,12 @@ def floatify_ans(ans):
 
 def simplify_ans(ans, convert_to_str: bool = True):
     """
-    Simplify the answer from a mathematical operation.
+    Simplify the answer from a mathematical tools.
 
     Parameters
     ----------
     ans : various types
-        The answer from a mathematical operation, could be various types (e.g., relational, numpy array, etc.)
+        The answer from a mathematical tools, could be various types (e.g., relational, numpy array, etc.)
     convert_to_str : bool, optional
         If True, convert the answer to string type. Default is True.
 
