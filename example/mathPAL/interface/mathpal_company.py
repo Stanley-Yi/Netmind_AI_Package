@@ -13,7 +13,7 @@ class MathPALCompany(Agent):
         # For example, description might be used to show the assistant's function
         # in the society and guide a manager assistant to choose the right assistant.
         self.set_name("MathPALCompany")
-        self.set_description("This is a company that uses Python programming and math to solve math problems and return a numerical answer.")
+        self.set_description("This is a graph that uses Python programming and math to solve math problems and return a numerical answer.")
         self.set_parameters({
                 "problem": {
                     "type": "str",

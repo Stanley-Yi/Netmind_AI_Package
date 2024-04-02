@@ -45,7 +45,7 @@ def test_save_memory_1(memory_instance):
 #     step_2P1 = memory_instance.save_memory(step_1, 2, step_2P1_status, step_2P1_goal, step_2P1_action, step_2P1_feedback)
     
 #     # step 2.2 - success
-#     step_2P2_status = 'Decided to use a new weight loss drug released by a pharmaceutical company.'
+#     step_2P2_status = 'Decided to use a new weight loss drug released by a pharmaceutical graph.'
 #     step_2P2_goal = 'Gradually reduce body weight by 100kg by taking medication to reach a reasonable level.'
 #     step_2P2_action = 'Engage in outdoor activities such as brisk walking or cycling daily.'
 #     step_2P2_feedback = 'As an office worker, the frequency and intensity of outdoor exercise cannot meet the goal of losing 5 kg.'

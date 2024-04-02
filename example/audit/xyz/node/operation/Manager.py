@@ -2,7 +2,7 @@
 =======
 Manager
 =======
-@file_name: Manager.py
+@file_name: manager_assistant.py
 @author: Bin Liang
 @date: 2024-3-1
 

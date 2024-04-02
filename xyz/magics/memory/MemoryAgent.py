@@ -13,7 +13,7 @@ import os
 import json
 from typing import Dict  
   
-from xyz.magics.memory.MemoryClient import MemoryClient
+from xyz.magics.memory_client import MemoryClient
 
 
 class MemoryAgent:

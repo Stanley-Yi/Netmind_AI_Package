@@ -16,7 +16,7 @@ import threading
 
 
 # import from our tools
-from xyz.company.XYZCompany import Company
+from xyz.graph.XYZCompany import Company
 from xyz.node.XYZNode import XYZNode
 from xyz.utils.api_wrap_tool import APIWrapTool
 

@@ -169,12 +169,12 @@ meta_data_dict_list = [{'importance': 10, 'area': 'london', 'mood': 'sad'},
                         {'importance': 2, 'area': 'birmingham', 'mood': 'peaceful'},
                         {'importance': 10, 'area': 'london', 'mood': 'fear'}]
 
-description_list = ['Eric found that he was rejected by his dream company',
+description_list = ['Eric found that he was rejected by his dream graph',
                     'Eric started his first dating activity with a girl',
                     'Eric took the bus to catch system engineering lecture in University of Birmingham as usual',
                     'Eric found that his roommate, Stanley is a gay who want to do something to him']
 
-full_contents_list = [{'content': 'Eric found that he was rejected by his dream company'},
+full_contents_list = [{'content': 'Eric found that he was rejected by his dream graph'},
                       {'content': 'Eric started his first dating activity with a girl'},
                       {'content': 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'},
                       {'content': 'Eric found that his roommate, Stanley is a gay who want to do something to him'}]

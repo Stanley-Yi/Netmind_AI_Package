@@ -2,7 +2,7 @@
 ============
 MemoryClient
 ============
-@file_name: MemoryClient.py
+@file_name: memory_client.py
 @author: Bin.Liang, BlackSheep-Team, Netmind.AI
 @date: 2024-2-1
 

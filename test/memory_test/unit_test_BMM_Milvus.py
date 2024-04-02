@@ -103,13 +103,13 @@ def test_add_memory_collection(collection_bmm):
                         {'importance': 10, 'area': 'london', 'mood': 'fear'}]
 
     # the description_list contains a list of strings, which will be embedded and stored, used to queried according to similarity
-    description_list = ['Eric found that he was rejected by his dream company',
+    description_list = ['Eric found that he was rejected by his dream graph',
                     'Eric started his first dating activity with a girl',
                     'Eric took the bus to catch system engineering lecture in University of Birmingham as usual',
                     'Eric found that his roommate, Stanley is a gay who want to do something to him']
 
     # the full_content_list contains a list of k-v data, whcih is the real contents needed to be stored and used in application
-    full_contents_list = [{'content': 'Eric found that he was rejected by his dream company'},
+    full_contents_list = [{'content': 'Eric found that he was rejected by his dream graph'},
                       {'content': 'Eric started his first dating activity with a girl'},
                       {'content': 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'},
                       {'content': 'Eric found that his roommate, Stanley is a gay who want to do something to him'}]
@@ -308,13 +308,13 @@ def test_add_memory_partition(partition_bmm):
                         {'importance': 10, 'area': 'london', 'mood': 'fear'}]
 
     # the description_list contains a list of strings, which will be embedded and stored, used to queried according to similarity
-    description_list = ['Eric found that he was rejected by his dream company',
+    description_list = ['Eric found that he was rejected by his dream graph',
                     'Eric started his first dating activity with a girl',
                     'Eric took the bus to catch system engineering lecture in University of Birmingham as usual',
                     'Eric found that his roommate, Stanley is a gay who want to do something to him']
 
     # the full_content_list contains a list of k-v data, whcih is the real contents needed to be stored and used in application
-    full_contents_list = [{'content': 'Eric found that he was rejected by his dream company'},
+    full_contents_list = [{'content': 'Eric found that he was rejected by his dream graph'},
                       {'content': 'Eric started his first dating activity with a girl'},
                       {'content': 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'},
                       {'content': 'Eric found that his roommate, Stanley is a gay who want to do something to him'}]

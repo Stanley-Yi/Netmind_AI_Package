@@ -16,7 +16,7 @@ memory
 ├── BasicAttributeStorage.py
 ├── BasicMemoryMechanism.py
 ├── MemoryAgent.py
-├── MemoryClient.py
+├── memory_client.py
 ├── _memory_config_template.py
 ├── README.md
 └── pai_company_utils.py

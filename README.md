@@ -28,7 +28,7 @@ Xiangpeng:
 │       ├── month_1.jpg
 │       └── structure.jpg
 ├── netmindxyz
-│   ├── company
+│   ├── graph
 │   │   └── README.md
 │   ├── government
 │   │   └── README.md

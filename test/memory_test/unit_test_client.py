@@ -1,7 +1,6 @@
 import pytest
 import json
-from urllib.parse import quote_plus
-from xyz.magics.memory.MemoryClient import MemoryClient
+from xyz.magics.memory_client import MemoryClient
 from xyz.magics.memory.MemoryAgent import MemoryAgent
 
 
@@ -98,12 +97,12 @@ def test_connect_memory(client_create):
                         {'importance': 2, 'area': 'birmingham', 'mood': 'peaceful'},
                         {'importance': 10, 'area': 'london', 'mood': 'fear'}]
 
-    description_list = ['Eric found that he was rejected by his dream company',
+    description_list = ['Eric found that he was rejected by his dream graph',
                     'Eric started his first dating activity with a girl',
                     'Eric took the bus to catch system engineering lecture in University of Birmingham as usual',
                     'Eric found that his roommate, Stanley is a gay who want to do something to him']
 
-    full_contents_list = [{'content': 'Eric found that he was rejected by his dream company'},
+    full_contents_list = [{'content': 'Eric found that he was rejected by his dream graph'},
                       {'content': 'Eric started his first dating activity with a girl'},
                       {'content': 'Eric took the bus to catch system engineering lecture in University of Birmingham as usual'},
                       {'content': 'Eric found that his roommate, Stanley is a gay who want to do something to him'}]

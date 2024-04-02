@@ -19,7 +19,7 @@ from typing import Any, Dict
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 from xyz.node.basic.functional_agent import FunctionalAgent
-from xyz.magics.assistant.Manager import Manager
+from xyz.magics.assistant.manager_assistant import Manager
 from xyz.magics.assistant.input_format_assistant import InputFormatAgent
 from xyz.parameters import openai_agent as default_agent
 from xyz.utils.llm.openai_client import OpenAIClient
@@ -136,7 +136,7 @@ class XYZNode(Agent):
             The configuration for the memory.
         """
 
-        # 这一步 应该在 初始化 company 的时候进行，每一个 company 共用一个 client
+        # 这一步 应该在 初始化 graph 的时候进行，每一个 graph 共用一个 client
         if self.node_config['memory_config']:
             # TODO 加载我们需要的 memory， 什么时候加载？怎么使用？
             # self.memory = self.load_memory(self.node_config['memory_config'])
