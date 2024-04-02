@@ -39,7 +39,7 @@ class Gen_pdf(Agent):
                              "img_path": {"type": "str", "description": "The path to store img."},
                              "html_path": {"type": "str", "description": "The path to load trml template."}})
 
-        self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview', temperature=0., top_p=1.0,
+        self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview',
                                          max_tokens=2096)
         self.llm_bank_agent = LLMAgent(BANK_INFO, self.openai_agent, inner_multi=False, stream=False)
 
