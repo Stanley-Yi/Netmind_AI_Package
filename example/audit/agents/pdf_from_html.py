@@ -59,8 +59,8 @@ class Gen_pdf(Agent):
 
         return extracted_text[0].strip()
 
-    def flowing(self, pdf_path: str, img_path: str,html_path: str) -> str:
-        data = self.llm_bank_agent()
+    def flowing(self, idx: str, pdf_path: str, img_path: str,html_path: str) -> str:
+        data = self.llm_bank_agent(idx=idx)
         data_clean = self.extract_dict_from_json(data)
         data_clean = json.loads(data_clean)
         env = Environment(loader=FileSystemLoader(''))
@@ -73,6 +73,17 @@ class Gen_pdf(Agent):
         cv2.imwrite(img_path, imgs[0])
 
         return data
+    
+    def template(self, data: str, pdf_path: str, img_path: str,html_path: str) -> None:
+ 
+        env = Environment(loader=FileSystemLoader(''))
+        template = env.get_template(html_path)
+        html_content = template.render(**data)
+        # Generate PDF
+        HTML(string=html_content).write_pdf(pdf_path)
+        # convert pdf to images
+        imgs = self.pdftopages(pdf_path)
+        cv2.imwrite(img_path, imgs[0])
 
 
 # Example data, including transactions and other dynamic content
@@ -132,5 +143,5 @@ BANK_INFO = {
 
     """,
     "user": """
-    Please generate logical user information for bank statement
+    Please generate unique logical user information for bank statement. This is request number {idx}. 
 """}
