@@ -39,7 +39,7 @@ class Gen_pdf(Agent):
                              "img_path": {"type": "str", "description": "The path to store img."},
                              "html_path": {"type": "str", "description": "The path to load trml template."}})
 
-        self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview',
+        self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview', temperature=0.7, top_p=0.8,
                                          max_tokens=2096)
         self.llm_bank_agent = LLMAgent(BANK_INFO, self.openai_agent, inner_multi=False, stream=False)
 
@@ -59,8 +59,8 @@ class Gen_pdf(Agent):
 
         return extracted_text[0].strip()
 
-    def flowing(self, idx: str, pdf_path: str, img_path: str,html_path: str) -> str:
-        data = self.llm_bank_agent(idx=idx)
+    def flowing(self, history: str, pdf_path: str, img_path: str,html_path: str) -> str:
+        data = self.llm_bank_agent(history=history)
         data_clean = self.extract_dict_from_json(data)
         data_clean = json.loads(data_clean)
         env = Environment(loader=FileSystemLoader(''))
@@ -143,5 +143,5 @@ BANK_INFO = {
 
     """,
     "user": """
-    Please generate unique logical user information for bank statement. This is request number {idx}. 
+    Please generate unique logical user information for bank statement, Not seen in previous. Here is the history {history}. 
 """}
