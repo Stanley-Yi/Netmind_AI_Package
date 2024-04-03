@@ -20,8 +20,9 @@ class CourseClassify(Agent):
         super().__init__(openai_agent)
 
         self.set_name("GuidanceTeacher")
-        self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
-        self.set_parameters({"question": {"type": "str", "description": "The question here which need help."}})
+        self.set_description("This is a teacher which can guide the user to solve the problem step by step.")   # TODO: description
+        self.set_parameters({"question": {"type": "str", "description": "The question here which need help."}}) # TODO: Input
+        self.set_output({"category": {"type": "str", "description": "The category of the question."}})  # TODO: Output
 
         self.llm_course_classify = LLMAgent(COURSE_CLASSIFY, openai_agent, inner_multi=False, stream=False)
 

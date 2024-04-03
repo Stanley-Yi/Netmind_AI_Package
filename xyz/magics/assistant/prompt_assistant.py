@@ -8,12 +8,14 @@ PromptAssistant
 """
 
 from typing import Any, List
+import os
+import json
 
 from tqdm.auto import tqdm
 
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
-from xyz.magics.assistant.prompts import default_generators, default_modifiers
+
 
 
 class PromptsCartridge(Agent):
@@ -70,6 +72,43 @@ class PromptsCartridge(Agent):
         return prompts
 
 
+def read_json_files(directory):
+    content_list = []
+    for filename in os.listdir(directory):
+        try:
+            if filename.endswith(".json"):
+                file_path = os.path.join(directory, filename)
+                with open(file_path, "r") as file:
+                    data = json.load(file)
+                    content = data.get("content")
+                    if content:
+                        content_list.append(content)
+        except:
+            raise Exception(f"Error in reading the file: {filename}")
+    return content_list
+    
+def load_default_generate(generate=True, modify=False):
+    """
+    Load the default generators for the prompts.
+
+    Returns
+    -------
+    List
+        A list of default generators.
+    """
+
+    assert generate != modify
+    
+    # TODO：这样只能获得当前的解释器的路径，而不是 prompts_assistant.py 的路径
+    current_path = os.getcwd()
+    
+    if generate:
+        folder_path = f"{current_path}/prompts_set/generating_prompts"
+    elif modify:
+        folder_path = f"{current_path}/prompts_set/modifing_prompts"
+        
+    return read_json_files(folder_path)
+
 class PromptAssistant(Agent):
     """
     PromptAssistant is a class to help the user to generate or modify prompts.
@@ -86,6 +125,7 @@ class PromptAssistant(Agent):
 
             user_input = f"My task is {task}. Please help me to make some good prompts."
             if strategy_list is None:
+                default_generators = load_default_generate(generate=True, modify=False)
                 results_prompt = prompt_cartridge(user_input=user_input, strategy_list=default_generators)
             else:
                 results_prompt = prompt_cartridge(user_input=user_input, strategy_list=strategy_list)
@@ -95,6 +135,7 @@ class PromptAssistant(Agent):
             user_input = f"My task is {task}. And my current prompt is: {prompt}\n Please help me to make it better!"
 
             if strategy_list is None:
+                default_generators = load_default_generate(modify=True, generate=False)
                 results_prompt = prompt_cartridge(user_input=user_input, strategy_list=default_generators)
             else:
                 results_prompt = prompt_cartridge(user_input=user_input, strategy_list=strategy_list)
