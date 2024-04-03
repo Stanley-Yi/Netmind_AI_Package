@@ -72,7 +72,7 @@ class Gen_pdf(Agent):
         imgs = self.pdftopages(pdf_path)
         cv2.imwrite(img_path, imgs[0])
 
-        return data
+        return data_clean
     
     def template(self, data: str, pdf_path: str, img_path: str,html_path: str) -> None:
  

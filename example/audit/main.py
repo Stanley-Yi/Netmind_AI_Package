@@ -13,7 +13,9 @@ for idx in range(1,100):
     html_path = htmls[idx%3]
     data = gen_pdf_tool(history=history, pdf_path=pdf_path, img_path=img_path, html_path=html_path)
     bank_info[img_path] = data
-    history = history + data + '\n'
+
+    history = history + data["name"] + '\n' + data["address_line1"] + '\n' + data["address_line2"] + '\n'
+    print(idx)
 
 with open('bank_info.json', 'w') as f:
     json.dump(bank_info, f)
