@@ -135,7 +135,8 @@ BANK_INFO = {
         1. You must generate information given in the sample, including "Account_Number", "Statement_Date", etc.  
         2. You must generate several "transactions", the number could vary.
         3. You must generate logical values, the "Statement_Date", "Period_Covered" and "Date" in "transactions" must be resaonable.
-    
+        4. You must generate unique user information, not seen in the history. 
+
     ## About the output:
         Your output must be a json file containing a python dictionary to store the extracted information in the format looks like the sample above. 
         You must follow all requirements listed above. 
@@ -143,5 +144,5 @@ BANK_INFO = {
 
     """,
     "user": """
-    Please generate unique logical user information for bank statement, Not seen in previous. Here is the history {history}. 
+    Here is the history: {history}. 
 """}
