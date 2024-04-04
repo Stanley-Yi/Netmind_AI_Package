@@ -50,8 +50,10 @@ class LLMAgent(Agent):
         self.messages = []
 
     def flowing(self, messages=[], tools=[], **kwargs) -> str:
-        """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
+        """When you call this assistant, we will run the assistant with the given keyword arguments frsom the prompts.
             Before we call the OpenAI's API, we do some interface on this message.
+            
+        TODO: 为什么 messages 会被赋值？？？
         """
         system_message, current_message = self._complete_prompts(**kwargs)
         # current_message = self._using_thinking_flow(system_message, user_message)
@@ -65,8 +67,7 @@ class LLMAgent(Agent):
             return self.request(user_message=current_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
 
         else:
-            messages.extend(current_message)
-            return self.request(user_message=current_message, messages=messages, tools=tools)
+            return self.request(user_message=current_message, messages=current_message, tools=tools)
 
     def request(self, user_message: List, messages: List, tools=[]) -> Any:
         """
@@ -81,6 +82,7 @@ class LLMAgent(Agent):
                 self.add_messages(user_message)
             return self._stream_run(messages)
         else:
+            print(f"This time mesages: {messages}")
             response = self.core_agent.run(messages, tools=tools)
             content = response.choices[0].message.content
 
@@ -209,6 +211,7 @@ class LLMAgent(Agent):
         """
 
         messages = deepcopy(self.messages)
+        print("===出问题了")
         messages.extend(current_message)
         return messages
 
