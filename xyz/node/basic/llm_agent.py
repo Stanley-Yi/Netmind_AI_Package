@@ -65,7 +65,10 @@ class LLMAgent(Agent):
             return self.request(user_message=current_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
 
         else:
+            # print(f"\n 2pre ======{messages}")
+            # print(f"\n tools: {tools}")
             messages.extend(current_message)
+            # print(f"\n 2post ======{messages}")
             return self.request(user_message=current_message, messages=messages, tools=tools)
 
     def request(self, user_message: List, messages: List, tools=[]) -> Any:

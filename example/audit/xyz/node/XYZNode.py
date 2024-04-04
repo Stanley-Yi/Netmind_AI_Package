@@ -21,7 +21,6 @@ from xyz.node.basic.llm_agent import LLMAgent
 from xyz.node.basic.functional_agent import FunctionalAgent
 from xyz.magics.assistant.manager_assistant import Manager
 from xyz.magics.assistant.input_format_assistant import InputFormatAgent
-from xyz.parameters import openai_agent as default_agent
 from xyz.utils.llm.openai_client import OpenAIClient
 
 
@@ -40,7 +39,7 @@ class XYZNode(Agent):
 
     def __init__(self,
                  node_config: dict,
-                 core_agent: OpenAIClient = default_agent) -> None:
+                 core_agent: OpenAIClient) -> None:
         """ 
         Initialize the Node.
 

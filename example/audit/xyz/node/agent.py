@@ -1,40 +1,53 @@
 """
-====
-Node
-====
-@file_name: assistant.py
+=====
+Agent
+=====
+@file_name: agent.py
 @author: Bin Liang
 @date: 2024-3-15
-
 """
 
 from typing import Dict, Callable, Any
-from abc import abstractmethod
+from xyz.node.node import Node
 
 from xyz.utils.llm.dummy_llm import dummy_agent as default_agent
 
 __all__ = ["Agent"]
 
 
-class Agent:
+class Agent(Node):
     name: str
-    description: str
+    description: Dict[str, str]
     parameters: Dict[str, str]
     required: list
     input_format_agent: None
     template: str
 
     def __init__(self, core_agent=default_agent) -> None:
-        # TODO: Careful with this. You'd better use super().__init__(core_agent)
+        super().__init__()
+
         self.input_format_agent = None
         self.core_agent = core_agent
 
         super().__setattr__("name", "")
-        super().__setattr__("description", "")
+        super().__setattr__("description", {})
         super().__setattr__("parameters", {})
         super().__setattr__("required", [])
-        super().__setattr__("type", "assistant")
+        super().__setattr__("type", "agent")
         super().__setattr__("input_format_agent", None)
+
+    def __str__(self) -> str:
+
+        info = f"Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
+
+        for key, value in vars(self).items():
+            try:
+                if "type" in vars(value) and value.type == "assistant":
+                    info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
+            except:
+                pass
+
+        return info
 
     def _wrap_call(self, **kwargs) -> Callable:
         # TODO: Preparing for hooks part. For example, we can add a hook to see the interface.
@@ -60,28 +73,6 @@ class Agent:
             return self.flowing(**parameters)
         else:
             return self.flowing(**kwargs)
-
-    __call__: Callable[..., Any] = _wrap_call
-    
-    @abstractmethod
-    def flowing(self, *args, **kwargs) -> Any:
-        """
-        We can use the overload for multimodal
-        """
-        ...
-
-    def __str__(self) -> str:
-
-        info = f"Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
-
-        for key, value in vars(self).items():
-            try:
-                if "type" in vars(value) and value.type == "assistant":
-                    info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
-            except:
-                pass
-
-        return info
     
     def _structure(self, order):
 
@@ -90,7 +81,7 @@ class Agent:
 
         for key, value in vars(self).items():
             try:
-                if "type" in vars(value) and value.type == "assistant":
+                if "type" in vars(value) and value.type == "agent":
                     info += f"\n{pre_blank}[SubAgent: {key}: {value._structure(order+1)}]"
             except:
                 pass
@@ -100,10 +91,10 @@ class Agent:
     def set_name(self, name: str) -> None:
         self.name = name
 
-    def set_description(self, description: str) -> None:
+    def set_description(self, description: dict) -> None:
         self.description = description
 
-    def set_parameters(self, parameters: Dict[str, Dict]) -> None:
+    def set_parameters(self, parameters: Dict[str, str]) -> None:
         self.parameters = parameters
         self.required = [key for key in self.parameters.keys()]
 

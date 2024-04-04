@@ -9,6 +9,8 @@ MemoryClient
 """
 
 
+__all__ = ["MemoryClient"]
+
 import os
 import json
 from typing import Dict
