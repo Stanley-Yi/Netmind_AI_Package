@@ -82,7 +82,6 @@ class LLMAgent(Agent):
                 self.add_messages(user_message)
             return self._stream_run(messages)
         else:
-            print(f"This time mesages: {messages}")
             response = self.core_agent.run(messages, tools=tools)
             content = response.choices[0].message.content
 
