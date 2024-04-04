@@ -17,8 +17,9 @@ __all__ = ["Agent"]
 
 class Agent(Node):
     name: str
-    description: Dict[str, str]
+    description: str
     parameters: Dict[str, str]
+    output: Dict[str, str]
     required: list
     input_format_agent: None
     template: str
@@ -30,8 +31,9 @@ class Agent(Node):
         self.core_agent = core_agent
 
         super().__setattr__("name", "")
-        super().__setattr__("description", {})
+        super().__setattr__("description", str)
         super().__setattr__("parameters", {})
+        super().__setattr__("output", {})
         super().__setattr__("required", [])
         super().__setattr__("type", "agent")
         super().__setattr__("input_format_agent", None)
@@ -74,7 +76,7 @@ class Agent(Node):
         else:
             return self.flowing(**kwargs)
     
-    def _structure(self, order):
+    def _structure(self, order) -> str:
 
         pre_blank = "\t"*order
         info = f"{pre_blank}Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
@@ -91,12 +93,15 @@ class Agent(Node):
     def set_name(self, name: str) -> None:
         self.name = name
 
-    def set_description(self, description: dict) -> None:
+    def set_description(self, description: str) -> None:
         self.description = description
 
     def set_parameters(self, parameters: Dict[str, str]) -> None:
         self.parameters = parameters
         self.required = [key for key in self.parameters.keys()]
+        
+    def set_output(self, output: Dict[str, str]) -> None:
+        self.output = output
 
     def tools_format(self) -> Dict[str, str]:
 
@@ -121,7 +126,7 @@ class Agent(Node):
         return request_info
 
     @property
-    def as_tool(self) -> Dict[str, str]:
+    def as_tool(self) -> Dict:
         return self.tools_format()
 
     def format_input(self, input: str) -> Dict[str, str]:
@@ -143,6 +148,6 @@ class Agent(Node):
         _, parameters = self.input_format_agent(tools=tools, input=input)
         return parameters
 
-    def add_input_format_agent(self, input_format_agent):
+    def add_input_format_agent(self, input_format_agent) -> None:
         self.input_format_agent = input_format_agent
 
