@@ -61,7 +61,7 @@ class Gen_pdf(Agent):
 
     def flowing(self, history: str, pdf_path: str, img_path: str,html_path: str) -> str:
         
-        data = self.llm_bank_agent(messages=[], history=history)
+        data = self.llm_bank_agent(history=history)
         
         data_clean = self.extract_dict_from_json(data)
         data_clean = json.loads(data_clean)

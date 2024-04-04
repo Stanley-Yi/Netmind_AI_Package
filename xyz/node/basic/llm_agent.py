@@ -47,29 +47,32 @@ class LLMAgent(Agent):
 
         self.template = self.node_config['template']
         self.generate_parameters = self.node_config['generate_parameters']
-        self.messages = []
+        self.memory = []
 
-    def flowing(self, messages=[], tools=[], **kwargs) -> str:
+    def flowing(self, messages=None, tools=[], **kwargs) -> str:
         """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
             Before we call the OpenAI's API, we do some interface on this message.
         """
+        
+        if messages is None:
+            local_messages = []
+        else:
+            local_messages = deepcopy(messages)
+            messages = None
+        
         system_message, current_message = self._complete_prompts(**kwargs)
         # current_message = self._using_thinking_flow(system_message, user_message)
 
-        if self.generate_parameters["inner_multi"]:
+        if  not self.generate_parameters["inner_multi"]:
+            local_messages.extend(current_message)
+            return self.request(user_message=current_message, messages=local_messages, tools=tools)
+        else:
             try:
                 assert messages is None
             except:
                 raise ValueError("The messages should be None when the inner-multi is True.")
-            messages = self._get_messages(current_message)
-            return self.request(user_message=current_message, messages=messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
-
-        else:
-            # print(f"\n 2pre ======{messages}")
-            # print(f"\n tools: {tools}")
-            messages.extend(current_message)
-            # print(f"\n 2post ======{messages}")
-            return self.request(user_message=current_message, messages=messages, tools=tools)
+            local_messages = self._get_messages(current_message)
+            return self.request(user_message=current_message, messages=local_messages, tools=tools)  # TODO: 这个 User message 传的不优雅。
 
     def request(self, user_message: List, messages: List, tools=[]) -> Any:
         """
@@ -105,7 +108,7 @@ class LLMAgent(Agent):
         # The reason why we not return the Generator is that we may need update the messages with inner_multi
         for word in self.core_agent.stream_run(messages):
             if self.generate_parameters["inner_multi"]:
-                self.messages[-1]["content"] += word
+                self.memory[-1]["content"] += word
             yield word
 
     def reset_messages(self, messages=[]) -> None:
@@ -118,7 +121,7 @@ class LLMAgent(Agent):
             The new messages for the assistant. Default is an empty list.
         """
 
-        self.messages = messages
+        self.memory = messages
 
     def add_messages(self, messages: list) -> None:
         """
@@ -133,7 +136,7 @@ class LLMAgent(Agent):
         if self.generate_parameters["inner_multi"]:
             for message in messages:
                 if message["role"] != "system":
-                    self.messages.append(message)
+                    self.memory.append(message)
 
     def _complete_prompts(self, **kwargs) -> tuple:  # TODO: 这里的返回值不够明确
         """
@@ -211,7 +214,7 @@ class LLMAgent(Agent):
             The assistant's messages.
         """
 
-        messages = deepcopy(self.messages)
+        messages = deepcopy(self.memory)
         messages.extend(current_message)
         return messages
 

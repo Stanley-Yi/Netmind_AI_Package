@@ -51,7 +51,7 @@ class Agent(Node):
 
     def _wrap_call(self, **kwargs) -> Callable:
         # TODO: Preparing for hooks part. For example, we can add a hook to see the interface.
-
+        
         if "auto" in kwargs:
             auto = kwargs.pop("auto")
         else:
@@ -73,6 +73,8 @@ class Agent(Node):
             return self.flowing(**parameters)
         else:
             return self.flowing(**kwargs)
+        
+    __call__: Callable[..., Any] = _wrap_call
     
     def _structure(self, order):
 
