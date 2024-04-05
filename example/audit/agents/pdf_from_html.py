@@ -235,10 +235,11 @@ LOAN_INFO = [
         }}
     }}
 ## You must follow all the requirements to modify the draft:
-    1. You must generate the same structure dictionary as the sample, including all the keys, the value could be different.
-    2. You would be given the user information, you must use the information to fill the generated dictionary as much as possible.
-    3. For those values that are not given in user information, you must generate logical values, considering loan detail, loan purpose, and user information.
-
+    1. You must generate the same structure dictionary as the sample, including all the keys and values.
+    2. You must generate complete dictionary, each key should have a corresponding value.
+    3. You would be given only part of the user information, you must use the information to fill the generated dictionary.
+    4. You must generate logical values for those information not given in the user information.
+    
 ## About the output:
     Your output must be a json file containing a python dictionary to store the extracted information in the format looks like the sample above. 
     You must follow all requirements listed above. 
