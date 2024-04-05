@@ -33,11 +33,7 @@
         <textarea name="address" required>{{ applicant.address }}</textarea>
         <br>
         Marital Status:<br>
-        <select name="maritalStatus" required>
-            {% for status in marital_statuses %}
-            <option value="{{ status }}" {% if status == applicant.marital_status %}selected{% endif %}>{{ status }}</option>
-            {% endfor %}
-        </select>
+        <input type="text" name="marital_status" value="{{ applicant.marital_status }}" required>
         <br>
     </fieldset>
 

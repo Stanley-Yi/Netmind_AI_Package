@@ -42,6 +42,7 @@ class Gen_pdf(Agent):
         self.openai_agent = OpenAIClient(api_key=OPENAI_API_KEY, model='gpt-4-0125-preview', temperature=0.7, top_p=0.8,
                                          max_tokens=2096)
         self.llm_bank_agent = LLMAgent(BANK_INFO, self.openai_agent, inner_multi=False, stream=False)
+        self.llm_loan_agent = LLMAgent(LOAN_INFO, self.openai_agent, inner_multi=False, stream=False)
 
     def pdftopages(self,pdf_path):
         """Input: PDF Filepath, Output: List of Page objects."""
@@ -76,19 +77,25 @@ class Gen_pdf(Agent):
 
         return data_clean
     
-    def template(self, data: str, pdf_path: str, img_path: str,html_path: str) -> None:
+    def template(self, user_information: str, pdf_path: str, img_path: str,html_path: str) -> None:
  
+        data = self.llm_loan_agent(user_information=user_information)
+        
+        data_clean = self.extract_dict_from_json(data)
+        data_clean = json.loads(data_clean)
         env = Environment(loader=FileSystemLoader(''))
         template = env.get_template(html_path)
-        html_content = template.render(**data)
+        html_content = template.render(**data_clean)
         # Generate PDF
         HTML(string=html_content).write_pdf(pdf_path)
         # convert pdf to images
         imgs = self.pdftopages(pdf_path)
         cv2.imwrite(img_path, imgs[0])
 
+        return data_clean
 
-# Example data, including transactions and other dynamic content
+
+# bank statement data, including transactions and other dynamic content
 data = {
     "Account_Number": "123-456-789",
     "Statement_Date": "2024-03-01",
@@ -149,4 +156,96 @@ Here is a sample of information that you need to follow:
     {"role": "user",
     "content": """
         Here is the history: {history}. 
+"""}]
+
+# loan application data
+loan_data = {
+    "title": "Loan Application Form",
+    "form_title": "Please Fill Out the Loan Application",
+    "form_action": "/submit-application",
+    "applicant": {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "ssn": "987-65-4321",
+        "dob": "1990-05-15",
+        "email": "jane.doe@example.com",
+        "phone": "555-6789",
+        "address": "123 Elm Street, Yourtown, YS",
+        "marital_status": "Single",
+        "employment_status": "Employed",
+        "employer_name": "YourCompany",
+        "annual_income": 50000,
+        "other_income": 5000,
+        "monthly_expenses": 2000
+    },
+    "marital_statuses": ["Single", "Married", "Divorced", "Widowed"],
+    "employment_statuses": ["Employed", "Unemployed", "Self-Employed", "Retired"],
+    "loan_details": {
+        "amount": 25000,
+        "purpose": "Home Renovation",
+        "term": 10,
+        "interest_rate": "5.5%"
+    },
+    "loan_purposes": {
+        "Home Purchase": "Home Purchase",
+        "Home Renovation": "Home Renovation",
+        "Debt Consolidation": "Debt Consolidation",
+        "Education": "Education",
+        "Other": "Other"
+    }
+}
+
+LOAN_INFO = [
+    {"role" : "system",
+     "content": """Now, you are a loan application assistant who can help user to generate logical user information for loan application. 
+    
+     Here is a sample data that you need to follow:
+    {{
+        "title": "Loan Application Form",
+        "form_title": "Please Fill Out the Loan Application",
+        "form_action": "/submit-application",
+        "applicant": {{
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "ssn": "987-65-4321",
+            "dob": "1990-05-15",
+            "email": "jane.doe.fake@example.com",
+            "phone": "555-6789",
+            "address": "123 Elm Street, Yourtown, YS",
+            "marital_status": "Single",
+            "employment_status": "Employed",
+            "employer_name": "YourCompany",
+            "annual_income": 50000,
+            "other_income": 5000,
+            "monthly_expenses": 2000
+        }},
+        "employment_statuses": ["Employed", "Unemployed", "Self-Employed", "Retired"],
+        "loan_details": {{
+            "amount": 25000,
+            "purpose": "Home Renovation",
+            "term": 10,
+            "interest_rate": "5.5%"
+        }},
+        "loan_purposes": {{
+            "Home Purchase": "Home Purchase",
+            "Home Renovation": "Home Renovation",
+            "Debt Consolidation": "Debt Consolidation",
+            "Education": "Education",
+            "Other": "Other"
+        }}
+    }}
+## You must follow all the requirements to modify the draft:
+    1. You must generate the same structure dictionary as the sample, including all the keys, the value could be different.
+    2. You would be given the user information, you must use the information to fill the generated dictionary as much as possible.
+    3. For those values that are not given in user information, you must generate logical values, considering loan detail, loan purpose, and user information.
+
+## About the output:
+    Your output must be a json file containing a python dictionary to store the extracted information in the format looks like the sample above. 
+    You must follow all requirements listed above. 
+    Your output must contain the json file quoted by "```json" and "```"
+
+    """},
+    {"role": "user",
+    "content": """
+        Here is the user information: {user_information}. 
 """}]
