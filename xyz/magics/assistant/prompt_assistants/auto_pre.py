@@ -1,10 +1,11 @@
 """
-==================
-AutoPromptEngineer
-==================
-@file_name: auto_prompt_engineer.py
+=======
+AutoPRE
+=======
+@file_name: auto_pre.py
 @author: Bin Liang
 @date: 2024-3-14
+From an opensource author.
 """
 
 __all__ = ["AutoPRE"]
