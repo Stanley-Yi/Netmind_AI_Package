@@ -45,7 +45,7 @@ class Manager(LLMAgent):
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
-    def run(self, content:str) -> str:
+    def run(self, content: str) -> str:
         raise NotImplementedError
 
     def save(self) -> None:

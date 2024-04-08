@@ -17,10 +17,6 @@ from typing import Generator, List
 from openai import Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
-# import from our tools
-# from xyz.parameters import logger
-
-
 __all__ = ["OpenAIClient"]
 
 
@@ -108,7 +104,7 @@ class OpenAIClient:
 
                 return response
 
-            except Exception as e:
+            except Exception:
                 count += 1
                 error_message = str(traceback.format_exc())
                 print(f"The error: {error_message}")
@@ -134,7 +130,6 @@ class OpenAIClient:
         Exception
             If there is an error while processing the messages.
         """
-        # 流式输出，为后续产品化作准备
 
         get_response_signal = False
         count = 0
@@ -147,26 +142,21 @@ class OpenAIClient:
                         timeout=5,
                         **self.generate_args
                 ):
-
                     if response.choices[0].delta.content is None:
-                        messages.append({"role": "assistant", "content": answer})
-                        get_response_signal = True
-                        return "--Finish--"
+                        return None
                     else:
                         text = response.choices[0].delta.content
                         yield text
                         answer += text
-            except Exception as e:
+            except Exception:
                 count += 1
                 error_message = str(traceback.format_exc())
+                print(f"The error: {error_message}")
+                print(f"The messages: {messages}")
                 time.sleep(2)
-                self.logger.error(f"The error: {error_message}")
 
-        answer = response.choices[0].message.content
-
-        return answer
-
-    def check_generate_args(self, generate_args: dict) -> dict:
+    @staticmethod
+    def check_generate_args(generate_args: dict) -> None:
         """
         Check the generate arguments.
 
@@ -174,11 +164,6 @@ class OpenAIClient:
         ----------
         generate_args : dict
             The generate arguments to be checked.
-
-        Returns
-        -------
-        dict
-            The checked generate arguments.
         """
 
         assert "llm" in generate_args

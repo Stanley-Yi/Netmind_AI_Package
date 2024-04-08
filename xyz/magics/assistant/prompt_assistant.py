@@ -20,7 +20,7 @@ from xyz.node.basic.llm_agent import LLMAgent
 class PromptsCartridge(Agent):
 
     def __init__(self, core_agent):
-        super().__init__(core_agent=core_agent)
+        super().__init__()
 
         self.name = "PromptsCartridge"
         self.description = {
