@@ -13,8 +13,8 @@ from ast import literal_eval
 
 from xyz.node.agent import Agent
 
-from example.pai.agents.search_answer_utils import question_search
-from example.pai.global_parameters import openai_agent
+from agents.search_answer_utils import question_search
+from global_parameters import openai_agent
 
 
 SQL_READER = 'netmind-rds-dev.cluster-ro-czi0esc0atmh.eu-west-2.rds.amazonaws.com'
@@ -51,13 +51,13 @@ class SearchAnswer(Agent):
     """
 
     def __init__(self):
-        super().__init__(openai_agent)
+        super().__init__()
 
-        self.set_name("SearchAnswer")
-        self.set_description("This is a teacher which can guide the user to search similar problem.")
-        self.set_parameters({"question": {"type": "str", "description": "The question here which need be researched."},
-                             "images": {"type": "str", "description": "The image of this question."},
-                             "course": {"type": "str", "description": "The course about this question."}})
+        # self.set_name("SearchAnswer")
+        # self.set_description("This is a teacher which can guide the user to search similar problem.")
+        # self.set_parameters({"question": {"type": "str", "description": "The question here which need be researched."},
+        #                      "images": {"type": "str", "description": "The image of this question."},
+        #                      "course": {"type": "str", "description": "The course about this question."}})
 
         # 配置我们的 memory assistant
 

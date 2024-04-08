@@ -11,21 +11,21 @@ Summary
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
-from example.pai.global_parameters import openai_agent
+from global_parameters import openai_agent
 
 
 class Summary(Agent):
 
     def __init__(self):
-        super().__init__(openai_agent)
+        super().__init__()
 
-        self.set_name("Summary")
-        self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
-        self.set_parameters({"messages": {"type": "list", "description": "The OpenAI messages list which store the "
-                                                                         "chat history between the user and assistant."}
-                             })
+        # self.set_name("Summary")
+        # self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
+        # self.set_parameters({"messages": {"type": "list", "description": "The OpenAI messages list which store the "
+        #                                                                  "chat history between the user and assistant."}
+        #                      })
 
-        self.llm_summary_agent = LLMAgent(SUMMARIZE, openai_agent, inner_multi=False, stream=True)
+        self.llm_summary_agent = LLMAgent(SUMMARIZE, openai_agent, stream=True)
 
     def flowing(self,  messages: list) -> str:
 

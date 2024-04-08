@@ -12,23 +12,23 @@ from typing import Generator
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
-from pai.global_parameters import openai_agent
+from global_parameters import openai_agent
 
 
 class GuidanceChat(Agent):
 
     def __init__(self):
-        super().__init__(openai_agent)
+        super().__init__()
 
-        self.set_name("GuidanceTeacher")
-        self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
-        self.set_parameters({"question": {"type": "str", "description": "The question here which need help."},
-                             "answer": {"type": "str", "description": "The answer of this question."},
-                             "interface": {"type": "str", "description": "The detail interface about this question."},
-                             "user_input": {"type": "str", "description": "The user's input in this time."}})
+        # self.set_name("GuidanceTeacher")
+        # self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
+        # self.set_parameters({"question": {"type": "str", "description": "The question here which need help."},
+        #                      "answer": {"type": "str", "description": "The answer of this question."},
+        #                      "interface": {"type": "str", "description": "The detail interface about this question."},
+        #                      "user_input": {"type": "str", "description": "The user's input in this time."}})
 
-        self.llm_start_agent = LLMAgent(GUIDE_START, openai_agent, inner_multi=False, stream=True)
-        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, openai_agent, inner_multi=False, stream=True)
+        self.llm_start_agent = LLMAgent(GUIDE_START, openai_agent, stream=True)
+        self.llm_guidance_agent = LLMAgent(GUIDE_TEACHER, openai_agent, stream=True)
 
     def flowing(self, question: str, answer: str, process: str,
                 content: str, messages: list = None) -> Generator:
@@ -42,8 +42,10 @@ class GuidanceChat(Agent):
 # Prompts Set
 
 # Step 2: 给出问题 + 简单答案 + 解析 -> 多轮对话交互引导用户学习如何解答这个问题
-GUIDE_START = {
-    "system": """You are an experienced AI teacher - Pai.
+GUIDE_START = [
+    
+    {"role" : "system",
+    "content": """You are an experienced AI teacher - Pai.
 
 ## Role of Teacher
 
@@ -74,7 +76,11 @@ Please ensure that you STRICTLY follow the following procedures and requirements
 #### Forbidden
 1. You must refusal to answer questions that do not have the same knowledge points to the given problem.
 2. Refuse to answer questions that are not related to learning, such as violence, sensitive content, and politically related content.
-""", "user":  """
+"""
+    }, 
+    
+    {"role":"user",
+     "content" : """
 Hi teacher, I'm so sorry to bother you. But this one, even though I have the problem and the parsing process, I still don't quite understand it. I wanted to ask you something.
 
 The Problem : {question}    
@@ -83,9 +89,12 @@ The Process: {process}
 
 Can you take me step by step to solve this problem? In the process of guiding, solve all my problems
 """}
+]
 
-GUIDE_TEACHER = {
-    "system": """You are an experienced AI teacher - Pai.
+GUIDE_TEACHER = [
+    
+    {"role" : "system",
+    "content": """You are an experienced AI teacher - Pai.
 
 ## Role of Teacher
 
@@ -116,6 +125,10 @@ Please ensure that you STRICTLY follow the following procedures and requirements
 #### Forbidden
 1. You must refusal to answer questions that do not have the same knowledge points to the given problem.
 2. Refuse to answer questions that are not related to learning, such as violence, sensitive content, and politically related content.
-""",
-    "user": "{content}"
-}
+"""
+    }, 
+    
+    {"role":"user",
+     "content" : "{content}"
+    }
+]

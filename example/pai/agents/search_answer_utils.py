@@ -13,9 +13,7 @@ from openai import OpenAI
 
 
 client = OpenAI(
-    api_key=os.environ.get(
-        API_KEY),
-)
+    api_key="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")
 
 MODEL = 'efficientnet_b3'
 DEVICE = None  # if None, use default device (cuda is enabled if available)

@@ -11,21 +11,31 @@ GenerateProcess
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
-from example.pai.global_parameters import openai_agent
+from global_parameters import openai_agent
 
 
 class GenerateProcess(Agent):
 
     def __init__(self):
-        super().__init__(openai_agent)
+        super().__init__()
 
-        self.set_name("GenerateProcess")
-        self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
-        self.set_parameters({"question": {"type": "str", "description": "The question here which need help."},
-                             "answer": {"type": "str", "description": "The answer of this question."}
-                             })
 
-        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, openai_agent, inner_multi=False, stream=False)
+        # self.set_information({
+        #     "type": "function",
+        #     "function": {
+        #         "name": "",
+        #         "description": "",
+        #         "parameters": ,
+        #         "required": [],
+        #     },
+        # })
+        # self.set_name("GenerateProcess")
+        # self.set_description("This is a teacher which can guide the user to solve the problem step by step.")
+        # self.set_parameters({"question": {"type": "str", "description": "The question here which need help."},
+        #                      "answer": {"type": "str", "description": "The answer of this question."}
+        #                      })
+
+        self.llm_summary_agent = LLMAgent(ANSWER_ANALYSIS, openai_agent, stream=False)
 
     def flowing(self, question: str, answer: str) -> str:
 
@@ -34,8 +44,10 @@ class GenerateProcess(Agent):
 
 
 # Step 1: 给出问题 + 简单答案 -> 解析
-ANSWER_ANALYSIS = {
-    "system": """From now on, you're an experienced teacher.
+ANSWER_ANALYSIS = [
+    
+    {"role" : "system",
+    "content": """From now on, you're an experienced teacher.
 
 ## Your character is
 Be patient and careful.
@@ -90,11 +102,16 @@ By following the correct order of operations, we can ensure that the arithmetic 
 
 You must be patient and careful to help students analyze the problems, you are not allowed to make any mistakes.
 The total steps cannot excess 10 steps, and do not contain cases.
-    """,
-    "user": """
+"""
+    },
+    
+    {"role": "user",
+    "content": """
 I want to ask the question:
 {question}
 
 And the standard answer is:
 {answer}    
-"""}
+"""
+    }
+]

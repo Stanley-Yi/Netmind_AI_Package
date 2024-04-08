@@ -3,11 +3,14 @@ test_company.py
 """
 
 import os
+import sys 
+sys.path.append("../..")
 
-API_KEY = ""
+API_KEY = "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"
 os.environ["OPENAI_API_KEY"] = API_KEY
 
-from example.pai.interface.pai_company import PaiCompany
+
+from interface.pai_company import PaiCompany
 
 if __name__ == "__main__":
     company = PaiCompany()
