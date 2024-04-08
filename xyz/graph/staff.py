@@ -8,10 +8,8 @@ Agent
 """
 
 
-from typing import Dict, Callable, Any
+from typing import Dict, Callable
 from xyz.node.agent import Agent
-
-from xyz.utils.llm.dummy_llm import dummy_agent as default_agent
 
 __all__ = ["Staff"]
 
@@ -25,7 +23,7 @@ class Staff(Agent):
     input_format_agent: None
     template: str
 
-    def __init__(self, core_agent=default_agent) -> None:
+    def __init__(self, core_agent) -> None:
         super().__init__()
 
         self.input_format_agent = None

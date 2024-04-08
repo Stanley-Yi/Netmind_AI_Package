@@ -8,50 +8,55 @@ CoreAGent
 To define the BlackSheep-Agent(The BasicCLass of Agent)
 """
 
-# python standard packages
+
+__all__ = ["OpenAIClient"]
+
+import os
 import time
 import traceback
 from typing import Generator, List
 
-# python third-party packages
+from dotenv import load_dotenv
+from openai import OpenAI
 from openai import Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
 
-__all__ = ["OpenAIClient"]
-
 
 class OpenAIClient:
+    """
+    The OpenAI client which uses the OpenAI API to generate responses to messages.
+    """
+    client: OpenAI
+    generate_args: dict
+    last_time_price: float
 
-    def __init__(self, api_key=None, logger=None, **generate_args):
-        """Initializes the assistant.
+    def __init__(self, api_key=None, **generate_args):
+        """Initializes the OpenAI Client.
 
         Parameters
         ----------
-        logger : logging.Logger, optional
-            A logger for logging messages, by default None.
-        generate_args : dict
-            A dictionary of keyword arguments to be passed to the OpenAI API.
+        api_key : str, optional
+            The OpenAI API key.
         """
 
         try:
-            from openai import OpenAI
+            if api_key is None:
+                load_dotenv()
+                api_key = os.getenv('OPENAI_API_KEY')
             self.client = OpenAI(api_key=api_key)
         except:
             raise ValueError("The OpenAI client is not available. Please check the OpenAI API key.")
 
+        # Set the default generate arguments for OpenAI's chat completions
         self.generate_args = {
             "model": "gpt-4-0125-preview",
             "temperature": 0.,
             "top_p": 1.0
         }
-
+        # If the user provides generate arguments, update the default values
         self.generate_args.update(generate_args)
 
-        # Set some default values for the generate arguments
-
-        self.logger = logger
-
-    def run(self, messages: List, tools: List = []) -> ChatCompletion | Stream[ChatCompletionChunk]:
+    def run(self, messages: List, tools: List = None) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """
         Run the assistant with the given messages.
 
@@ -73,20 +78,25 @@ class OpenAIClient:
             If there is an error while processing the messages.
         """
 
+        # If the user provides tools, use them; otherwise, this client will not use any tools
         if tools:
             tool_choice = "auto"
+            local_tools = tools
+            tools = None    # Reset the tools parameter to avoid errors
         else:
+            local_tools = []
             tool_choice = "none"
 
         get_response_signal = False
         count = 0
         while not get_response_signal and count < 10:
             try:
-                # In OpenAI's api, if we request with tools == [], it will make an error
+                # In OpenAI's api, if we request with tools == [], it will make an error. Caz the OpenAI use the default
+                # value is 'NOT_GIVEN' which is a special type designed by them.
                 if tool_choice == "auto":
                     response = self.client.chat.completions.create(
                         messages=messages,
-                        tools=tools,
+                        tools=local_tools,
                         tool_choice="auto",
                         **self.generate_args
                     )
@@ -99,11 +109,8 @@ class OpenAIClient:
 
                 prompt_tokens = response.usage.prompt_tokens
                 completion_tokens = response.usage.completion_tokens
-                this_time_price = self.get_oai_fees(self.generate_args['model'], prompt_tokens, completion_tokens)
-                # TODO: We do not compute the price for now, but we can add this feature in the future
-
+                self.last_time_price = self.get_oai_fees(self.generate_args['model'], prompt_tokens, completion_tokens)
                 return response
-
             except Exception:
                 count += 1
                 error_message = str(traceback.format_exc())
@@ -203,32 +210,21 @@ class OpenAIClient:
                 "prompt": 0.01,
                 "completion": 0.03
             },
-            "gpt-3.5-turbo": {
+            "gpt-3.5-turbo-instruct": {
                 "prompt": 0.0015,
                 "completion": 0.002
             },
-            "gpt-3.5-turbo-16k": {
-                "prompt": 0.003,
-                "completion": 0.004
+            "gpt-3.5-turbo-0125": {
+                "prompt": 0.0005,
+                "completion": 0.0015
             }
         }
 
-        if model_name.startswith("gpt-4-32k"):
-            model_name = "gpt-4-32k"
-        elif model_name.startswith("gpt-4-1106"):
-            model_name = "gpt-4-1106-preview"
-        elif model_name.startswith("gpt-4-0125"):
-            model_name = "gpt-4-0125-preview"
-        elif model_name.startswith("gpt-4"):
-            model_name = "gpt-4"
-        elif model_name.startswith("gpt-3.5-turbo-16k"):
-            model_name = "gpt-3.5-turbo-16k"
-        elif model_name.startswith("gpt-3.5-turbo"):
-            model_name = "gpt-3.5-turbo"
+        if model_name in openai_price:
+            pass
         else:
             raise ValueError(f"Unknown model name {model_name}")
-        if model_name not in openai_price:
-            return -1
+
         fee = (openai_price[model_name]["prompt"] * prompt_tokens + openai_price[model_name][
             "completion"] * completion_tokens) / 1000
 

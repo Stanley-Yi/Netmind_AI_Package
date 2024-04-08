@@ -9,7 +9,7 @@ LLMAgent
 """
 
 from copy import deepcopy
-from typing import Generator, List, Any
+from typing import Generator, Any
 
 from xyz.node.agent import Agent
 from xyz.utils.llm.openai_client import OpenAIClient
@@ -20,11 +20,21 @@ __all__ = ["LLMAgent"]
 class LLMAgent(Agent):
     """ 
     An assistant that uses the LLM (Language Learning Model) for processing messages.
+
+    1， This agent will have a template for the assistant's prompts.
+    2， This agent will have a core agent for calling the OpenAI API.
+    3， This agent will have a stream parameter for streaming the assistant's messages.
     """
+    information: dict
+    core_agent: OpenAIClient
+    last_request_info: dict
+    node_config: dict
+    template: list
+    generate_parameters: dict
 
     def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False) -> None:
         """
-        Initialize the LLMAgent.
+        Initialize the assistant with the given template and core agent.
 
         Parameters
         ----------
@@ -34,63 +44,69 @@ class LLMAgent(Agent):
             The core agent for the assistant.
         stream: bool, optional
             Whether to stream the assistant's messages, by default False.
+
+        Examples
+        --------
+        >>> from xyz.utils.llm.openai_client import OpenAIClient
+        >>> from xyz.magics.assistant.llm_agent import LLMAgent
+        >>> core_agent = OpenAIClient()
+        >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
+        >>>             {"role": "user", "content": "{content}"}]
+        >>> assistant = LLMAgent(template=template, core_agent=core_agent, stream=False)
+        >>> output = assistant(content="I want to write a story about a dog.")
         """
         super().__init__()
 
         self.core_agent = core_agent
 
-        generate_parameters = {"stream": stream}
-        self.node_config = {"template": template,
-                            "generate_parameters": generate_parameters}
+        # The node_config is used to store the assistant's configuration.
+        self.template = template
+        self.stream = stream
 
-        self.template = self.node_config['template']
-        self.generate_parameters = self.node_config['generate_parameters']
         self.last_request_info = {}
 
-    def flowing(self, messages: list = None, tools: list = None, **kwargs) -> str:
+    def flowing(self, messages: list = None, tools: list = None, **kwargs) -> Any:
         """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
         Before we call the OpenAI's API, we do some interface on this message.
 
         Parameters
+        ----------
+        messages: list, optional
+            The messages to use for completing the prompts, by default None.
+        tools: list, optional
+            The tools to use for completing the prompts, by default None.
+        **kwargs
+            The keyword arguments to use for completing the prompts.
 
+        Returns
+        -------
+        str/generator
+            The response from the assistant. If stream == True, we will return a generator.
         """
 
-        if messages is None:
-            local_messages = []
-        else:
-            local_messages = deepcopy(messages)
-            messages = None  # This is necessary, because we need to reset the messages
+        local_messages, messages = self._reset_default_list(messages)
+        local_tools, tools = self._reset_default_list(tools)
+        local_messages.extend(self._complete_prompts(**kwargs))
 
-        if tools is None:
-            local_tools = []
-        else:
-            local_tools = deepcopy(tools)
-            tools = None
-
-        system_message, current_message = self._complete_prompts(**kwargs)
-
-        local_messages.extend(current_message)
         return self.request(messages=local_messages, tools=local_tools)
 
-    def request(self, messages: list, tools: list = None) -> Any:
+    def request(self, messages: list, tools: list) -> Any:
         """
         Run the assistant with the given keyword arguments.
         """
 
-        if tools is None:
-            tools = []
         self.last_request_info = {
             "messages": messages,
             "tools": tools
         }
 
-        if self.generate_parameters["stream"]:
+        if self.stream:
             return self._stream_run(messages)
         else:
             response = self.core_agent.run(messages=messages, tools=tools)
             content = response.choices[0].message.content
 
-            # TODO: 要检测出是否一定有 tool 的返回
+            # TODO: 要检测出是否一定有 tool 的返回, 等待测试
             if content is None:
                 return response.choices[0].message.tool_calls[0].function
             else:
@@ -99,6 +115,16 @@ class LLMAgent(Agent):
     def _stream_run(self, messages: list) -> Generator[str, None, None]:
         """
         Run the assistant in a streaming manner with the given messages.
+
+        Parameters
+        ----------
+        messages: list
+            The messages which be used for call the LLM API.
+
+        Returns
+        -------
+        generator
+            The generator for the token(already be decoded) in assistant's messages.
         """
 
         return self.core_agent.stream_run(messages)
@@ -115,7 +141,30 @@ class LLMAgent(Agent):
 
         return self.last_request_info
 
-    def _complete_prompts(self, **kwargs) -> tuple:  # TODO: 这里的返回值不够明确
+    def _reset_default_list(self, parameter) -> tuple[list, Any]:
+        """
+        Reset the assistant's parameters to the default values.
+
+        Parameters
+        ----------
+        parameter
+            The parameter to reset.
+
+        Returns
+        -------
+        tuple
+            The value of this parameter in this time, and reset the parameter to None.
+        """
+
+        if parameter is None:
+            local = []
+        else:
+            local = deepcopy(parameter)
+            parameter = None
+
+        return local, parameter
+
+    def _complete_prompts(self, **kwargs) -> list:  # TODO: 这里的返回值不够明确
         """
         Complete the assistant's prompts with the given keyword arguments.
 
@@ -133,11 +182,8 @@ class LLMAgent(Agent):
         if type(self.template) is list:
 
             current_messages = deepcopy(self.template)
-            system_message = {}
 
             for i in range(len(current_messages)):
                 current_messages[i]['content'] = current_messages[i]['content'].format(**kwargs)
-                if current_messages[i]['role'] == 'system':
-                    system_message = current_messages[i]
 
-            return system_message, current_messages
+            return current_messages
