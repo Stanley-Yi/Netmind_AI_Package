@@ -164,7 +164,7 @@ class LLMAgent(Agent):
 
         return local, parameter
 
-    def _complete_prompts(self, **kwargs) -> list:  # TODO: 这里的返回值不够明确
+    def _complete_prompts(self, **kwargs) -> list:
         """
         Complete the assistant's prompts with the given keyword arguments.
 

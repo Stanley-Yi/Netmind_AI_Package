@@ -25,6 +25,12 @@ from openai.types.chat import ChatCompletion, ChatCompletionChunk
 class OpenAIClient:
     """
     The OpenAI client which uses the OpenAI API to generate responses to messages.
+
+    Examples
+    --------
+    >>> client = OpenAIClient()
+    >>> response = client.run([{"role":"user","conten":"Hello, how are you?"}])
+    >>> print(response.choices[0].message.content)
     """
     client: OpenAI
     generate_args: dict
