@@ -13,32 +13,19 @@ __all__ = ["Graph"]
 
 
 class Graph:
+    """
+    agent_list = []
 
-    def __init__(self):
-        pass
+    company_test = Company(agent_list)
 
-    def add_node(self, node):
-        pass
+    task = ""
+    result = company_test(task)
 
-    def add_edge(self, edge):
-        pass
+    1. input format
+    2. manager 决定流程
+        i. Manger 在 company 执行任务之前，就决定 edges
+        ii. 在运行中，根据 edges 去选择下一个
 
-    def remove_node(self, node):
-        pass
-
-    def remove_edge(self, edge):
-        pass
-
-    def get_node(self, node):
-        pass
-
-    def get_edge(self, edge):
-        pass
-
-    def __str__(self):
-        pass
-
-    def __repr__(self):
-        pass
+    """
 
 

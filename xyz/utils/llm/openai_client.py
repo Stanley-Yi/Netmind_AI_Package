@@ -146,7 +146,6 @@ class OpenAIClient:
 
         get_response_signal = False
         count = 0
-        answer = ""
         while not get_response_signal and count < 10:
             try:
                 for response in self.client.chat.completions.create(
@@ -160,7 +159,6 @@ class OpenAIClient:
                     else:
                         text = response.choices[0].delta.content
                         yield text
-                        answer += text
             except Exception:
                 count += 1
                 error_message = str(traceback.format_exc())

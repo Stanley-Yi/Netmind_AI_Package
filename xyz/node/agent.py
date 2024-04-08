@@ -16,6 +16,7 @@ from typing import Callable, Any
 class Agent:
     type: str
     information: dict
+    output: dict
 
     def __init__(self):
         """
@@ -49,6 +50,7 @@ class Agent:
 
         super().__setattr__("type", "agent")
         super().__setattr__("information", dict)
+        super().__setattr__("output", dict)
 
     def _wrap_call(self, **kwargs) -> Callable:
         """
