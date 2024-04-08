@@ -7,18 +7,20 @@ Agent
 @date: 2024-3-15
 """
 
+
 from typing import Dict, Callable, Any
-from xyz.node.node import Node
+from xyz.node.agent import Agent
 
 from xyz.utils.llm.dummy_llm import dummy_agent as default_agent
 
-__all__ = ["Agent"]
+__all__ = ["Staff"]
 
 
-class Agent(Node):
+class Staff(Agent):
     name: str
-    description: Dict[str, str]
+    description: str
     parameters: Dict[str, str]
+    output: Dict[str, str]
     required: list
     input_format_agent: None
     template: str
@@ -30,28 +32,16 @@ class Agent(Node):
         self.core_agent = core_agent
 
         super().__setattr__("name", "")
-        super().__setattr__("description", {})
+        super().__setattr__("description", str)
         super().__setattr__("parameters", {})
+        super().__setattr__("output", {})
         super().__setattr__("required", [])
         super().__setattr__("type", "agent")
         super().__setattr__("input_format_agent", None)
 
-    def __str__(self) -> str:
-
-        info = f"Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
-
-        for key, value in vars(self).items():
-            try:
-                if "type" in vars(value) and value.type == "assistant":
-                    info += f"\n\n\t[SubAgent: {key}: {value._structure(2)}]"
-            except:
-                pass
-
-        return info
-
     def _wrap_call(self, **kwargs) -> Callable:
         # TODO: Preparing for hooks part. For example, we can add a hook to see the interface.
-        
+
         if "auto" in kwargs:
             auto = kwargs.pop("auto")
         else:
@@ -73,32 +63,6 @@ class Agent(Node):
             return self.flowing(**parameters)
         else:
             return self.flowing(**kwargs)
-        
-    __call__: Callable[..., Any] = _wrap_call
-    
-    def _structure(self, order):
-
-        pre_blank = "\t"*order
-        info = f"{pre_blank}Agent(name={self.name}, description={self.description}, parameters={self.parameters})"
-
-        for key, value in vars(self).items():
-            try:
-                if "type" in vars(value) and value.type == "agent":
-                    info += f"\n{pre_blank}[SubAgent: {key}: {value._structure(order+1)}]"
-            except:
-                pass
-
-        return info
-
-    def set_name(self, name: str) -> None:
-        self.name = name
-
-    def set_description(self, description: dict) -> None:
-        self.description = description
-
-    def set_parameters(self, parameters: Dict[str, str]) -> None:
-        self.parameters = parameters
-        self.required = [key for key in self.parameters.keys()]
 
     def tools_format(self) -> Dict[str, str]:
 
@@ -123,7 +87,7 @@ class Agent(Node):
         return request_info
 
     @property
-    def as_tool(self) -> Dict[str, str]:
+    def as_tool(self) -> Dict:
         return self.tools_format()
 
     def format_input(self, input: str) -> Dict[str, str]:
@@ -145,6 +109,6 @@ class Agent(Node):
         _, parameters = self.input_format_agent(tools=tools, input=input)
         return parameters
 
-    def add_input_format_agent(self, input_format_agent):
+    def add_input_format_agent(self, input_format_agent) -> None:
         self.input_format_agent = input_format_agent
 
