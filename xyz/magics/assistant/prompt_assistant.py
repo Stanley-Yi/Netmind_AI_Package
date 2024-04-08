@@ -17,7 +17,6 @@ from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 
 
-
 class PromptsCartridge(Agent):
 
     def __init__(self, core_agent):
@@ -86,7 +85,8 @@ def read_json_files(directory):
         except:
             raise Exception(f"Error in reading the file: {filename}")
     return content_list
-    
+
+
 def load_default_generate(generate=True, modify=False):
     """
     Load the default generators for the prompts.
@@ -98,16 +98,17 @@ def load_default_generate(generate=True, modify=False):
     """
 
     assert generate != modify
-    
+
     # TODO：这样只能获得当前的解释器的路径，而不是 prompts_assistant.py 的路径
     current_path = os.getcwd()
-    
+
     if generate:
         folder_path = f"{current_path}/prompts_set/generating_prompts"
     elif modify:
-        folder_path = f"{current_path}/prompts_set/modifing_prompts"
-        
+        folder_path = f"{current_path}/prompts_set/modifying_prompts"
+
     return read_json_files(folder_path)
+
 
 class PromptAssistant(Agent):
     """
@@ -145,4 +146,3 @@ class PromptAssistant(Agent):
                 print(result)
 
         return results_prompt
-

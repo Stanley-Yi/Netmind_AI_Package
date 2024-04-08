@@ -5,7 +5,6 @@ Node
 @file_name: node.py
 @author: Bin Liang
 @date: 2024-3-15
-
 """
 
 
@@ -21,6 +20,12 @@ class Node:
     def __init__(self):
 
         super().__setattr__("type", "node")
+        super().__setattr__("name", "")
+        super().__setattr__("description", str)
+        super().__setattr__("parameters", {})
+        super().__setattr__("output", {})
+        super().__setattr__("required", [])
+        super().__setattr__("input_format_agent", None)
 
     def _wrap_call(self, **kwargs) -> Callable:
 

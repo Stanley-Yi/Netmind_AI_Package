@@ -1,9 +1,9 @@
 anytree==2.12.1
 fastapi==0.110.0
 loguru==0.5.3
-matplotlib==3.6.2
+matplotlib
 networkx==3.1
-numpy==1.23.4
+numpy
 openai==1.14.3
 pymilvus==2.4.0
 pymongo==3.12.0

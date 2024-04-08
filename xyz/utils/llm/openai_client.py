@@ -148,7 +148,7 @@ class OpenAIClient:
                         **self.generate_args
                 ):
 
-                    if response.choices[0].delta.content == None:
+                    if response.choices[0].delta.content is None:
                         messages.append({"role": "assistant", "content": answer})
                         get_response_signal = True
                         return "--Finish--"

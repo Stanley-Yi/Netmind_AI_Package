@@ -25,7 +25,7 @@ class Manager(LLMAgent):
     需要有的功能：
     
     1. 和其他的 assistant 进行交互
-    2. 能够修改其他 assistant 的prompts 进行迭代升级，或许可以利用 autoprompts 这个项目
+    2. 能够修改其他 assistant 的prompts 进行迭代升级，或许可以利用 auto-prompting 这个项目
     3. 能够获取所有 assistant 当前的状态和信息，进行任务的分配和调度
     4. 能够判断当前任务的进程，是否已经结束。
     
@@ -42,7 +42,7 @@ class Manager(LLMAgent):
         # TODO：这个 manager 相当于是一个 特殊的管理者，可以进行特殊的操作
         raise NotImplementedError
 
-    def __call__(self, *args, **kwds):
+    def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
     def run(self, content:str) -> str:
