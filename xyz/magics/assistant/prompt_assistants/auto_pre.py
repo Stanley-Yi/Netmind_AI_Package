@@ -31,9 +31,9 @@ class AutoPRE(Agent):
         Examples
         --------
         >>> from xyz.utils.llm.openai_client import OpenAIClient
-        >>> from xyz.function.auto_prompt_engineer import AutoPromptEngineer
+        >>> from xyz.function.auto_prompt_engineer import AutoPRE
         >>> core_agent = OpenAIClient()
-        >>> auto_prompt_engineer = AutoPromptEngineer(core_agent)
+        >>> auto_prompt_engineer = AutoPRE(core_agent)
         >>> task = "Build a new prompt from solving k-12 math."
         >>> result = auto_prompt_engineer(task=task)
 
@@ -55,7 +55,7 @@ class AutoPRE(Agent):
         # Using the template we designed to define the assistant, which can do the main task.
         self.llm_prompt_engineer = LLMAgent(template=prmompt_engineer, core_agent=core_agent, stream=False)
 
-    def flowing(self, task: str,) -> str:
+    def flowing(self, task: str) -> str:
         """
         The main function of the AutoPromptEngineer.
 

@@ -55,7 +55,7 @@ class AutoPromptEngineer(Agent):
         # Using the template we designed to define the assistant, which can do the main task.
         self.llm_prompt_engineer = LLMAgent(template=prmompt_engineer, core_agent=core_agent, stream=False)
 
-    def flowing(self, task: str,) -> str:
+    def flowing(self, task: str) -> str:
         """
         The main function of the AutoPromptEngineer.
 
