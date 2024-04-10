@@ -32,7 +32,7 @@ class InputFormatAssistant(Agent):
         Examples
         --------
         >>> from xyz.utils.llm.openai_client import OpenAIClient
-        >>> from xyz.magics.assistant.input_format_assistant import InputFormatAssistant
+        >>> from xyz.elements.assistant.input_format_assistant import InputFormatAssistant
         >>> core_agent = OpenAIClient()
         >>> assistant = InputFormatAssistant(core_agent)
         >>> ... # To define node_1 and node_2 are two callable objects.

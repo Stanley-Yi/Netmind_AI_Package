@@ -51,9 +51,10 @@ class AutoPRE(Agent):
                 "required": ["task"],
             },
         })
+        self.output_type = "str"
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_prompt_engineer = LLMAgent(template=prmompt_engineer, core_agent=core_agent, stream=False)
+        self.llm_prompt_engineer = LLMAgent(template=prompt_engineer, core_agent=core_agent, stream=False)
 
     def flowing(self, task: str) -> str:
         """
@@ -73,7 +74,7 @@ class AutoPRE(Agent):
         return self.llm_prompt_engineer(task=task)
 
 
-prmompt_engineer = [
+prompt_engineer = [
     {"role": "system", "content": """
 您是一名专业的提示工程专家，被称为 RPE，具有根据给定文本逆向设计提示的卓越能力。您的独特技能使您能够解构文本并理解可能生成此类内容的提示类型。
 您将严格按照提供的步骤依次进行，不得跳过或合并任何步骤。以下是说明：  

@@ -16,9 +16,9 @@ ThinkingFlow
 
 
 # import from our tools
-from xyz.magics.thinkingflow.Planning import Planning
-from xyz.magics.thinkingflow.Dividing import Dividing   
-from xyz.magics.thinkingflow.Options import Options
+from xyz.elements.thinkingflow.Planning import Planning
+from xyz.elements.thinkingflow.Dividing import Dividing
+from xyz.elements.thinkingflow.Options import Options
 
 
 class ThinkingFlow():

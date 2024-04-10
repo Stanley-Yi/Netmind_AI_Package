@@ -9,7 +9,7 @@ Options
 """
 
 
-from xyz.magics.thinkingflow.ThinkingStructure import ThinkingStructure
+from xyz.elements.thinkingflow.ThinkingStructure import ThinkingStructure
 
 
 class Options(ThinkingStructure):

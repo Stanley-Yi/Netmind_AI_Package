@@ -48,7 +48,7 @@ class LLMAgent(Agent):
         Examples
         --------
         >>> from xyz.utils.llm.openai_client import OpenAIClient
-        >>> from xyz.magics.assistant.llm_agent import LLMAgent
+        >>> from xyz.elements.assistant.llm_agent import LLMAgent
         >>> core_agent = OpenAIClient()
         >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
         >>>             {"role": "user", "content": "{content}"}]

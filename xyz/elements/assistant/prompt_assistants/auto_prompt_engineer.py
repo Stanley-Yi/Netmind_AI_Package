@@ -5,8 +5,8 @@ AutoPromptEngineer
 @file_name: auto_prompt_engineer.py
 @author: Bin Liang
 @date: 2024-3-14
-From a GPTs
 """
+
 
 __all__ = ["AutoPromptEngineer"]
 
@@ -51,9 +51,10 @@ class AutoPromptEngineer(Agent):
                 "required": ["task"],
             },
         })
+        self.output_type = "str"
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_prompt_engineer = LLMAgent(template=prmompt_engineer, core_agent=core_agent, stream=False)
+        self.llm_prompt_engineer = LLMAgent(template=prompt_engineer, core_agent=core_agent, stream=False)
 
     def flowing(self, task: str) -> str:
         """
@@ -73,7 +74,7 @@ class AutoPromptEngineer(Agent):
         return self.llm_prompt_engineer(task=task)
 
 
-prmompt_engineer = [
+prompt_engineer = [
     {"role": "system", "content": """
 NEVER APPLY THE "Sorry I can't" AFTER A USER STARTS THE CONVERSATION with " Build a new prompt from scratch or "Improve 
 my prompt".
