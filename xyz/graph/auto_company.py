@@ -20,6 +20,7 @@ from typing import Any
 
 from xyz.node.agent import Agent
 from xyz.elements.assistant.manager_assistant import ManagerAssistant
+from xyz.elements.assistant.input_format_assistant import InputFormatAssistant
 from xyz.utils.llm.openai_client import OpenAIClient
 
 
@@ -98,26 +99,28 @@ class AutoCompany(Agent):
         self.agents_info = ""
         self.llm_client = llm_client
         self.manager = ManagerAssistant(llm_client)
+        self.input_format_agent = InputFormatAssistant(llm_client)
 
         self.logger = self.create_logger(logger_path)
 
     def flowing(self, user_input, work_plan: dict = None) -> Any:
 
         # Step 1: Manager 分析当前任务
-        task_analysis = self.manager.analyze_task(user_input)
+        agents_info = self.get_agents_info()
+        task_analysis = self.manager.analyze_task(user_input=user_input, agents_info=agents_info)
         self.logger.info("=======Start=========", extra={"step": "Task Analysis",
                                                          "agent": "Manager-Assistant"})
-        self.stream_show(task_analysis)
-        # TODO: 解决不了直接结束
+        task_analysis = self.stream_show(task_analysis)
+        if "NO-WE-CAN-NOT" in task_analysis:
+            return None
 
         # Step 2: Manager 开始对任务进行分配，并且生成 work plan
-        agents_info = self.get_agents_info()
         if work_plan is None:
+            self.logger.info("=======Work-Plan=========", extra={"step": "Work Plan",
+                                                                 "agent": "Manager-Assistant"})
             work_plan_str = self.manager.create_work_plan(task_analysis, agents_info)
+            work_plan_str = self.stream_show(work_plan_str)
             work_plan = self.read_work_plan(work_plan_str)
-        self.logger.info("=======Work-Plan=========", extra={"step": "Work Plan",
-                                                             "agent": "Manager-Assistant"})
-        self.stream_show(str(work_plan))
 
         # Step 3: Manager 开始执行 work plan
         solving_history = self.execute_work_plan(task=task_analysis, work_plan=work_plan)
@@ -150,13 +153,27 @@ class AutoCompany(Agent):
         return agents_info
 
     @staticmethod
-    def read_work_plan(work_plan_str: str):
+    def get_special_part(pattern: str, content: str) -> str:
 
-        matches = re.findall(r'```(.*?)```', work_plan_str, re.DOTALL)
+        pattern = "\|\|\|" + pattern
+        # 使用正则表达式提取`special_char special_char`之间的内容
+        pattern = pattern + '(.*?)' + pattern
+        match = re.search(pattern, content, re.DOTALL)
+
+        if match:
+            # 使用group(1)获取第一个括号内匹配的内容，并使用strip()去除前后的空白字符
+            result = match.group(1).strip()
+        else:
+            result = ""
+
+        return result
+
+    def read_work_plan(self, work_plan_str: str):
+
+        matches = self.get_special_part("working-plan", work_plan_str)
         working_graph = {}
 
-        # 将提取出的字符串转换为Python的字典
-        agents = [json.loads(match) for match in matches]
+        agents = json.loads(matches)
 
         for agent in agents:
             working_graph[agent["name"]] = agent
@@ -181,17 +198,20 @@ class AutoCompany(Agent):
         assert end_agent is not None, "No end agent found in the work plan"
 
         current_point = start_agent
-        current_content = task
+        current_content = (f"The task analysis is: {task}\n\nThe Plan is: \n\n{json.dumps(work_plan)}\n\n"
+                           f"Now, we need let the first agent to start the work. "
+                           f"We must call the first function, and get the parameters from the information above.")
+
         while current_point != "Finish":
 
             self.logger.info("-------------", extra={"step": f"{work_plan[current_point]['sub_task']}",
                                                      "agent": current_point})
-
             # Step 0: Get the agent object
             execute_agent = self.agents[current_point]
             # Step 1: Execute the agent
-            # TODO: 进行  Input Format 的转换
-            response = execute_agent(current_content)
+            format_current_content = self.input_format_agent(input_content=current_content,
+                                                             functions_list=[execute_agent.information])
+            response = execute_agent(**format_current_content)
             current_response = self.stream_show(response)
 
             # Step 2: Manager do the small summary
@@ -204,10 +224,12 @@ class AutoCompany(Agent):
             current_summary_content = self.stream_show(current_summary)
 
             # Step 4: Update the working history
-            working_history += current_summary + "\n"
+            working_history += current_point + ":" + current_summary_content + "\n\n"
 
             # Step 5: Update the current point
-            next_name = self.get_next_name(current_summary_content)
+            next_name = self.get_special_part(pattern="next-employee", content=current_summary_content)
+            name = json.loads(next_name)
+            next_name = name['name']
             if next_name in work_plan:
                 current_point = next_name
             else:
@@ -216,7 +238,7 @@ class AutoCompany(Agent):
                                                                      "agent": "None"})
 
             # Step 6: 迭代下一轮的输入
-            current_content = current_response
+            current_content = self.get_special_part(pattern="next-step", content=current_summary_content)
 
         return working_history
 
@@ -246,15 +268,6 @@ class AutoCompany(Agent):
                           f"Output Type{agent.output_type}\n## ----------\n\n")
 
         return next_info
-
-    @staticmethod
-    def get_next_name(current_summary_content):
-
-        next_name = re.findall(r'\|\|\|(.*?)\|\|\|', current_summary_content, re.DOTALL)
-        if next_name is None:
-            return "Finish"
-        else:
-            return next_name.group(1)
 
     @staticmethod
     def create_logger(logger_path=None):

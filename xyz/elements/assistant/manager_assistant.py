@@ -84,6 +84,8 @@ class ManagerAssistant(Agent):
         ----------
         user_input: str
             The task information.
+        agents_info: str
+            The information of the agents which in this company.
 
         Returns
         -------
@@ -229,7 +231,8 @@ assignment.
     * name: employee name
     * sub_task: information about this work step
     * Please do not write any other information in the dictionary.
-    * You don't need to involve every employee in the task, you just need to choose the combination that you think best solves the task.
+    * You don't need to involve every employee in the task, you just need to choose the combination that you think best 
+    solves the task.
     * Please do not involve unhelpful employees in this work, which will waste time and resources.
 i.e. 
 |||working-plan
@@ -242,7 +245,7 @@ i.e.
 Think carefully about and analyze the current task and employee information, and record your thinking process. Then, 
 make a work plan by using the format which you are required for this task.
 Please tell the user why you make such a plan? Please describe the reason before you give me the plan.
-Please tell the user why each emplyee must take a specific task. Do they have some special contribution to the task?
+Please tell the user why each employee must take a specific task. Do they have some special contribution to the task?
 Take a deep breath and start to analysis the task.
 """
      },
@@ -276,8 +279,10 @@ You need to summarize the current work and tell which employee should handle the
 1. You must summarize the current work.
 2. You must to analyze where the current process is, what your employees have done and what they haven't done.
 3. You must to approach the next phase of your work independently. Put all the relevant information together. So that 
-the next employee can continue to work without relying on the previous job. You need to use a separate format to record this information.
-4. You must use a special format to record the information. The format must begin with |||next-step and end with |||next-step.
+the next employee can continue to work without relying on the previous job. You need to use a separate format to record 
+this information.
+4. You must use a special format to record the information. The format must begin with |||next-step and end 
+with |||next-step.
 i.e.
     Summary the current work:
     xxx
@@ -292,7 +297,7 @@ i.e.
 1. You need to select the next employee to handle the next work step.
 2. You must analysis the employee information and the work requirement.
 3. You must make sure that this employee can handle the next work step.
-4. You must select one employee.
+4. You must select one employee. And use the python dictionary to represent the employee information: {{"name": "xxx"}}
 5. You need to use a special format to record and express the next employee: |||next-employee and |||next-employee.
 i.e.
     |||next-employee
