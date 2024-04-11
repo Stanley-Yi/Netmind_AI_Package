@@ -76,7 +76,7 @@ class ManagerAssistant(Agent):
                "3. Summary the work plan step. manager.summary_step()\n" \
                "4. Summary the work history. manager.summary()\n"
 
-    def analyze_task(self, user_input: str) -> Generator:
+    def analyze_task(self, user_input: str, agents_info: str) -> Generator:
         """
         The manager assistant can help the manager to analyze the task.
 
@@ -90,7 +90,8 @@ class ManagerAssistant(Agent):
         Generator
             The analysis result of this task.
         """
-        return self.llm_task_analysis(user_input=user_input)
+        return self.llm_task_analysis(user_input=user_input,
+                                      agents_info=agents_info)
 
     def create_work_plan(self, task_analysis: str, agents_info: str) -> Generator:
         """
@@ -195,6 +196,9 @@ your employees can do this task.
 
 This is the task information:
 {user_input}
+
+Your employees in this company are:
+{agents_info}
 """
      }
 ]
@@ -221,18 +225,24 @@ You need to make a plan for a task which you want to do. The plan should be clea
 3. You must assign work in order according to the work process. You need use a python list to represent each job 
 assignment.
 4. Each job assignment must include: employee name and information about this work step. 
-    It's represented by a python dictionary.: {"name": "xxx", "sub_task": "xxx"}
+    It's represented by a python dictionary.: {{"name": "xxx", "sub_task": "xxx"}}
     * name: employee name
     * sub_task: information about this work step
     * Please do not write any other information in the dictionary.
+    * You don't need to involve every employee in the task, you just need to choose the combination that you think best solves the task.
+    * Please do not involve unhelpful employees in this work, which will waste time and resources.
 i.e. 
 |||working-plan
 [
-    {"name": "Alice", "sub_task": "Task1"}, 
-    {"name": "Bob", "sub_task": "Task2"}
+    {{"name": "Alice", "sub_task": "Task1"}}, 
+    {{"name": "Bob", "sub_task": "Task2"}}
 ]
 |||working-plan
 
+Think carefully about and analyze the current task and employee information, and record your thinking process. Then, 
+make a work plan by using the format which you are required for this task.
+Please tell the user why you make such a plan? Please describe the reason before you give me the plan.
+Please tell the user why each emplyee must take a specific task. Do they have some special contribution to the task?
 Take a deep breath and start to analysis the task.
 """
      },
@@ -246,7 +256,9 @@ Now I have already analysis the task and make a judgment if your employees can d
 And you know the information of the employees in this company:
 {agents_info}
 
-Please make a work plan by using the format which you are required for this task.
+Think carefully about and analyze the current task and employee information, and record your thinking process. Then, 
+make a work plan by using the format which you are required for this task.
+Please tell me why you make such a plan? Please describe the reason before you give me the plan.
 """
      }
 ]
@@ -284,7 +296,7 @@ i.e.
 5. You need to use a special format to record and express the next employee: |||next-employee and |||next-employee.
 i.e.
     |||next-employee
-    {"name": "Alice"}
+    {{"name": "Alice"}}
     |||next-employee
 
 ### Communication Requirement:
