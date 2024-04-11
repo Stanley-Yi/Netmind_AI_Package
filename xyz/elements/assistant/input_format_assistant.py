@@ -18,7 +18,7 @@ class InputFormatAssistant(Agent):
     information: str
     llm_input_format: LLMAgent
 
-    def __init__(self, core_agent: OpenAIClient) -> None:
+    def __init__(self, llm_client: OpenAIClient) -> None:
         """
         The InputFormatAssistant is a tool to help user using the function calling format to interface the messages.
         This assistant will call for the OpenAI API and use a tools list which is some callables object's information,
@@ -26,7 +26,7 @@ class InputFormatAssistant(Agent):
 
         Parameters
         ----------
-        core_agent: OpenAIClient
+        llm_client: OpenAIClient
             The core agent for the assistant, which can call the OpenAI API.
 
         Examples
@@ -34,7 +34,7 @@ class InputFormatAssistant(Agent):
         >>> from xyz.utils.llm.openai_client import OpenAIClient
         >>> from xyz.elements.assistant.input_format_assistant import InputFormatAssistant
         >>> core_agent = OpenAIClient()
-        >>> assistant = InputFormatAssistant(core_agent)
+        >>> assistant = InputFormatAssistant(llm_client)
         >>> ... # To define node_1 and node_2 are two callable objects.
         >>> node_1_parameter_1 = ""
         >>> node_1_parameter_2 = ""
@@ -61,7 +61,7 @@ class InputFormatAssistant(Agent):
         })
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_input_format = LLMAgent(template=input_format_prompts, core_agent=core_agent, stream=False)
+        self.llm_input_format = LLMAgent(template=input_format_prompts, llm_client=llm_client, stream=False)
 
     def flowing(self, input_content: str, functions_list: list) -> dict:
         """

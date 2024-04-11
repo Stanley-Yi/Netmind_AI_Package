@@ -26,13 +26,13 @@ class LLMAgent(Agent):
     3， This agent will have a stream parameter for streaming the assistant's messages.
     """
     information: dict
-    core_agent: OpenAIClient
+    llm_client: OpenAIClient
     last_request_info: dict
     node_config: dict
     template: list
     generate_parameters: dict
 
-    def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False) -> None:
+    def __init__(self, template: list, llm_client: OpenAIClient, stream: bool = False) -> None:
         """
         Initialize the assistant with the given template and core agent.
 
@@ -40,7 +40,7 @@ class LLMAgent(Agent):
         ----------
         template: list
             The template for the assistant's prompts. It should be a list of OpenAI's messages.
-        core_agent: OpenAIClient
+        llm_client: OpenAIClient
             The core agent for the assistant.
         stream: bool, optional
             Whether to stream the assistant's messages, by default False.
@@ -52,12 +52,12 @@ class LLMAgent(Agent):
         >>> core_agent = OpenAIClient()
         >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
         >>>             {"role": "user", "content": "{content}"}]
-        >>> assistant = LLMAgent(template=template, core_agent=core_agent, stream=False)
+        >>> assistant = LLMAgent(template=template, core_agent=llm_client, stream=False)
         >>> output = assistant(content="I want to write a story about a dog.")
         """
         super().__init__()
 
-        self.core_agent = core_agent
+        self.llm_client = llm_client
 
         # The node_config is used to store the assistant's configuration.
         self.template = template
@@ -103,7 +103,7 @@ class LLMAgent(Agent):
         if self.stream:
             return self._stream_run(messages)
         else:
-            response = self.core_agent.run(messages=messages, tools=tools)
+            response = self.llm_client.run(messages=messages, tools=tools)
             content = response.choices[0].message.content
 
             # TODO: 要检测出是否一定有 tool 的返回, 等待测试
@@ -127,7 +127,7 @@ class LLMAgent(Agent):
             The generator for the token(already be decoded) in assistant's messages.
         """
 
-        return self.core_agent.stream_run(messages)
+        return self.llm_client.stream_run(messages)
 
     def debug(self) -> dict[Any, Any]:
         """

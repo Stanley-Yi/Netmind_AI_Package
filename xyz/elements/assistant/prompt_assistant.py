@@ -39,7 +39,7 @@ class PromptsCartridge(Agent):
         process_bar = tqdm(prompts_list, desc="Processing prompts", leave=False)
 
         for prompt in prompts_list:
-            local_llm_agent = LLMAgent(template=prompt, core_agent=self.core_agent, inner_multi=False, stream=False)
+            local_llm_agent = LLMAgent(template=prompt, llm_client=self.core_agent, inner_multi=False, stream=False)
             local_result = local_llm_agent(content=user_input)
             results.append(local_result)
             process_bar.update(1)
