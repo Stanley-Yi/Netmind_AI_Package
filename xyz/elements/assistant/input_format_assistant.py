@@ -60,6 +60,7 @@ class InputFormatAssistant(Agent):
             },
         })
 
+        self.messages = []
         # Using the template we designed to define the assistant, which can do the main task.
         self.llm_input_format = LLMAgent(template=input_format_prompts, llm_client=llm_client, stream=False)
 
@@ -81,7 +82,18 @@ class InputFormatAssistant(Agent):
             The parameters dict for the next callable object which user want to use.
         """
 
-        return self.llm_input_format(input_content=input_content, tools=functions_list)
+        return self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
+    
+    def add_history(self, messages: list) -> None:
+        """
+        Add messages to the assistant's global conversation history.
+
+        Parameters
+        ----------
+        messages: list
+            The list of messages to be added to the assistant's global conversation history.
+        """
+        self.messages.append(messages)
 
 
 input_format_prompts = [
@@ -97,8 +109,10 @@ Requirements:
 3. You must fully understand what the parameters of tools mean.
 4. You must convert the natural language information into the function calling format and use the input information to 
 define various parameters in the tool.
+5. You have a global conversation history that you can use in this task. Sometimes the parameter information for the fucntion call you want to set is in the history dialog.
 
 You are not allowed to fail, please be patient to complete this task.
+Take a deep breath and start your work.
 """
      },
 
@@ -106,6 +120,7 @@ You are not allowed to fail, please be patient to complete this task.
 The input in this time is : 
 {input_content},
 please choose a tool to interface this input.
+Note: It is possible that the parameter information of the tool is in the history dialog. You can view the history dialog to get the parameter information of the tool. Please think carefully.
 """
-     }
+    }
 ]

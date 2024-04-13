@@ -84,6 +84,10 @@ class AutoCompany(Agent):
     1. work plan 可以是一个图，可以有多个分支
     2. 可以有条件判断
     3. 可以有循环
+    
+    TODO: 
+    1. input format agent 要有全局 memory. 两个方案：1. 拼接messages 2. 长文本
+    2. manager 要有全局 memory
     """
     llm_client: OpenAIClient
     manager: ManagerAssistant
@@ -225,6 +229,7 @@ class AutoCompany(Agent):
 
             # Step 4: Update the working history
             working_history += current_point + ":" + current_summary_content + "\n\n"
+            self.input_format_agent.add_history({"role":"assistant", "role":current_summary_content})
 
             # Step 5: Update the current point
             next_name = self.get_special_part(pattern="next-employee", content=current_summary_content)
