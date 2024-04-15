@@ -63,7 +63,7 @@ class AutoCompany(Agent):
             work_plan = self.read_work_plan(work_plan_str)
 
         # Step 3: Manager 开始执行 work plan
-        solving_history = self.execute_work_plan(task=task_analysis, work_plan=work_plan)
+        solving_history = self.execute_work_plan(user_input=user_input, task=task_analysis, work_plan=work_plan)
 
         # Step 4: 制作总结
         summary_response = self.manager.summary(solving_history)
@@ -79,12 +79,9 @@ class AutoCompany(Agent):
 
         return work_plan, solving_record
 
-    def execute_work_plan(self, task: str, work_plan: dict):
+    def execute_work_plan(self, user_input: str, task: str, work_plan: dict):
 
         working_history = ""
-
-        self.logger.info(f"=======Work Plan=========\n{work_plan}", extra={'step': "Show plan",
-                                                                           'agent': "None"})
 
         # Prepare: Choose the start agent and end agent
         positions = {agent_info['position']: agent_info['name'] for agent_info in work_plan.values()}
@@ -95,18 +92,23 @@ class AutoCompany(Agent):
         assert end_agent is not None, "No end agent found in the work plan"
 
         current_point = start_agent
-        current_content = (f"The task analysis is: {task}\n\nThe Plan is: \n\n{json.dumps(work_plan)}\n\n"
+        current_content = (f"The user input is: {user_input}\n\n"
+                           f"The task analysis is: {task}\n\n"
+                           f"The Plan is: \n\n{json.dumps(work_plan)}\n\n"
                            f"Now, we need let the first agent to start the work. "
                            f"We must call the first function, and get the parameters from the information above.")
 
         while current_point != "ErrorStop":
 
-            self.logger.info("-------------", extra={'step': f"{work_plan[current_point]['sub_task']}",
-                                                     'agent': current_point})
+            self.logger.info("-------------", extra={'step': f"In Company Progress: {work_plan[current_point]['sub_task']}",
+                                                     'agent': f"Company Agent: {current_point}"})
             # Step 0: Get the agent object
             execute_agent = self.agents[current_point]
 
             # Step 1: Execute the agent
+            self.logger.info("-------------\nI am communicating with this agent and arranging tasks for him. Please wait."
+                             "\n-------------", 
+                             extra={'step': "Analysis the parameters", 'agent': "Manager-Assistant"})
             format_current_content = self.input_format_agent(input_content=current_content,
                                                              functions_list=[execute_agent.information])
             response = execute_agent(**format_current_content)

@@ -322,6 +322,9 @@ You must select an employee which in the next list.
 2. The next step should be clear and easy to understand.
 3. The employee should be able to understand the next step and start working.
 
+## Importance:
+PLEASE DO NOT REPEAT THE WORK MORE THAN 3 TIMES.
+
 Take a deep breath and start to summary the current work.
 """
      },

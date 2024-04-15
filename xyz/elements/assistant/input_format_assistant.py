@@ -88,7 +88,6 @@ class InputFormatAssistant(Agent):
         """
 
         completion = self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
-        print(completion)
         parameters = completion.arguments
 
         return json.loads(parameters)
