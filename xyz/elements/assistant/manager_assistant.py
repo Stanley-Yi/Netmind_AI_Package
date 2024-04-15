@@ -7,7 +7,6 @@ ManagerAssistant
 @date: 2024-04-09
 """
 
-
 __all__ = ["ManagerAssistant"]
 
 from typing import Generator
@@ -42,9 +41,9 @@ class ManagerAssistant(Agent):
                                "supervision.",
                 "parameters": {
                     "type": "object",
-                    "properties":{"task": {"type": "str", "description": "The task which the user want to do."},
-                               "source": {"type": "list", "description": "The Agents in this company."},
-                               },
+                    "properties": {"task": {"type": "str", "description": "The task which the user want to do."},
+                                   "source": {"type": "list", "description": "The Agents in this company."},
+                                   },
                     "required": ["task"],
                 }
             },
@@ -223,8 +222,10 @@ You need to make a plan for a task which you want to do. The plan should be clea
 1. You have already analysis the task and make a judgment if your employees can do this task. Please use the analysis.
 2. You must refer to employee information and assign tasks to appropriate employees.
 3. You will eventually have to document and express your plan in a special format.
-4. You need to recruit as many helpful employees as possible, regardless of the cost. Results are the most important thing. 
-As far as possible, there should be employees to plan, employees to implement, employees to inspect, and finally employees 
+4. You need to recruit as many helpful employees as possible, regardless of the cost. Results are the most important 
+thing. 
+As far as possible, there should be employees to plan, employees to implement, employees to inspect, and finally 
+employees 
 to summarize.
 
 ### Work Plan Format:
@@ -249,7 +250,8 @@ i.e.
     {{"name": "Bob", "sub_task": "Task2"}}
 ]
 |||working-plan
-Make sure the above content is parsed with json.loads(he current task and employee information, and record your thinking process. Then, 
+Make sure the above content is parsed with json.loads(he current task and employee information, and record your thinking
+ process. Then, 
 make a work plan by using the format which you are required for this task.
 Please tell the user why you make such a plan? Please describe the reason before you give me the plan.
 Please tell the user why each employee must take a specific task. Do they have some special contribution to the task?

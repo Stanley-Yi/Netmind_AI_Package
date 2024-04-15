@@ -9,7 +9,7 @@ InputFormatAssistant
 
 __all__ = ["InputFormatAssistant"]
 
-import json 
+import json
 
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
@@ -57,9 +57,9 @@ class InputFormatAssistant(Agent):
                 "description": "Help user using the function calling format to interface the messages.",
                 "parameters": {
                     "type": "object",
-                    "properties":{"last_node_input": {"type": "string", "description": "The input of the last node."},
-                               "next_nodes_format": {"type": "list", "description": "The format of the next nodes."}
-                               },
+                    "properties": {"last_node_input": {"type": "string", "description": "The input of the last node."},
+                                   "next_nodes_format": {"type": "list", "description": "The format of the next nodes."}
+                                   },
                     "required": ["last_node_input", "next_nodes_format"],
                 }
             },
@@ -87,12 +87,12 @@ class InputFormatAssistant(Agent):
             The parameters dict for the next callable object which user want to use.
         """
 
-        completion= self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
+        completion = self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
         print(completion)
         parameters = completion.arguments
-        
+
         return json.loads(parameters)
-    
+
     def add_history(self, messages: list) -> None:
         """
         Add messages to the assistant's global conversation history.
@@ -102,7 +102,7 @@ class InputFormatAssistant(Agent):
         messages: list
             The list of messages to be added to the assistant's global conversation history.
         """
-        self.messages.append(messages)
+        self.messages.extend(messages)
 
 
 input_format_prompts = [
@@ -118,7 +118,8 @@ Requirements:
 3. You must fully understand what the parameters of tools mean.
 4. You must convert the natural language information into the function calling format and use the input information to 
 define various parameters in the tool.
-5. You have a global conversation history that you can use in this task. Sometimes the parameter information for the fucntion call you want to set is in the history dialog.
+5. You have a global conversation history that you can use in this task. Sometimes the parameter information for the 
+function call you want to set is in the history dialog.
 
 You are not allowed to fail, please be patient to complete this task.
 Take a deep breath and start your work.
@@ -129,7 +130,8 @@ Take a deep breath and start your work.
 The input in this time is : 
 {input_content},
 please choose a tool to interface this input.
-Note: It is possible that the parameter information of the tool is in the history dialog. You can view the history dialog to get the parameter information of the tool. Please think carefully.
+Note: It is possible that the parameter information of the tool is in the history dialog. You can view the history 
+dialog to get the parameter information of the tool. Please think carefully.
 """
-    }
+     }
 ]

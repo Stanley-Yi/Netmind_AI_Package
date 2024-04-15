@@ -24,16 +24,6 @@ from xyz.elements.assistant.input_format_assistant import InputFormatAssistant
 from xyz.utils.llm.openai_client import OpenAIClient
 
 
-class FinishAgent:
-    
-    def __init__(self):
-
-        self.information = {}
-        self.information['function'] = {}
-        self.information['function']['description'] = "This is the last agent in the work plan. It means the work plan is finished."
-        self.input_type = None
-        self.output_type = None
-
 class AutoCompany(Agent):
     llm_client: OpenAIClient
     manager: ManagerAssistant
@@ -83,11 +73,103 @@ class AutoCompany(Agent):
 
         solving_record = ("User Input: " + user_input + "\n" + task_analysis
                           + solving_history + summary_response)
-        
+
         self.logger.info("=======Finish=========\n\t\tSee you next time!!!", extra={'step': "Finish",
-                                                           'agent': "Netmind_AI_XYZ"})
+                                                                                    'agent': "Netmind_AI_XYZ"})
 
         return work_plan, solving_record
+
+    def execute_work_plan(self, task: str, work_plan: dict):
+
+        working_history = ""
+
+        self.logger.info(f"=======Work Plan=========\n{work_plan}", extra={'step': "Show plan",
+                                                                           'agent': "None"})
+
+        # Prepare: Choose the start agent and end agent
+        positions = {agent_info['position']: agent_info['name'] for agent_info in work_plan.values()}
+        start_agent = positions.get('start')
+        end_agent = positions.get('end')
+
+        assert start_agent is not None, "No start agent found in the work plan"
+        assert end_agent is not None, "No end agent found in the work plan"
+
+        current_point = start_agent
+        current_content = (f"The task analysis is: {task}\n\nThe Plan is: \n\n{json.dumps(work_plan)}\n\n"
+                           f"Now, we need let the first agent to start the work. "
+                           f"We must call the first function, and get the parameters from the information above.")
+
+        while current_point != "ErrorStop":
+
+            self.logger.info("-------------", extra={'step': f"{work_plan[current_point]['sub_task']}",
+                                                     'agent': current_point})
+            # Step 0: Get the agent object
+            execute_agent = self.agents[current_point]
+
+            # Step 1: Execute the agent
+            format_current_content = self.input_format_agent(input_content=current_content,
+                                                             functions_list=[execute_agent.information])
+            response = execute_agent(**format_current_content)
+            current_response = self.stream_show(response)
+
+            if work_plan[current_point]['position'] == "end":
+                working_history += current_point + ":" + current_response + "\n\n"
+                self.logger.info("The work plan is finished", extra={'step': "Finish",
+                                                                     'agent': "None"})
+                break
+
+            # Step 2: Manager do the small summary
+            next_list_info = self.get_next_list_info(work_plan[current_point])
+            current_summary = self.manager.summary_step(working_history=working_history,
+                                                        current_response=current_response,
+                                                        next_list_info=next_list_info)
+
+            # Step 3: Log the information
+            self.logger.info("-------Step Summary------", extra={'step': f"Summarize this step",
+                                                                 'agent': f"Manager-Assistant"})
+            current_summary_content = self.stream_show(current_summary)
+
+            # Step 4: Update the working history
+            working_history += current_point + ":" + current_summary_content + "\n\n"
+            self.input_format_agent.add_history([{"role": "assistant", "content": current_summary_content}])
+
+            # Step 5: Update the current point
+            next_name = self.get_special_part(pattern="next-employee", content=current_summary_content)
+            name = json.loads(next_name)
+            next_name = name['name']
+            if next_name in work_plan:
+                current_point = next_name
+                current_content = current_response + self.get_special_part(pattern="next-step",
+                                                                           content=current_summary_content)
+            else:
+                current_point = "ErrorStop"
+                self.logger.info("This task is terminate with some error.", extra={'step': "Terminate",
+                                                                                   'agent': "AutoSystem"})
+
+        return working_history
+
+    def read_work_plan(self, work_plan_str: str):
+
+        matches = self.get_special_part("working-plan", work_plan_str)
+        working_graph = {}
+
+        matches = re.sub(r'(?<!\\)\\(?!\\)', '\\\\\\\\', matches)
+        agents = json.loads(matches)
+
+        for i, agent in enumerate(agents):
+            if i == 0:
+                agent["position"] = "start"
+            elif i == len(agents) - 1:
+                agent["position"] = "end"
+            else:
+                agent["position"] = "in-progress"
+
+            working_graph[agent["name"]] = agent
+
+            if i != 0:
+                working_graph[agents[i - 1]["name"]]["next"] = [agent["name"]]
+
+        return working_graph
 
     def add_agent(self, agents: list) -> None:
         for agent in agents:
@@ -105,6 +187,18 @@ class AutoCompany(Agent):
 
         return agents_info
 
+    def get_next_list_info(self, work_step):
+
+        next_info = f"Next Agents: \n\n"
+        for agent_name in work_step['next']:
+            agent = self.agents[agent_name]
+            next_info += (f"## ----------\nName: {agent_name}\n"
+                          f"Description: {agent.information['function']['description']}\n"
+                          f"Input Type: {agent.input_type}\n"
+                          f"Output Type{agent.output_type}\n## ----------\n\n")
+
+        return next_info
+
     @staticmethod
     def get_special_part(pattern: str, content: str) -> str:
 
@@ -120,131 +214,6 @@ class AutoCompany(Agent):
             result = ""
 
         return result
-
-    def read_work_plan(self, work_plan_str: str):
-
-        matches = self.get_special_part("working-plan", work_plan_str)
-        working_graph = {}
-
-        matches = re.sub(r'(?<!\\)\\(?!\\)', '\\\\\\\\',  matches)
-        agents = json.loads(matches)
-
-        for i, agent in enumerate(agents):
-            if i == 0:
-                agent["position"] = "start"
-            elif i == len(agents) - 1:
-                agent["position"] = "end"
-            else:
-                agent["position"] = "in-progress"
-            
-            working_graph[agent["name"]] = agent
-            
-            if i != 0:
-                working_graph[agents[i - 1]["name"]]["next"] = [agent["name"]]
-
-        return working_graph
-
-    def execute_work_plan(self, task: str, work_plan: dict):
-
-        start_agent = None
-        end_agent = None
-        working_history = ""
-        
-        self.logger.info(f"=======Work Plan=========\n{work_plan}", extra={'step': "Show plan",
-                                                         'agent': "None"})
-
-        # Step 1: 选择第一个 Agent
-        for agent_info in work_plan.values():
-            if agent_info["position"] == "start":
-                start_agent = agent_info["name"]
-            elif agent_info["position"] == "end":
-                end_agent = agent_info["name"]
-                work_plan[agent_info["name"]]["next"] = "Finish"
-        work_plan["Finish"] = {"sub_task": "Finish", "position": "end", "next": []}
-        self.agents["Finish"] = FinishAgent()
-
-        assert start_agent is not None, "No start agent found in the work plan"
-        assert end_agent is not None, "No end agent found in the work plan"
-
-        current_point = start_agent
-        current_content = (f"The task analysis is: {task}\n\nThe Plan is: \n\n{json.dumps(work_plan)}\n\n"
-                           f"Now, we need let the first agent to start the work. "
-                           f"We must call the first function, and get the parameters from the information above.")
-
-        while current_point != "Finish":
-
-            self.logger.info("-------------", extra={'step': f"{work_plan[current_point]['sub_task']}",
-                                                     'agent': current_point})
-            # Step 0: Get the agent object
-            execute_agent = self.agents[current_point]
-            
-            # Step 1: Execute the agent
-            format_current_content = self.input_format_agent(input_content=current_content,
-                                                             functions_list=[execute_agent.information])
-            response = execute_agent(**format_current_content)
-            current_response = self.stream_show(response)
-            
-            if work_plan[current_point]['position'] == "end":
-                working_history += current_point + ":" + current_summary_content + "\n\n"
-                break
-
-            # Step 2: Manager do the small summary
-            next_list_info = self.get_next_list_info(work_plan[current_point])
-            current_summary = self.manager.summary_step(working_history=working_history,
-                                                        current_response=current_response,
-                                                        next_list_info=next_list_info)
-
-            # Step 3: Log the information
-            self.logger.info("-------Step Summary------", extra={'step': f"Summarize this step",
-                                                     'agent': f"Manager-Assistant"})
-            current_summary_content = self.stream_show(current_summary)
-
-            # Step 4: Update the working history
-            working_history += current_point + ":" + current_summary_content + "\n\n"
-            self.input_format_agent.add_history({"role":"assistant", "content":current_summary_content})
-
-            # Step 5: Update the current point
-            next_name = self.get_special_part(pattern="next-employee", content=current_summary_content)
-            name = json.loads(next_name)
-            next_name = name['name']
-            if next_name in work_plan:
-                current_point = next_name
-            else:
-                current_point = "Finish"
-                self.logger.info("The work plan is finished", extra={'step': "Finish",
-                                                                     'agent': "None"})
-
-            # Step 6: 迭代下一轮的输入
-            current_content = current_response+self.get_special_part(pattern="next-step", content=current_summary_content)
-
-        return working_history
-
-    def stream_show(self, response):
-
-        full_content = ""
-        if inspect.isgenerator(response):
-            for word in response:
-                self.logger.process(word, extra={'step': "in progress", 'agent': "None"})
-                full_content += word
-        else:
-            full_content = response
-            self.logger.info(response, extra={'step': "in progress", 'agent': "None"})
-
-        self.logger.process("\n", extra={'step': "in progress", 'agent': "None"})
-
-        return full_content
-
-    def get_next_list_info(self, work_step):
-
-        next_info = f"Next Agents: \n\n"
-        for agent_name in work_step['next']:
-            agent = self.agents[agent_name]
-            next_info += (f"## ----------\nName: {agent_name}\n"
-                          f"Description: {agent.information['function']['description']}\n"
-                          f"Input Type: {agent.input_type}\n"
-                          f"Output Type{agent.output_type}\n## ----------\n\n")
-
-        return next_info
 
     @staticmethod
     def create_logger(logger_path=None):
@@ -311,7 +280,7 @@ class AutoCompany(Agent):
                 self.stream.flush()
 
         # logger = logging.getLogger()
-        logger = logging.getLogger("Assitant")
+        logger = logging.getLogger("Assistant")
         logger.setLevel(logging.INFO)
 
         file_handler = FileHandlerNoNewline(local_path)
@@ -328,3 +297,18 @@ class AutoCompany(Agent):
         logger.addHandler(console_handler)
 
         return logger
+
+    def stream_show(self, response):
+
+        full_content = ""
+        if inspect.isgenerator(response):
+            for word in response:
+                self.logger.process(word, extra={'step': "in progress", 'agent': "None"})
+                full_content += word
+        else:
+            full_content = response
+            self.logger.info(response, extra={'step': "in progress", 'agent': "None"})
+
+        self.logger.process("\n", extra={'step': "in progress", 'agent': "None"})
+
+        return full_content
