@@ -65,7 +65,7 @@ class LLMAgent(Agent):
 
         self.last_request_info = {}
 
-    def flowing(self, messages: list = None, tools: list = None, **kwargs) -> Any:
+    def flowing(self, messages: list = None, tools: list = None, images: list = None, **kwargs) -> Any:
         """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
         Before we call the OpenAI's API, we do some interface on this message.
 
@@ -88,22 +88,23 @@ class LLMAgent(Agent):
         local_tools, tools = self._reset_default_list(tools)
         local_messages.extend(self._complete_prompts(**kwargs))
 
-        return self.request(messages=local_messages, tools=local_tools)
+        return self.request(messages=local_messages, tools=local_tools, images=images)
 
-    def request(self, messages: list, tools: list) -> Any:
+    def request(self, messages: list, tools: list, images: list) -> Any:
         """
         Run the assistant with the given keyword arguments.
         """
 
         self.last_request_info = {
             "messages": messages,
-            "tools": tools
+            "tools": tools,
+            "images": images
         }
 
         if self.stream:
-            return self._stream_run(messages)
+            return self._stream_run(messages=messages, images=images)
         else:
-            response = self.llm_client.run(messages=messages, tools=tools)
+            response = self.llm_client.run(messages=messages, tools=tools, images=images)
             content = response.choices[0].message.content
 
             # TODO: 要检测出是否一定有 tool 的返回, 等待测试
