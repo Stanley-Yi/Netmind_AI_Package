@@ -7,6 +7,7 @@ InputFormatAssistant
 @date: 2024-3-14
 """
 
+
 __all__ = ["InputFormatAssistant"]
 
 import json
@@ -69,7 +70,7 @@ class InputFormatAssistant(Agent):
         # Using the template we designed to define the assistant, which can do the main task.
         self.llm_input_format = LLMAgent(template=input_format_prompts, llm_client=llm_client, stream=False)
 
-    def flowing(self, input_content: str, functions_list: list) -> dict:
+    def flowing(self, input_content: str, functions_list: list, repeat_time: int=0) -> dict:
         """
         The main function of the assistant, which can help user using the function calling format to interface
         the messages.
@@ -87,8 +88,14 @@ class InputFormatAssistant(Agent):
             The parameters dict for the next callable object which user want to use.
         """
 
-        completion = self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
-        parameters = completion.arguments
+        if repeat_time == 3:
+            raise Exception("The manager assistant failed to distribute the tasks.")
+        try:
+            completion = self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
+            parameters = completion.arguments
+        except Exception:
+            return self.flowing(input_content=input_content, functions_list=functions_list, repeat_time=repeat_time+1)
+            
 
         return json.loads(parameters)
 
