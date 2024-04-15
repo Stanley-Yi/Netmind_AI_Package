@@ -32,7 +32,7 @@ class LLMAgent(Agent):
     template: list
     generate_parameters: dict
 
-    def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False) -> None:
+    def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False, multi_choice: bool = False) -> None:
         """
         Initialize the assistant with the given template and core agent.
 
@@ -62,6 +62,7 @@ class LLMAgent(Agent):
         # The node_config is used to store the assistant's configuration.
         self.template = template
         self.stream = stream
+        self.multi_choice = multi_choice
 
         self.last_request_info = {}
 
@@ -104,6 +105,9 @@ class LLMAgent(Agent):
             return self._stream_run(messages)
         else:
             response = self.core_agent.run(messages=messages, tools=tools)
+            if self.multi_choice:
+                return response
+            
             content = response.choices[0].message.content
 
             # TODO: 要检测出是否一定有 tool 的返回, 等待测试
