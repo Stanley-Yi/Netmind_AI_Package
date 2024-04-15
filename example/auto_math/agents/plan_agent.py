@@ -23,15 +23,27 @@ class PlanAgent(Agent):
     def __init__(self, llm_client: OpenAIClient):
         super().__init__()
         
-        self.set_information({
+        self.set_information(
+        {
             "type": "function",
             "function": {
-                "name": "PlanAgent",
-                "description": "This agent can help user to make a plan for solving the question step by step.",
-                "parameters": {"question": {"type": "str", "description": "The question here which need help."}},
+            "name": "PlanAgent",
+            "description": "This function can help user to make a plan for solving the question step by step.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The question here which need help.",
+                }
+                },
                 "required": ["question"],
             },
-        })
+            }
+        }
+        )
+        self.input_type = "str"
+        self.output_type = "str"
         
         self.llm_plan = LLMAgent(template=plan_prompt, llm_client=llm_client, stream=True)
         

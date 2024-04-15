@@ -12,7 +12,7 @@ AutoMathCompany
 import argparse 
 
 from xyz.graph.auto_company import AutoCompany
-from xyz.utils.openai_client import OpenAIClient
+from xyz.utils.llm.openai_client import OpenAIClient
 
 from example.auto_math.agents.plan_agent import PlanAgent
 from example.auto_math.agents.solving_agent import SolvingAgent
@@ -23,8 +23,7 @@ from example.auto_math.agents.coding_agent import CodingAgent
 def set_args():
     
     parser = argparse.ArgumentParser(description="Auto Math Company")
-    parser.add_argument("--api_key", type=str, default="", help="OpenAI API Key")
-    parser.add_argument("--question", type=str, default="", help="The question which need help.")
+    parser.add_argument("--question", type=str, default="Find the sum. \( \sum_{n=1}^{10} 4n - 5 \)", help="The question which need help.")
     
     return parser.parse_args()
 
@@ -33,7 +32,7 @@ if __name__ == "__main__":
     
     args= set_args()
     
-    llm_client = OpenAIClient(api_key=args.api_key)
+    llm_client = OpenAIClient(model="gpt-4-turbo")
     
     plan_agent = PlanAgent(llm_client)
     solving_agent = SolvingAgent(llm_client)
@@ -44,6 +43,6 @@ if __name__ == "__main__":
     
     company = AutoCompany(llm_client=llm_client)
     
-    company.add_agents(staffs)
+    company.add_agent(staffs)
     
-    company(question=args.question)
+    company(user_input=args.question)

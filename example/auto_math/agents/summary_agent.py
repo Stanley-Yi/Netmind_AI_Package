@@ -27,19 +27,24 @@ class SummaryAgent(Agent):
             "type": "function",
             "function": {
                 "name": "SummaryAgent",
-                "description": "This agent can help user to solve the question by using a plan.",
-                "parameters": {"question": {"type": "str", "description": "The question here which need help."},
-                               "answer": {"type": "str", "description": "The answer written by following the plan."},
-                               "coding_result": {"type": "str", "description": "The result which be computed by the python code."}},
-                "required": ["question", "answer", "coding_result"],
+                "description": "This agent can help user to summarize the solving process and the coding process.",
+                "parameters": {
+                    "type": "object",
+                    "properties":{"question": {"type": "string", "description": "The question here which need help."},
+                               "full_solving_process": {"type": "string", "description": "The full solving process answer."},
+                               "coding_answer": {"type": "string", "description": "The result which be computed by the python code."}},
+                    "required": ["question", "full_solving_process", "coding_answer"],
+                }
             },
         })
+        self.input_type = "str"
+        self.output_type = "str"
         
         self.llm_summary = LLMAgent(template=summary_prompt, llm_client=llm_client, stream=True)
         
-    def flowing(self, question: str, answer: str, coding_answer: str) -> Any:
+    def flowing(self, question: str, full_solving_process: str, coding_answer: str) -> Any:
         
-        return self.llm_summary(question=question, answer=answer, computed=coding_answer)
+        return self.llm_summary(question=question, answer=full_solving_process, computed=coding_answer)
     
 summary_prompt = [
 {

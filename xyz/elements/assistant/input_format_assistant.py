@@ -9,6 +9,8 @@ InputFormatAssistant
 
 __all__ = ["InputFormatAssistant"]
 
+import json 
+
 from xyz.node.agent import Agent
 from xyz.node.basic.llm_agent import LLMAgent
 from xyz.utils.llm.openai_client import OpenAIClient
@@ -53,10 +55,13 @@ class InputFormatAssistant(Agent):
             "function": {
                 "name": "InputFormatAssistant",
                 "description": "Help user using the function calling format to interface the messages.",
-                "parameters": {"last_node_input": {"type": "str", "description": "The input of the last node."},
+                "parameters": {
+                    "type": "object",
+                    "properties":{"last_node_input": {"type": "string", "description": "The input of the last node."},
                                "next_nodes_format": {"type": "list", "description": "The format of the next nodes."}
                                },
-                "required": ["last_node_input", "next_nodes_format"],
+                    "required": ["last_node_input", "next_nodes_format"],
+                }
             },
         })
 
@@ -82,7 +87,11 @@ class InputFormatAssistant(Agent):
             The parameters dict for the next callable object which user want to use.
         """
 
-        return self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
+        completion= self.llm_input_format(messages=self.messages, input_content=input_content, tools=functions_list)
+        print(completion)
+        parameters = completion.arguments
+        
+        return json.loads(parameters)
     
     def add_history(self, messages: list) -> None:
         """

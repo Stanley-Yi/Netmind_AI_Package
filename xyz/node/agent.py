@@ -98,7 +98,6 @@ class Agent:
         assert "name" in information["function"], "The information must have a key 'name'."
         assert "description" in information["function"], "The information must have a key 'description'."
         assert "parameters" in information["function"], "The information must have a key 'parameters'."
-        assert "required" in information["function"], "The information must have a key 'required'."
 
         self.information = information
 

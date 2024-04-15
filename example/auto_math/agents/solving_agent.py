@@ -26,19 +26,24 @@ class SolvingAgent(Agent):
         self.set_information({
             "type": "function",
             "function": {
-                "name": "PlanAgent",
-                "description": "This agent can help user to solve the question by using a plan.",
-                "parameters": {"question": {"type": "str", "description": "The question here which need help."},
-                               "plan": {"type": "str", "description": "The plan here which need help."}},
-                "required": ["question", "plan"],
+                "name": "SolvingAgent",
+                "description": "This agent can get a solving process using a plan. And this agent can not use any code to solve the question.",
+                "parameters": {
+                    "type": "object",
+                    "properties":{"question": {"type": "string", "description": "The question here which need help."},
+                               "plan": {"type": "string", "description": "The plan here which need help."}},
+                    "required": ["question", "plan"],
+                }
             },
         })
+        self.input_type = "str"
+        self.output_type = "str"
         
-        self.llm_sloving = LLMAgent(template=solving_prompt, llm_client=llm_client, stream=True)
+        self.llm_solving = LLMAgent(template=solving_prompt, llm_client=llm_client, stream=True)
         
-    def flowing(self, question: str) -> Any:
+    def flowing(self, question: str, plan:str) -> Any:
         
-        return self.llm_solving(question=question)
+        return self.llm_solving(question=question, plan=plan)
     
 solving_prompt = [
 {

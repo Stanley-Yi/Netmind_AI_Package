@@ -198,6 +198,10 @@ class OpenAIClient:
         """
 
         openai_price = {
+            "gpt-4-turbo": {
+                "prompt": 0.01,
+                "completion": 0.03
+            },
             "gpt-4": {
                 "prompt": 0.03,
                 "completion": 0.06

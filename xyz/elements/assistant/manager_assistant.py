@@ -40,10 +40,13 @@ class ManagerAssistant(Agent):
                 "name": "ManagerAssistant",
                 "description": "Manager can make a plan for the task which contain task assignment and execution "
                                "supervision.",
-                "parameters": {"task": {"type": "str", "description": "The task which the user want to do."},
+                "parameters": {
+                    "type": "object",
+                    "properties":{"task": {"type": "str", "description": "The task which the user want to do."},
                                "source": {"type": "list", "description": "The Agents in this company."},
                                },
-                "required": ["task"],
+                    "required": ["task"],
+                }
             },
         })
 
@@ -220,13 +223,18 @@ You need to make a plan for a task which you want to do. The plan should be clea
 1. You have already analysis the task and make a judgment if your employees can do this task. Please use the analysis.
 2. You must refer to employee information and assign tasks to appropriate employees.
 3. You will eventually have to document and express your plan in a special format.
+4. You need to recruit as many helpful employees as possible, regardless of the cost. Results are the most important thing. 
+As far as possible, there should be employees to plan, employees to implement, employees to inspect, and finally employees 
+to summarize.
 
 ### Work Plan Format:
 1. You need to use a special format to record and express your plans.
 2. This particular format must begin with |||working-plan and end with |||working-plan.
 3. You must assign work in order according to the work process. You need use a python list to represent each job 
 assignment.
-4. Each job assignment must include: employee name and information about this work step. 
+4. If using a mathematical formula, use two double slashes. Because we need to parse the string with json.loads(). 
+i.e. \\alpha \\times 3 = 3\\alpha
+5. Each job assignment must include: employee name and information about this work step. 
     It's represented by a python dictionary.: {{"name": "xxx", "sub_task": "xxx"}}
     * name: employee name
     * sub_task: information about this work step
@@ -241,12 +249,14 @@ i.e.
     {{"name": "Bob", "sub_task": "Task2"}}
 ]
 |||working-plan
-
-Think carefully about and analyze the current task and employee information, and record your thinking process. Then, 
+Make sure the above content is parsed with json.loads(he current task and employee information, and record your thinking process. Then, 
 make a work plan by using the format which you are required for this task.
 Please tell the user why you make such a plan? Please describe the reason before you give me the plan.
 Please tell the user why each employee must take a specific task. Do they have some special contribution to the task?
 Take a deep breath and start to analysis the task.
+
+If using a mathematical formula, use two double slashes. Because we need to parse the string with json.loads(). 
+i.e. \\alpha \\times 3 = 3\\alpha
 """
      },
 
@@ -303,6 +313,7 @@ i.e.
     |||next-employee
     {{"name": "Alice"}}
     |||next-employee
+You must select an employee which in the next list.
 
 ### Communication Requirement:
 1. You need be professional and polite.
@@ -324,6 +335,7 @@ The current step is:
 
 The employees in the next list are:
 {next_list_info}
+next-employee must be selected from the next list.
 
 Please summary the current work and tell which employee should handle the next work step.
 Please use the format which you are required for this task to record the information.

@@ -38,22 +38,27 @@ class CodingAgent(Agent):
             "type": "function",
             "function": {
                 "name": "CodingAgent",
-                "description": "This agent can write a python code to compute the math part in a solving result.",
-                "parameters": {"question": {"type": "str", "description": "The question here which need help."},
-                               "answer": {"type": "str", "description": "The llm answer which written by following the plan."}},
-                "required": ["question", "answer"],
+                "description": "This agent can write a python code to compute the math part by following the solving process.",
+                "parameters": {
+                    "type": "object",
+                    "properties":{"question": {"type": "string", "description": "The question here which need help."},
+                               "full_solving_process": {"type": "string", "description": "The full solving process answer."}},
+                    "required": ["question", "full_solving_process"],
+                }
             },
         })
+        self.input_type = "str"
+        self.output_type = "str"
         
         self.repeat_time = 0
           
         self.coding_agent = LLMAgent(template=coding_prompt, llm_client=llm_client, stream=True)
         self.debug_agent = LLMAgent(template=debug_prompt, llm_client=llm_client, stream=False)
         
-    def flowing(self, question, answer):
+    def flowing(self, question: str , full_solving_process: str):
         
         
-        python_code_generate = self.coding_agent.run(question=question, input=answer)        
+        python_code_generate = self.coding_agent(question=question, input=full_solving_process)        
         
         python_code_rough = ""
         for code in python_code_generate:
@@ -121,7 +126,7 @@ class CodingAgent(Agent):
             if self.repeat_time >= 4:
                 return "The code is error."
             
-            new_sample = self.debug_agent.run(code=sample, error=error_message)
+            new_sample = self.debug_agent(code=sample, error=error_message)
             new_code = new_sample.split("|||Code:")[-1]
             new_result = self.run_code(new_code)
             return new_result

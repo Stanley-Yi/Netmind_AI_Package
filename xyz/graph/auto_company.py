@@ -24,71 +24,17 @@ from xyz.elements.assistant.input_format_assistant import InputFormatAssistant
 from xyz.utils.llm.openai_client import OpenAIClient
 
 
-class AutoCompany(Agent):
-    """
-    主要功能
-    1. input format
-    2. manager 决定流程
-        i. Manger 在 company 执行任务之前，就决定 edges 优先这个版本的流程
-        ii. 在运行中，根据 edges 去选择下一个
-    3. 对 Manager 的分析结果进行理解和执行
-
-    使用方式
-    1. 创建一个 AutoCompany 对象
-    2. 添加一组 Agents
-    3. 给定一个 Task
-    4. 运行 AutoCompany，就开始进行 完整的流程：
-        理解任务，分配任务，执行任务
-
-    这个自驱动的 Company 有什么用？
-    1. 自动化进行 多智能体 协作 （针对开发者，没什么帮助。针对非开发者，挺有意思的）
-    2. 如果有一套合适的 Agents 组织结构，可以管理一个非常大的 AI-Society，黑盒能力可以解决更多的问题
-
-    设计记录
-    在执行任务之前，先获取当前的 task，和手下所有员工的信息。
-    1. 判断这些员工是否可以解决当前任务
-    2. 开始列计划，安排工作流程。
-    3. 开始执行任务
-        1. 选择一个 Agent 进行执行。 输入：当前的任务，需要这个 Agent 做的事情 输出：Agent 的执行结果
-        2. 根据 Agent 的执行结果，进行下一个 Agent 的选择
-        3. Manager 对输出进行一些处理
-        4. 重复 1-3，直到任务结束
-
-    work plan 是什么格式？
-    一个 sequence ：
-    [
-        {"name": "", "sub_task": "", "position" : ""},
-        {"name": "", "sub_task": "", "position" : ""},
-        {"name": "", "sub_task": "", "position" : ""},
-    ]
-    和一个 edge：
-    {
-        "node_1" : ["node_x", "node_y"],
-        ...
-    }
-    一个 graph ：
-    Node=Agents_List
-    由 manager 生成 Edge
-    在执行的时候，由 Manager 根据 Edge 选择下一个 Agent，循环这个过程来执行任务
-
-    疑问：
-    1. Manager 需不需要参与到每一个环节里？
-    2. 最终的答案需不需要 Manager 进行总结？
-
-    简单版本：
-    1. 线性执行，只按照给出的顺序执行
-    2. 无法进行 条件判断
-    3. 无法进行 循环
-
-    复杂版本：
-    1. work plan 可以是一个图，可以有多个分支
-    2. 可以有条件判断
-    3. 可以有循环
+class FinishAgent:
     
-    TODO: 
-    1. input format agent 要有全局 memory. 两个方案：1. 拼接messages 2. 长文本
-    2. manager 要有全局 memory
-    """
+    def __init__(self):
+
+        self.information = {}
+        self.information['function'] = {}
+        self.information['function']['description'] = "This is the last agent in the work plan. It means the work plan is finished."
+        self.input_type = None
+        self.output_type = None
+
+class AutoCompany(Agent):
     llm_client: OpenAIClient
     manager: ManagerAssistant
     agents: dict
@@ -112,16 +58,16 @@ class AutoCompany(Agent):
         # Step 1: Manager 分析当前任务
         agents_info = self.get_agents_info()
         task_analysis = self.manager.analyze_task(user_input=user_input, agents_info=agents_info)
-        self.logger.info("=======Start=========", extra={"step": "Task Analysis",
-                                                         "agent": "Manager-Assistant"})
+        self.logger.info("=======Start=========", extra={'step': "Task Analysis",
+                                                         'agent': "Manager-Assistant"})
         task_analysis = self.stream_show(task_analysis)
         if "NO-WE-CAN-NOT" in task_analysis:
             return None
 
         # Step 2: Manager 开始对任务进行分配，并且生成 work plan
         if work_plan is None:
-            self.logger.info("=======Work-Plan=========", extra={"step": "Work Plan",
-                                                                 "agent": "Manager-Assistant"})
+            self.logger.info("=======Work-Plan=========", extra={'step': "Work Plan",
+                                                                 'agent': "Manager-Assistant"})
             work_plan_str = self.manager.create_work_plan(task_analysis, agents_info)
             work_plan_str = self.stream_show(work_plan_str)
             work_plan = self.read_work_plan(work_plan_str)
@@ -131,26 +77,29 @@ class AutoCompany(Agent):
 
         # Step 4: 制作总结
         summary_response = self.manager.summary(solving_history)
-        self.logger.info("=======Summary=========", extra={"step": "Summary",
-                                                           "agent": "Manager-Assistant"})
-        self.stream_show(summary_response)
+        self.logger.info("=======Summary=========", extra={'step': "Summary",
+                                                           'agent': "Manager-Assistant"})
+        summary_response = self.stream_show(summary_response)
 
         solving_record = ("User Input: " + user_input + "\n" + task_analysis
                           + solving_history + summary_response)
+        
+        self.logger.info("=======Finish=========\n\t\tSee you next time!!!", extra={'step': "Finish",
+                                                           'agent': "Netmind_AI_XYZ"})
 
         return work_plan, solving_record
 
     def add_agent(self, agents: list) -> None:
         for agent in agents:
-            self.agents[agent.information["name"]] = agent
+            self.agents[agent.information["function"]["name"]] = agent
 
     def get_agents_info(self):
 
         agents_info = "In this company, we have the following agents:\n"
 
-        for agent in self.agents:
-            agents_info += (f"## ----------\nName: {agent.information['name']}\n"
-                            f"Description: {agent.information['description']}\n"
+        for name, agent in self.agents.items():
+            agents_info += (f"## ----------\nName: {name}\n"
+                            f"Description: {agent.information['function']['description']}\n"
                             f"Input Type: {agent.input_type}\n"
                             f"Output Type{agent.output_type}\n## ----------\n\n")
 
@@ -177,10 +126,21 @@ class AutoCompany(Agent):
         matches = self.get_special_part("working-plan", work_plan_str)
         working_graph = {}
 
+        matches = re.sub(r'(?<!\\)\\(?!\\)', '\\\\\\\\',  matches)
         agents = json.loads(matches)
 
-        for agent in agents:
+        for i, agent in enumerate(agents):
+            if i == 0:
+                agent["position"] = "start"
+            elif i == len(agents) - 1:
+                agent["position"] = "end"
+            else:
+                agent["position"] = "in-progress"
+            
             working_graph[agent["name"]] = agent
+            
+            if i != 0:
+                working_graph[agents[i - 1]["name"]]["next"] = [agent["name"]]
 
         return working_graph
 
@@ -189,14 +149,19 @@ class AutoCompany(Agent):
         start_agent = None
         end_agent = None
         working_history = ""
+        
+        self.logger.info(f"=======Work Plan=========\n{work_plan}", extra={'step': "Show plan",
+                                                         'agent': "None"})
 
         # Step 1: 选择第一个 Agent
-        for agent_info in work_plan:
+        for agent_info in work_plan.values():
             if agent_info["position"] == "start":
                 start_agent = agent_info["name"]
             elif agent_info["position"] == "end":
                 end_agent = agent_info["name"]
-                agent_info["name"]["next"] = "Finish"
+                work_plan[agent_info["name"]]["next"] = "Finish"
+        work_plan["Finish"] = {"sub_task": "Finish", "position": "end", "next": []}
+        self.agents["Finish"] = FinishAgent()
 
         assert start_agent is not None, "No start agent found in the work plan"
         assert end_agent is not None, "No end agent found in the work plan"
@@ -208,15 +173,20 @@ class AutoCompany(Agent):
 
         while current_point != "Finish":
 
-            self.logger.info("-------------", extra={"step": f"{work_plan[current_point]['sub_task']}",
-                                                     "agent": current_point})
+            self.logger.info("-------------", extra={'step': f"{work_plan[current_point]['sub_task']}",
+                                                     'agent': current_point})
             # Step 0: Get the agent object
             execute_agent = self.agents[current_point]
+            
             # Step 1: Execute the agent
             format_current_content = self.input_format_agent(input_content=current_content,
                                                              functions_list=[execute_agent.information])
             response = execute_agent(**format_current_content)
             current_response = self.stream_show(response)
+            
+            if work_plan[current_point]['position'] == "end":
+                working_history += current_point + ":" + current_summary_content + "\n\n"
+                break
 
             # Step 2: Manager do the small summary
             next_list_info = self.get_next_list_info(work_plan[current_point])
@@ -225,11 +195,13 @@ class AutoCompany(Agent):
                                                         next_list_info=next_list_info)
 
             # Step 3: Log the information
+            self.logger.info("-------Step Summary------", extra={'step': f"Summarize this step",
+                                                     'agent': f"Manager-Assistant"})
             current_summary_content = self.stream_show(current_summary)
 
             # Step 4: Update the working history
             working_history += current_point + ":" + current_summary_content + "\n\n"
-            self.input_format_agent.add_history({"role":"assistant", "role":current_summary_content})
+            self.input_format_agent.add_history({"role":"assistant", "content":current_summary_content})
 
             # Step 5: Update the current point
             next_name = self.get_special_part(pattern="next-employee", content=current_summary_content)
@@ -239,11 +211,11 @@ class AutoCompany(Agent):
                 current_point = next_name
             else:
                 current_point = "Finish"
-                self.logger.info("The work plan is finished", extra={"step": "Finish",
-                                                                     "agent": "None"})
+                self.logger.info("The work plan is finished", extra={'step': "Finish",
+                                                                     'agent': "None"})
 
             # Step 6: 迭代下一轮的输入
-            current_content = self.get_special_part(pattern="next-step", content=current_summary_content)
+            current_content = current_response+self.get_special_part(pattern="next-step", content=current_summary_content)
 
         return working_history
 
@@ -252,13 +224,13 @@ class AutoCompany(Agent):
         full_content = ""
         if inspect.isgenerator(response):
             for word in response:
-                self.logger.process(word, extra={"step": "in progress", "agent": "None"})
+                self.logger.process(word, extra={'step': "in progress", 'agent': "None"})
                 full_content += word
         else:
             full_content = response
-            self.logger.info(response)
+            self.logger.info(response, extra={'step': "in progress", 'agent': "None"})
 
-        self.logger.process("\n", extra={"step": "in progress", "agent": "None"})
+        self.logger.process("\n", extra={'step': "in progress", 'agent': "None"})
 
         return full_content
 
@@ -267,8 +239,8 @@ class AutoCompany(Agent):
         next_info = f"Next Agents: \n\n"
         for agent_name in work_step['next']:
             agent = self.agents[agent_name]
-            next_info += (f"## ----------\nName: {agent.information['name']}\n"
-                          f"Description: {agent.information['description']}\n"
+            next_info += (f"## ----------\nName: {agent_name}\n"
+                          f"Description: {agent.information['function']['description']}\n"
                           f"Input Type: {agent.input_type}\n"
                           f"Output Type{agent.output_type}\n## ----------\n\n")
 
@@ -311,8 +283,12 @@ class AutoCompany(Agent):
                 if record.levelno == PROCESS_LEVEL_NUM:
                     msg = record.getMessage()
                 else:
-                    msg = self.format(record)
-                    msg += "\n"
+                    try:
+                        msg = self.format(record)
+                        msg += "\n"
+                    except:
+                        msg = record.getMessage()
+                        msg += "\n"
                 if self.stream is None:
                     self.stream = self._open()
                 self.stream.write(msg)
@@ -323,14 +299,19 @@ class AutoCompany(Agent):
                 if record.levelno == PROCESS_LEVEL_NUM:
                     msg = record.getMessage()
                 else:
-                    msg = self.format(record)
-                    msg += "\n"
+                    try:
+                        msg = self.format(record)
+                        msg += "\n"
+                    except:
+                        msg = record.getMessage()
+                        msg += "\n"
                 if self.stream is None:
                     self.stream = self._open()
                 self.stream.write(msg)
                 self.stream.flush()
 
-        logger = logging.getLogger()
+        # logger = logging.getLogger()
+        logger = logging.getLogger("Assitant")
         logger.setLevel(logging.INFO)
 
         file_handler = FileHandlerNoNewline(local_path)
