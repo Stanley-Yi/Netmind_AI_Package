@@ -32,6 +32,34 @@ class AutoCompany(Agent):
     graph: dict
 
     def __init__(self, llm_client: OpenAIClient, logger_path=None) -> None:
+        """
+        Initialize the AutoCompany. Which you can use to manage the agents and execute the work plan automatically.
+
+        Parameters
+        ----------
+        llm_client: OpenAIClient
+            The OpenAI client which you can use to communicate with the OpenAI API.
+        logger_path: str
+            The path of the logger file. If you don't provide the path, the logger will be saved in the logs folder.
+
+        Examples
+        --------
+        >>> from xyz.graph.auto_company import AutoCompany
+        >>> from example.auto_math.agents.plan_agent import PlanAgent
+        >>> from example.auto_math.agents.solving_agent import SolvingAgent
+        >>> from example.auto_math.agents.summary_agent import SummaryAgent
+        >>> from example.auto_math.agents.coding_agent import CodingAgent
+        >>> from xyz.utils.llm.openai_client import OpenAIClient
+        >>> llm_client = OpenAIClient(model="gpt-4-turbo")
+        >>> plan_agent = PlanAgent(llm_client)
+        >>> solving_agent = SolvingAgent(llm_client)
+        >>> summary_agent = SummaryAgent(llm_client)
+        >>> coding_agent = CodingAgent(llm_client)
+        >>> staffs = [plan_agent, solving_agent, summary_agent, coding_agent]
+        >>> company = AutoCompany(llm_client=llm_client)
+        >>> company.add_agent(staffs)
+        >>> company(user_input="Find the sum. \( \sum_{n=1}^{10} 4n - 5 \)")
+        """
         super().__init__()
 
         self.graph = {}
@@ -44,8 +72,28 @@ class AutoCompany(Agent):
         self.logger = self.create_logger(logger_path)
 
     def flowing(self, user_input, work_plan: dict = None) -> Any:
+        """
+        The main function of the AutoCompany. Which you can use to manage the agents and execute the work plan
+        automatically.
+        And you can see the log in the console and the log file.
 
-        # Step 1: Manager 分析当前任务
+        Parameters
+        ----------
+        user_input: str
+            The user input which you want to process.
+        work_plan: dict or None
+            The work plan which you want to execute. If you don't provide the work plan, the manager will generate
+            the work plan automatically.
+
+        Returns
+        -------
+        work_plan: dict
+            The work plan which you have executed.
+        solving_record: str
+            The solving record which you have executed.
+        """
+
+        # Step 1: Manager will analyze the task
         agents_info = self.get_agents_info()
         task_analysis = self.manager.analyze_task(user_input=user_input, agents_info=agents_info)
         self.logger.info("=======Start=========", extra={'step': "Task Analysis",
@@ -54,7 +102,7 @@ class AutoCompany(Agent):
         if "NO-WE-CAN-NOT" in task_analysis:
             return None
 
-        # Step 2: Manager 开始对任务进行分配，并且生成 work plan
+        # Step 2: Manager start to create work plan and distribute the work
         if work_plan is None:
             self.logger.info("=======Work-Plan=========", extra={'step': "Work Plan",
                                                                  'agent': "Manager-Assistant"})
@@ -62,10 +110,10 @@ class AutoCompany(Agent):
             work_plan_str = self.stream_show(work_plan_str)
             work_plan = self.read_work_plan(work_plan_str)
 
-        # Step 3: Manager 开始执行 work plan
+        # Step 3: Manager start to execute the work plan
         solving_history = self.execute_work_plan(user_input=user_input, task=task_analysis, work_plan=work_plan)
 
-        # Step 4: 制作总结
+        # Step 4: Manager do the summary
         summary_response = self.manager.summary(solving_history)
         self.logger.info("=======Summary=========", extra={'step': "Summary",
                                                            'agent': "Manager-Assistant"})
@@ -80,6 +128,23 @@ class AutoCompany(Agent):
         return work_plan, solving_record
 
     def execute_work_plan(self, user_input: str, task: str, work_plan: dict):
+        """
+        Execute the work plan automatically.
+
+        Parameters
+        ----------
+        user_input: str
+            The user input
+        task: str
+            The task analysis
+        work_plan: dict
+            The work plan which you want to execute.
+
+        Returns
+        -------
+        working_history: str
+            The working history which you have executed.
+        """
 
         working_history = ""
 
@@ -151,6 +216,19 @@ class AutoCompany(Agent):
         return working_history
 
     def read_work_plan(self, work_plan_str: str):
+        """
+        Read the work plan from the string. And return the work plan as a dict.
+
+        Parameters
+        ----------
+        work_plan_str: str
+            The work plan string.
+
+        Returns
+        -------
+        working_graph: dict
+            The work plan dict by using the json.
+        """
 
         matches = self.get_special_part("working-plan", work_plan_str)
         working_graph = {}
@@ -174,10 +252,26 @@ class AutoCompany(Agent):
         return working_graph
 
     def add_agent(self, agents: list) -> None:
+        """
+        Add the agents to the company. And you can use the agents to execute the work plan.
+
+        Parameters
+        ----------
+        agents: list
+            The list of the agents which you want to add to the company.
+        """
         for agent in agents:
             self.agents[agent.information["function"]["name"]] = agent
 
     def get_agents_info(self):
+        """
+        Get the agents information which you have added to the company.
+
+        Returns
+        -------
+        agents_info: str
+            The agents information which you have added to the company.
+        """
 
         agents_info = "In this company, we have the following agents:\n"
 
@@ -189,7 +283,20 @@ class AutoCompany(Agent):
 
         return agents_info
 
-    def get_next_list_info(self, work_step):
+    def get_next_list_info(self, work_step: dict):
+        """
+        Get the next agents information which you have added to the company.
+
+        Parameters
+        ----------
+        work_step: dict
+            The element in the work plan, which is a dict store the information of the current agent.
+
+        Returns
+        -------
+        next_info: str
+            The next agents information which you have added to the company.
+        """
 
         next_info = f"Next Agents: \n\n"
         for agent_name in work_step['next']:
@@ -203,6 +310,21 @@ class AutoCompany(Agent):
 
     @staticmethod
     def get_special_part(pattern: str, content: str) -> str:
+        """
+        Get the special part from the content by using the pattern. The special part must be in the `|||{pattern}`.
+
+        Parameters
+        ----------
+        pattern: str
+            The pattern which you want to extract from the content.
+        content: str
+            The full content which you want to extract the special part.
+
+        Returns
+        -------
+        result: str
+            The special part which you have extracted from the content.
+        """
 
         pattern = "\|\|\|" + pattern
         # 使用正则表达式提取`special_char special_char`之间的内容
@@ -219,6 +341,20 @@ class AutoCompany(Agent):
 
     @staticmethod
     def create_logger(logger_path=None):
+        """
+        Create the logger for the company. And you can use the logger to log the information in the console and the file
+        In fact, this is the user's command line UI.
+
+        Parameters
+        ----------
+        logger_path: str
+            The path of the logger file. If you don't provide the path, the logger will be saved in the logs folder.
+
+        Returns
+        -------
+        logger: logging.Logger
+            The logger which you can use to log the information in the console and the file.
+        """
 
         class ColoredFormatter(logging.Formatter):
             RED = '\033[31m'
