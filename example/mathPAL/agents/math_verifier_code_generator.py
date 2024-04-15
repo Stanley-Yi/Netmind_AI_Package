@@ -36,10 +36,10 @@ class MathVerifierCodeGenerator(Agent):
         # 2. Initialize sub-agents for your custom assistant
         # In your custom assistant, you may integrate multiple other agents to achieve the goal.
         # LLMAgent is a built-in assistant in XYZ, which can be used to interact with OpenAI API.
-        self.llm_code_verifier = LLMAgent(template=MATHANSWER_VERIFIER_TEMPLATE, 
-                                        core_agent=openai_client, 
-                                        inner_multi=False, 
-                                        stream=False)
+        self.llm_code_verifier = LLMAgent(template=MATHANSWER_VERIFIER_TEMPLATE,
+                                          llm_client=openai_client,
+                                          inner_multi=False,
+                                          stream=False)
     
     def flowing(self, problem: str, answer: str) -> str:
         code = self.llm_code_verifier(problem=problem, answer=answer)

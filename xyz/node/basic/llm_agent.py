@@ -26,11 +26,12 @@ class LLMAgent(Agent):
     3， This agent will have a stream parameter for streaming the assistant's messages.
     """
     information: dict
-    core_agent: OpenAIClient
+    llm_client: OpenAIClient
     last_request_info: dict
     node_config: dict
     template: list
     generate_parameters: dict
+
 
     def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False, multi_choice: bool = False) -> None:
         """
@@ -40,7 +41,7 @@ class LLMAgent(Agent):
         ----------
         template: list
             The template for the assistant's prompts. It should be a list of OpenAI's messages.
-        core_agent: OpenAIClient
+        llm_client: OpenAIClient
             The core agent for the assistant.
         stream: bool, optional
             Whether to stream the assistant's messages, by default False.
@@ -52,12 +53,12 @@ class LLMAgent(Agent):
         >>> core_agent = OpenAIClient()
         >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
         >>>             {"role": "user", "content": "{content}"}]
-        >>> assistant = LLMAgent(template=template, core_agent=core_agent, stream=False)
+        >>> assistant = LLMAgent(template=template, core_agent=llm_client, stream=False)
         >>> output = assistant(content="I want to write a story about a dog.")
         """
         super().__init__()
 
-        self.core_agent = core_agent
+        self.llm_client = llm_client
 
         # The node_config is used to store the assistant's configuration.
         self.template = template
@@ -66,7 +67,7 @@ class LLMAgent(Agent):
 
         self.last_request_info = {}
 
-    def flowing(self, messages: list = None, tools: list = None, **kwargs) -> Any:
+    def flowing(self, messages: list = None, tools: list = None, images: list = None, **kwargs) -> Any:
         """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
         Before we call the OpenAI's API, we do some interface on this message.
 
@@ -89,22 +90,23 @@ class LLMAgent(Agent):
         local_tools, tools = self._reset_default_list(tools)
         local_messages.extend(self._complete_prompts(**kwargs))
 
-        return self.request(messages=local_messages, tools=local_tools)
+        return self.request(messages=local_messages, tools=local_tools, images=images)
 
-    def request(self, messages: list, tools: list) -> Any:
+    def request(self, messages: list, tools: list, images: list) -> Any:
         """
         Run the assistant with the given keyword arguments.
         """
 
         self.last_request_info = {
             "messages": messages,
-            "tools": tools
+            "tools": tools,
+            "images": images
         }
 
         if self.stream:
-            return self._stream_run(messages)
+            return self._stream_run(messages=messages, images=images)
         else:
-            response = self.core_agent.run(messages=messages, tools=tools)
+            response = self.llm_client.run(messages=messages, tools=tools, images=images)
             if self.multi_choice:
                 return response
             
@@ -131,7 +133,7 @@ class LLMAgent(Agent):
             The generator for the token(already be decoded) in assistant's messages.
         """
 
-        return self.core_agent.stream_run(messages)
+        return self.llm_client.stream_run(messages)
 
     def debug(self) -> dict[Any, Any]:
         """
