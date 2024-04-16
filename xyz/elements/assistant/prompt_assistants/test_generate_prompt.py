@@ -25,54 +25,60 @@ NUMBER_OF_PROMPTS = 5  # this determines how many candidate prompts to generate.
 
 # test_cases
 # this style of description tends to work well
-description = "Given a prompt, generate a landing page headline."
-
-test_cases = [
-    {
-        'prompt': 'Promoting an innovative new fitness app, Smartly',
-    },
-    {
-        'prompt': 'Why a vegan diet is beneficial for your health',
-    },
-    {
-        'prompt': 'Introducing a new online course on digital marketing',
-    },
-    {
-        'prompt': 'Launching a new line of eco-friendly clothing',
-    },
-    {
-        'prompt': 'Promoting a new travel blog focusing on budget travel',
-    },
-    {
-        'prompt': 'Advertising a new software for efficient project management',
-    },
-    {
-        'prompt': 'Introducing a new book on mastering Python programming',
-    },
-    {
-        'prompt': 'Promoting a new online platform for learning languages',
-    },
-    {
-        'prompt': 'Advertising a new service for personalized meal plans',
-    },
-    {
-        'prompt': 'Launching a new app for mental health and mindfulness',
-    }
-]
-
-# description = "Given a question, generate detailed solution process."
+# description = "Given a prompt, generate a landing page headline."
 
 # test_cases = [
 #     {
-#         'prompt': 'How many different real numbers $$x$$ satisfy the equation $$\left(x^{2}-5\right)^{2}=16 ?$$ ( )',
+#         'prompt': 'Promoting an innovative new fitness app, Smartly',
 #     },
 #     {
-#         'prompt': 'What is the area of the triangle formed by the lines $$y=5$$，$$y=1+x$$，and $$y=1-x$$？( )',
+#         'prompt': 'Why a vegan diet is beneficial for your health',
 #     },
 #     {
-#         'prompt': 'Alice has $$24$$ apples．In how many ways can she share them with Becky and Chris so that each of the three people has at least two apples？( )',
+#         'prompt': 'Introducing a new online course on digital marketing',
 #     },
+#     {
+#         'prompt': 'Launching a new line of eco-friendly clothing',
+#     },
+#     {
+#         'prompt': 'Promoting a new travel blog focusing on budget travel',
+#     },
+#     {
+#         'prompt': 'Advertising a new software for efficient project management',
+#     },
+#     {
+#         'prompt': 'Introducing a new book on mastering Python programming',
+#     },
+#     {
+#         'prompt': 'Promoting a new online platform for learning languages',
+#     },
+#     {
+#         'prompt': 'Advertising a new service for personalized meal plans',
+#     },
+#     {
+#         'prompt': 'Launching a new app for mental health and mindfulness',
+#     }
 # ]
+
+description = "Given a question and a correct answer, generate detailed solution of the question. Please solve the problem yourself first and then check it based on the answer."
+
+test_cases = [
+    {
+        'prompt': 'How many different real numbers $$x$$ satisfy the equation $$\left(x^{2}-5\right)^{2}=16 ?$$ ( ) \n\n Correct answer: 4',
+    },
+    {
+        'prompt': 'What is the area of the triangle formed by the lines $$y=5$$，$$y=1+x$$，and $$y=1-x$$？( ) \n\n Correct answer: 16',
+    },
+    {
+        'prompt': 'Alice has $$24$$ apples．In how many ways can she share them with Becky and Chris so that each of the three people has at least two apples？( ) \n\n Correct answer: 190',
+    },
+    {
+        'prompt': 'At the 2013 Winnebago County Fair a vendor is offering a ``fair special" on sandals．If you buy one pair of sandals at the regular price of $$\$ 50 $$, you get a second pair at a $$ 40\% $$ discount, and a third pair at half the regular price. Javier took advantage of the "fair special" to buy three pairs of sandals. What percentage of the \$ $$150$$ regular price did he save？( ) \n\n Correct answer: 30',
+    },
+    {
+        'prompt': 'Ralph went to the store and bought 12 pairs of socks for a total of $$\$ 24 $$. Some of the socks he bought cost \$ $$ 1$$ a pair，some of the socks he bought cost $$\$ 3 $$ a pair, and some of the socks he bought cost \$ $$ 4$$ a pair．If he bought at least one pair of each type，how many pairs of $$\$ 1 $$ socks did Ralph buy？( ) \n\n Correct answer: 7',
+    },
+]
 
 
 API_KEY = "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"

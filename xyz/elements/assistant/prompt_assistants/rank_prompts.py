@@ -29,19 +29,25 @@ class RankPrompts(Agent):
 
     def __init__(self, generation_agent: OpenAIClient, score_agent: OpenAIClient, k: int) -> None:
         """
-        The GPTPromptEngineer is a class to generate an optimal prompt for a given task.
+        The RankPrompts is a class to rank a list of prompts based on their performance.
 
         Parameters
         ----------
-        core_agent: OpenAIClient
-            The core agent of the GPTPromptEngineer.
+        generation_agent: OpenAIClient
+            The agent to generate result according to specific prompt.
+        score_agent: OpenAIClient
+            The agent to score the performance of prompt's result.
+        k: int
+            A constant factor that determines how much ratings change.
 
         Examples
         --------
         >>> from xyz.utils.llm.openai_client import OpenAIClient
-        >>> from xyz.function.gpt_prompt_engineer import GPTPromptEngineer
-        >>> core_agent = OpenAIClient()
-        >>> gpt_prompt_engineer = GPTPromptEngineer(core_agent)
+        >>> from xyz.function.rank_prompts import RankPrompts
+        >>> generation_agent = OpenAIClient()
+        >>> score_agent = OpenAIClient()
+        >>> k = 32
+        >>> gpt_prompt_engineer = GPTPromptEngineer(generation_agent, score_agent, k)
         >>> task = "Build a new prompt from solving k-12 math."
         >>> result = gpt_prompt_engineer(task=task)
 
@@ -54,9 +60,11 @@ class RankPrompts(Agent):
             "function": {
                 "name": "GPTPromptEngineer",
                 "description": "Generate an optimal prompt for a given task.",
-                "parameters": {"task": {"type": "str", "description": "The task which the user want to do."}
+                "parameters": {"test_cases": {"type": "list", "test_cases": "Some examples of the task."},
+                               "description": {"type": "str", "description": "Description of the task which the user want to do."},
+                               "prompts": {"type": "list", "prompts": "Prompts that need to be compared."}
                                },
-                "required": ["task"],
+                "required": ["test_cases", "description", "prompts"],
             },
         })
         self.output_type = "str"
