@@ -34,8 +34,16 @@ class GPTPromptEngineer(Agent):
         >>> from xyz.function.gpt_prompt_engineer import GPTPromptEngineer
         >>> core_agent = OpenAIClient()
         >>> gpt_prompt_engineer = GPTPromptEngineer(core_agent)
-        >>> task = "Build a new prompt from solving k-12 math."
-        >>> result = gpt_prompt_engineer(task=task)
+        >>> description = "Given a prompt, generate a landing page headline."
+        >>> test_cases = [
+                    {
+                        'prompt': 'Promoting an innovative new fitness app, Smartly',
+                    },
+                    {
+                        'prompt': 'Why a vegan diet is beneficial for your health',
+                    },
+                ]
+        >>> result = gpt_prompt_engineer(test_cases=test_cases, description=description)
 
         """
         super().__init__()
@@ -46,8 +54,8 @@ class GPTPromptEngineer(Agent):
             "function": {
                 "name": "GPTPromptEngineer",
                 "description": "Generate an optimal prompt for a given task.",
-                "parameters": {"test_cases": {"type": "str", "description": "The task which the user want to do."},
-                               "description": {"type": "str", "description": "The task which the user want to do."},
+                "parameters": {"test_cases": {"type": "list", "test_cases": "Some examples of the task."},
+                               "description": {"type": "str", "description": "Description of the task which the user want to do."},
                                },
                 "required": ["test_cases", "description"],
             },
@@ -64,13 +72,15 @@ class GPTPromptEngineer(Agent):
 
         Parameters
         ----------
-        task: str
-            The task which the user want to do.
+        test_cases: list
+            Some examples of the task.
+        description: str
+            Description of the task which the user want to do.
 
         Returns
         -------
         str
-            The prompts of the GPTPromptEngineer.
+            The prompts of the task.
         """
         outputs = self.llm_generate_prompt(test_cases=test_cases, description=description.strip())
         prompts = []
