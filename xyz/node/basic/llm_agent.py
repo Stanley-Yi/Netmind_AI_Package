@@ -58,7 +58,7 @@ class LLMAgent(Agent):
         """
         super().__init__()
 
-        self.llm_client = llm_client
+        self.llm_client = core_agent
 
         # The node_config is used to store the assistant's configuration.
         self.template = template
