@@ -55,7 +55,8 @@ class GPTPromptEngineer(Agent):
         self.output_type = "list"
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, core_agent=core_agent, stream=False, multi_choice=True)
+        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, llm_client=core_agent, stream=False,
+                                            original_response=True)
 
     def flowing(self, test_cases: str, description: str) -> list:
         """

@@ -32,7 +32,9 @@ class LLMAgent(Agent):
     template: list
     generate_parameters: dict
 
-    def __init__(self, template: list, llm_client: OpenAIClient, stream: bool = False, multi_choice: bool = False) -> None:
+    def __init__(self, template: list, llm_client: OpenAIClient,
+                 stream: bool = False, original_response: bool = False) -> None:
+        # noinspection PyUnresolvedReferences
         """
         Initialize the assistant with the given template and core agent.
 
@@ -59,10 +61,9 @@ class LLMAgent(Agent):
 
         self.llm_client = llm_client
 
-
         self.template = template
         self.stream = stream
-        self.multi_choice = multi_choice
+        self.original_response = original_response
 
         self.last_request_info = {}
 
@@ -76,6 +77,8 @@ class LLMAgent(Agent):
             The messages to use for completing the prompts, by default None.
         tools: list, optional
             The tools to use for completing the prompts, by default None.
+        images: list, optional
+            The images to use for completing the prompts, by default None.
         **kwargs
             The keyword arguments to use for completing the prompts.
 
@@ -105,7 +108,7 @@ class LLMAgent(Agent):
             return self._stream_run(messages=messages, images=images)
         else:
             response = self.llm_client.run(messages=messages, tools=tools, images=images)
-            if self.multi_choice:
+            if self.original_response:
                 return response
             
             content = response.choices[0].message.content
@@ -145,7 +148,8 @@ class LLMAgent(Agent):
 
         return self.last_request_info
 
-    def _reset_default_list(self, parameter) -> tuple[list, Any]:
+    @staticmethod
+    def _reset_default_list(parameter) -> tuple[list, Any]:
         """
         Reset the assistant's parameters to the default values.
 
