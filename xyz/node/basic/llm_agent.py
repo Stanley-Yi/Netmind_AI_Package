@@ -21,9 +21,9 @@ class LLMAgent(Agent):
     """ 
     An assistant that uses the LLM (Language Learning Model) for processing messages.
 
-    1， This agent will have a template for the assistant's prompts.
-    2， This agent will have a core agent for calling the OpenAI API.
-    3， This agent will have a stream parameter for streaming the assistant's messages.
+    1. This agent will have a template for the assistant's prompts.
+    2. This agent will have a core agent for calling the OpenAI API.
+    3. This agent will have a stream parameter for streaming the assistant's messages.
     """
     information: dict
     core_agent: OpenAIClient
@@ -66,7 +66,7 @@ class LLMAgent(Agent):
 
         self.last_request_info = {}
 
-    def flowing(self, messages: list = None, tools: list = None, **kwargs) -> Any:
+    def flowing(self, messages: list = None, tools: list = None, images: list = None, **kwargs) -> Any:
         """When you call this assistant, we will run the assistant with the given keyword arguments from the prompts.
         Before we call the OpenAI's API, we do some interface on this message.
 
@@ -89,9 +89,9 @@ class LLMAgent(Agent):
         local_tools, tools = self._reset_default_list(tools)
         local_messages.extend(self._complete_prompts(**kwargs))
 
-        return self.request(messages=local_messages, tools=local_tools)
+        return self.request(messages=local_messages, tools=local_tools, images=images)
 
-    def request(self, messages: list, tools: list) -> Any:
+    def request(self, messages: list, tools: list, images: list) -> Any:
         """
         Run the assistant with the given keyword arguments.
         """
@@ -102,9 +102,9 @@ class LLMAgent(Agent):
         }
 
         if self.stream:
-            return self._stream_run(messages)
+            return self._stream_run(messages=messages, images=images)
         else:
-            response = self.core_agent.run(messages=messages, tools=tools)
+            response = self.core_agent.run(messages=messages, tools=tools, images=images)
             if self.multi_choice:
                 return response
             
@@ -116,7 +116,7 @@ class LLMAgent(Agent):
             else:
                 return content
 
-    def _stream_run(self, messages: list) -> Generator[str, None, None]:
+    def _stream_run(self, messages: list, images: list) -> Generator[str, None, None]:
         """
         Run the assistant in a streaming manner with the given messages.
 
@@ -131,7 +131,7 @@ class LLMAgent(Agent):
             The generator for the token(already be decoded) in assistant's messages.
         """
 
-        return self.core_agent.stream_run(messages)
+        return self.core_agent.stream_run(messages=messages, images=images)
 
     def debug(self) -> dict[Any, Any]:
         """
