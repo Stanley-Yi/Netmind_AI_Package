@@ -55,14 +55,14 @@ class OpenAIClient:
 
         # Set the default generate arguments for OpenAI's chat completions
         self.generate_args = {
-            "model": "gpt-4-0125-preview",
+            "model": "gpt-4-turbo",
             "temperature": 0.,
             "top_p": 1.0
         }
         # If the user provides generate arguments, update the default values
         self.generate_args.update(generate_args)
 
-    def run(self, messages: List, tools: List = None) -> ChatCompletion | Stream[ChatCompletionChunk]:
+    def run(self, messages: List, tools: List = None, images: List = None) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """
         Run the assistant with the given messages.
 
@@ -72,6 +72,8 @@ class OpenAIClient:
             A list of messages to be processed by the assistant.
         tools : list, optional
             A list of tools to be used by the assistant, by default [].
+        images : list, optional
+            A list of image URLs to be used by the assistant, by default [].
 
         Returns
         -------
@@ -83,6 +85,25 @@ class OpenAIClient:
         Exception
             If there is an error while processing the messages.
         """
+        
+        if images:
+            last_message = messages.pop()
+            text = last_message['content']
+            content = [
+                {"type": "text","text": text},
+            ]
+            for image_url in images:
+                content.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": image_url,
+                    },
+                })
+            messages.append({
+                "role": last_message['role'],
+                "content": content
+            })
+            
 
         # If the user provides tools, use them; otherwise, this client will not use any tools
         if tools:
@@ -124,7 +145,7 @@ class OpenAIClient:
                 print(f"The messages: {messages}")
                 time.sleep(2)
 
-    def stream_run(self, messages: List) -> Generator[str, None, None]:
+    def stream_run(self, messages: List, images: List) -> Generator[str, None, None]:
         """
         Run the assistant with the given messages in a streaming manner.
 
@@ -143,6 +164,24 @@ class OpenAIClient:
         Exception
             If there is an error while processing the messages.
         """
+        
+        if images:
+            last_message = messages.pop()
+            text = last_message['content']
+            content = [
+                {"type": "text","text": text},
+            ]
+            for image_url in images:
+                content.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": image_url,
+                    },
+                })
+            messages.append({
+                "role": last_message['role'],
+                "content": content
+            })
 
         get_response_signal = False
         count = 0
@@ -198,6 +237,10 @@ class OpenAIClient:
         """
 
         openai_price = {
+            "gpt-4-turbo": {
+                "prompt": 0.01,
+                "completion": 0.03
+            },
             "gpt-4": {
                 "prompt": 0.03,
                 "completion": 0.06
