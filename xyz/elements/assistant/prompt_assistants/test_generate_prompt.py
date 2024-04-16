@@ -60,6 +60,20 @@ test_cases = [
     }
 ]
 
+# description = "Given a question, generate detailed solution process."
+
+# test_cases = [
+#     {
+#         'prompt': 'How many different real numbers $$x$$ satisfy the equation $$\left(x^{2}-5\right)^{2}=16 ?$$ ( )',
+#     },
+#     {
+#         'prompt': 'What is the area of the triangle formed by the lines $$y=5$$，$$y=1+x$$，and $$y=1-x$$？( )',
+#     },
+#     {
+#         'prompt': 'Alice has $$24$$ apples．In how many ways can she share them with Becky and Chris so that each of the three people has at least two apples？( )',
+#     },
+# ]
+
 
 API_KEY = "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"
 
