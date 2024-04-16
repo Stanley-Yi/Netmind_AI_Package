@@ -151,6 +151,8 @@ class OpenAIClient:
 
         Parameters
         ----------
+        images : list
+            A list of image URLs to be used by the assistant.
         messages : list
             A list of messages to be processed by the assistant.
 

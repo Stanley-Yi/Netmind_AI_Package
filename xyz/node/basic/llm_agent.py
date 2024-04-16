@@ -26,13 +26,15 @@ class LLMAgent(Agent):
     3. This agent will have a stream parameter for streaming the assistant's messages.
     """
     information: dict
-    core_agent: OpenAIClient
+    llm_client: OpenAIClient
     last_request_info: dict
     node_config: dict
     template: list
     generate_parameters: dict
 
-    def __init__(self, template: list, core_agent: OpenAIClient, stream: bool = False, multi_choice: bool = False) -> None:
+    def __init__(self, template: list, llm_client: OpenAIClient,
+                 stream: bool = False, original_response: bool = False) -> None:
+        # noinspection PyUnresolvedReferences
         """
         Initialize the assistant with the given template and core agent.
 
@@ -40,7 +42,7 @@ class LLMAgent(Agent):
         ----------
         template: list
             The template for the assistant's prompts. It should be a list of OpenAI's messages.
-        core_agent: OpenAIClient
+        llm_client: OpenAIClient
             The core agent for the assistant.
         stream: bool, optional
             Whether to stream the assistant's messages, by default False.
@@ -52,17 +54,17 @@ class LLMAgent(Agent):
         >>> core_agent = OpenAIClient()
         >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
         >>>             {"role": "user", "content": "{content}"}]
-        >>> assistant = LLMAgent(template=template, core_agent=core_agent, stream=False)
+        >>> assistant = LLMAgent(template=template, core_agent=llm_client, stream=False)
         >>> output = assistant(content="I want to write a story about a dog.")
         """
         super().__init__()
 
-        self.core_agent = core_agent
+        self.llm_client = llm_client
 
         # The node_config is used to store the assistant's configuration.
         self.template = template
         self.stream = stream
-        self.multi_choice = multi_choice
+        self.original_response = original_response
 
         self.last_request_info = {}
 
@@ -76,6 +78,8 @@ class LLMAgent(Agent):
             The messages to use for completing the prompts, by default None.
         tools: list, optional
             The tools to use for completing the prompts, by default None.
+        images: list, optional
+            The images to use for completing the prompts, by default None.
         **kwargs
             The keyword arguments to use for completing the prompts.
 
@@ -104,8 +108,8 @@ class LLMAgent(Agent):
         if self.stream:
             return self._stream_run(messages=messages, images=images)
         else:
-            response = self.core_agent.run(messages=messages, tools=tools, images=images)
-            if self.multi_choice:
+            response = self.llm_client.run(messages=messages, tools=tools, images=images)
+            if self.original_response:
                 return response
             
             content = response.choices[0].message.content
@@ -131,7 +135,7 @@ class LLMAgent(Agent):
             The generator for the token(already be decoded) in assistant's messages.
         """
 
-        return self.core_agent.stream_run(messages=messages, images=images)
+        return self.llm_client.stream_run(messages=messages, images=images)
 
     def debug(self) -> dict[Any, Any]:
         """
@@ -145,7 +149,8 @@ class LLMAgent(Agent):
 
         return self.last_request_info
 
-    def _reset_default_list(self, parameter) -> tuple[list, Any]:
+    @staticmethod
+    def _reset_default_list(parameter) -> tuple[list, Any]:
         """
         Reset the assistant's parameters to the default values.
 

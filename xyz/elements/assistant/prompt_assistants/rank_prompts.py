@@ -60,7 +60,7 @@ class RankPrompts(Agent):
         self.output_type = "str"
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, core_agent=core_agent, stream=False)
+        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, llm_client=core_agent, stream=False)
     
     
     def generate_candidate_prompts(description, test_cases, number_of_prompts):
