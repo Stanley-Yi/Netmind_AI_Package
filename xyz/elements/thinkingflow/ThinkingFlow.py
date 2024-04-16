@@ -21,7 +21,7 @@ from xyz.elements.thinkingflow.Dividing import Dividing
 from xyz.elements.thinkingflow.Options import Options
 
 
-class ThinkingFlow():
+class ThinkingFlow:
     
     def __init__(self):
         pass

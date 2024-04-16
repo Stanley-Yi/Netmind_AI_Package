@@ -1,8 +1,15 @@
 """
+<<<<<<< HEAD
 =====
 Graph
 =====
 @file_name: agent_graph.py
+=======
+===========
+AutoCompany
+===========
+@file_name: auto_company.py
+>>>>>>> 0bce3e4aef53f93dbc4a2df6f9f05585444a4709
 @author: Bin Liang
 @date: 2024-04-07
     This is a class for graph

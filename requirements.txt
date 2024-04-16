@@ -2,4 +2,7 @@ openai==1.17.1
 python-dotenv==1.0.1
 setuptools==69.2.0
 tqdm==4.66.1
+<<<<<<< HEAD
 tqdm==4.65.0
+=======
+>>>>>>> 0bce3e4aef53f93dbc4a2df6f9f05585444a4709

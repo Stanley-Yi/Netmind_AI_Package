@@ -25,7 +25,7 @@ class RankPrompts(Agent):
     information: str
     llm_prompt_engineer: LLMAgent
 
-    def __init__(self, core_agent: OpenAIClient) -> None:
+    def __init__(self, core_agent: list[OpenAIClient] | OpenAIClient) -> None:
         """
         The GPTPromptEngineer is a class to generate an optimal prompt for a given task.
 
@@ -60,7 +60,7 @@ class RankPrompts(Agent):
         self.output_type = "str"
 
         # Using the template we designed to define the assistant, which can do the main task.
-        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, core_agent=core_agent, stream=False)
+        self.llm_generate_prompt = LLMAgent(template=generate_prompt_engineer, llm_client=core_agent, stream=False)
     
     
     def generate_candidate_prompts(description, test_cases, number_of_prompts):
@@ -179,7 +179,7 @@ class RankPrompts(Agent):
         return prompt_ratings
     
 
-    def flowing(self, description, test_cases, number_of_prompts=10) -> str:
+    def flowing(self, description, test_cases, prompts) -> str:
         """
         The main function of the GPTPromptEngineer.
 

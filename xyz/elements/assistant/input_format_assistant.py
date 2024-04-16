@@ -77,6 +77,8 @@ class InputFormatAssistant(Agent):
 
         Parameters
         ----------
+        repeat_time : int
+            The repeat time of the assistant.
         input_content: str
             The input of the last node.
         functions_list: list
