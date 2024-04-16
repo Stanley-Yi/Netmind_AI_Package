@@ -51,17 +51,16 @@ class LLMAgent(Agent):
         --------
         >>> from xyz.utils.llm.openai_client import OpenAIClient
         >>> from xyz.elements.assistant.llm_agent import LLMAgent
-        >>> core_agent = OpenAIClient()
+        >>> llm_client = OpenAIClient()
         >>> template = [{"role": "system", "content": "Now you are a story writer. Please write a story for user."},
         >>>             {"role": "user", "content": "{content}"}]
-        >>> assistant = LLMAgent(template=template, core_agent=llm_client, stream=False)
+        >>> assistant = LLMAgent(template=template, llm_client=llm_client, stream=False)
         >>> output = assistant(content="I want to write a story about a dog.")
         """
         super().__init__()
 
         self.llm_client = llm_client
 
-        # The node_config is used to store the assistant's configuration.
         self.template = template
         self.stream = stream
         self.original_response = original_response
