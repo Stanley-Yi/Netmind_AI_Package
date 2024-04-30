@@ -93,13 +93,13 @@ class GPTPromptEngineer(Agent):
 
 generate_prompt_engineer = [
     {"role": "system", "content": """
-Your job is to generate system prompts for GPT-4, given a description of the use-case and some test cases.
+Your job is to generate system prompts for GPT-4, given a description of the use-case and some test cases (may include tasks and expections).
 
 The prompts you will be generating will be for freeform tasks, such as generating a landing page headline, an intro paragraph, solving a math problem, etc.
 
 In your generated prompt, you should describe how the AI should behave in plain English. Include what it will see, and what it's allowed to output. Be creative with prompts to get the best possible results. The AI knows it's an AI -- you don't need to tell it this.
 
-You will be graded based on the performance of your prompt... but don't cheat! You cannot include specifics about the test cases in your prompt. Any prompts with examples will be disqualified.
+You will be graded based on the performance of your prompt (if expections is provided, whether the result is close to expectations is an important consideration)... but don't cheat! You cannot include specifics about the test cases in your prompt. Any prompts with examples will be disqualified.
 
 Most importantly, output NOTHING but the prompt. Do not include anything else in your message.
 """
